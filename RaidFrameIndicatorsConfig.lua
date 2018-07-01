@@ -54,9 +54,9 @@ function RaidFrameIndicators:CreateOptions ()
 				name = "Show Dispellable Icons",
 				desc = "Show the standard raid frame dispellable debuff icons",
 				order = 15,
-			},			
+			},
 			indicatorFont = {
-				type = 'select', 
+				type = 'select',
 				dialogControl = "LSM30_Font",
 				name = "Indicator Font",
 				desc = "Adjust the font used for the indicators",
@@ -79,7 +79,7 @@ function RaidFrameIndicators:CreateOptions ()
 			}
 		}
 	}
-	
+
 	--- Add options for each indicator
 	local indicatorNames = {"Top Left", "Top", "Top Right", "Left", "Center", "Right", "Bottom Left", "Bottom", "Bottom Right"}
 	for i = 1, 9 do
@@ -226,7 +226,7 @@ function RaidFrameIndicators:CreateOptions ()
 end
 
 local SlashCommands = {
-        type    = "group",
+	type    = "group",
 	args  = {
 		enable = {
 			type = "execute",
@@ -258,19 +258,19 @@ function RaidFrameIndicators:SetupOptions()
 	-- Set up defaults
 	RaidFrameIndicators:CreateDefaults()
 	self.db = LibStub("AceDB-3.0"):New("IndicatorsDB", Defaults)
-	
+
 	-- Profile handling
 	local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
-	
+
 	-- Get the config up
 	RaidFrameIndicators:CreateOptions()
 	local config = LibStub("AceConfig-3.0")
 	config:RegisterOptionsTable("Raid Frame Indicators", Options)
 	config:RegisterOptionsTable("Raid Frame Indicators Profiles", profiles)
-	
+
 	-- Register slash commands
 	config:RegisterOptionsTable("Raid Frame Indicators Options", SlashCommands, {"indicators", "raidrfameindicators"})
-	
+
 	-- Add to Blizz option pane
 	local dialog = LibStub("AceConfigDialog-3.0")
 	self.optionsFrames = {}
