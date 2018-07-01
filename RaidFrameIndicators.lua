@@ -1,7 +1,10 @@
 ﻿-- ----------------------------------------------------------------------------
 -- Raid Frame Indicators by Szandos
 -- ----------------------------------------------------------------------------
-Indicators = LibStub( "AceAddon-3.0" ):NewAddon( "Indicators", "AceTimer-3.0")
+RaidFrameIndicators_Global = LibStub( "AceAddon-3.0" ):NewAddon( "Indicators", "AceTimer-3.0")
+local RaidFrameIndicators = RaidFrameIndicators_Global
+
+
 local media = LibStub:GetLibrary("LibSharedMedia-3.0")
 local f = {} -- Indicators for the frames
 local playerName
@@ -12,10 +15,75 @@ local auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}} -- Matrix to keep all a
 local _
 local allAuras
 
+
+-------------------------------------------------------------------------
+--------------------Start of Functions-----------------------------------
+-------------------------------------------------------------------------
+
+--- **OnInitialize**, which is called directly after the addon is fully loaded.
+--- do init tasks here, like loading the Saved Variables
+--- or setting up slash commands.
+function RaidFrameIndicators:OnInitialize()
+
+	-- Set up config pane
+	RaidFrameIndicators:SetupOptions()
+
+	-- Get the player name
+	playerName = UnitName("player")
+
+	-- Register callbacks for profile switching
+	RaidFrameIndicators.db.RegisterCallback(RaidFrameIndicators, "OnProfileChanged", "RefreshConfig")
+	RaidFrameIndicators.db.RegisterCallback(RaidFrameIndicators, "OnProfileCopied", "RefreshConfig")
+	RaidFrameIndicators.db.RegisterCallback(RaidFrameIndicators, "OnProfileReset", "RefreshConfig")
+	--dPrint ("Initialized")
+
+end
+
+--- **OnEnable** which gets called during the PLAYER_LOGIN event, when most of the data provided by the game is already present.
+--- Do more initialization here, that really enables the use of your addon.
+--- Register Events, Hook functions, Create Frames, Get information from
+--- the game that wasn't available in OnInitialize
+function RaidFrameIndicators:OnEnable()
+
+	if self.db.profile.enabled then
+		-- Start update
+		self.updateTimer = self:ScheduleRepeatingTimer("UpdateAllIndicators", 0.11)
+		RaidFrameIndicators:RefreshConfig()
+		--dPrint ("Enabled")
+	end
+
+end
+
+--- **OnDisable**, which is only called when your addon is manually being disabled.
+--- Unhook, Unregister Events, Hide frames that you created.
+--- You would probably only use an OnDisable if you want to
+--- build a "standby" mode, or be able to toggle modules on/off.
+function RaidFrameIndicators:OnDisable()
+
+	local i
+
+	-- Stop update
+	RaidFrameIndicators:CancelAllTimers()
+
+	-- Hide all indicators
+	for frameName, _ in pairs(f) do
+		for i = 1, 9 do
+			f[frameName][i].text:SetText("")
+			f[frameName][i].icon:SetTexture("")
+		end
+	end
+	--dPrint ("Disabled")
+
+end
+
+-------------------------------------------------
+
+
+
 -- Hide buff/debuff icons
 local function HideBuffs(frame)
 	if frame.optionTable.displayBuffs then -- Normal frame
-		if not Indicators.db.profile.showBuffs then
+		if not RaidFrameIndicators.db.profile.showBuffs then
 			CompactUnitFrame_HideAllBuffs(frame)
 		end
 	end
@@ -24,7 +92,7 @@ hooksecurefunc("CompactUnitFrame_UpdateBuffs", HideBuffs)
 
 local function HideDebuffs(frame)
 	if frame.optionTable.displayBuffs then -- Normal frame
-		if not Indicators.db.profile.showDebuffs then
+		if not RaidFrameIndicators.db.profile.showDebuffs then
 			CompactUnitFrame_HideAllDebuffs(frame)
 		end
 	end
@@ -33,7 +101,7 @@ hooksecurefunc("CompactUnitFrame_UpdateDebuffs", HideDebuffs)
 
 local function HideDispelDebuffs(frame)
 	if frame.optionTable.displayBuffs then -- Normal frame
-		if not Indicators.db.profile.showDispelDebuffs then
+		if not RaidFrameIndicators.db.profile.showDispelDebuffs then
 			CompactUnitFrame_HideAllDispelDebuffs(frame)
 		end
 	end
@@ -71,7 +139,7 @@ end
 hooksecurefunc("UnitFrame_OnLeave", TipHook_OnLeave)
 
 -- Create the FontStrings used for indicators
-function Indicators.CreateIndicator(frame)
+function RaidFrameIndicators:CreateIndicator(frame)
 	local unit = frame.unit
 	local frameName = frame:GetName()
 	local i
@@ -122,11 +190,11 @@ function Indicators.CreateIndicator(frame)
 	end
 	
 	-- Set appearance
-	Indicators.SetIndicatorAppearance(frame)
+	RaidFrameIndicators:SetIndicatorAppearance(frame)
 end
 
 -- Set the appearance of the FontStrings
-function Indicators.SetIndicatorAppearance(frame)
+function RaidFrameIndicators:SetIndicatorAppearance(frame)
 	local unit = frame.unit
 	local frameName = frame:GetName()
 	local i
@@ -135,15 +203,15 @@ function Indicators.SetIndicatorAppearance(frame)
 	if not unit then return end
 	if not f[frameName] then return end
 	
-	local font = media and media:Fetch('font', Indicators.db.profile.indicatorFont) or STANDARD_TEXT_FONT
+	local font = media and media:Fetch('font', RaidFrameIndicators.db.profile.indicatorFont) or STANDARD_TEXT_FONT
 	
 	--dPrint ("SetIndicatorAppearance")
 	for i = 1, 9 do
-		f[frameName][i].text:SetFont(font, Indicators.db.profile["size"..i], "OUTLINE")
-		f[frameName][i].text:SetTextColor(Indicators.db.profile["color"..i].r, Indicators.db.profile["color"..i].g, Indicators.db.profile["color"..i].b, Indicators.db.profile["color"..i].a)
-		f[frameName][i].icon:SetWidth(Indicators.db.profile["iconSize"..i])
-		f[frameName][i].icon:SetHeight(Indicators.db.profile["iconSize"..i])
-		if Indicators.db.profile["showIcon"..i] then 
+		f[frameName][i].text:SetFont(font, RaidFrameIndicators.db.profile["size"..i], "OUTLINE")
+		f[frameName][i].text:SetTextColor(RaidFrameIndicators.db.profile["color"..i].r, RaidFrameIndicators.db.profile["color"..i].g, RaidFrameIndicators.db.profile["color"..i].b, RaidFrameIndicators.db.profile["color"..i].a)
+		f[frameName][i].icon:SetWidth(RaidFrameIndicators.db.profile["iconSize"..i])
+		f[frameName][i].icon:SetHeight(RaidFrameIndicators.db.profile["iconSize"..i])
+		if RaidFrameIndicators.db.profile["showIcon"..i] then
 			f[frameName][i].icon:Show()
 		else
 			f[frameName][i].icon:Hide()
@@ -152,12 +220,12 @@ function Indicators.SetIndicatorAppearance(frame)
 end
 
 -- Update all indicators
-function Indicators:UpdateAllIndicators()
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", Indicators.UpdateIndicatorFrame)
+function RaidFrameIndicators:UpdateAllIndicators()
+	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", RaidFrameIndicators:UpdateIndicatorFrame)
 end
 
 -- Get all unit auras
-function Indicators:UpdateUnitAuras(unit)
+function RaidFrameIndicators:UpdateUnitAuras(unit)
 	--debugprofilestart()
 	-- Create tables for the unit
 	if not unitBuffs[unit] then unitBuffs[unit] = {} end
@@ -209,7 +277,7 @@ function Indicators:UpdateUnitAuras(unit)
 end
 
 -- Check the indicators on a frame and update the times on them
-function Indicators.UpdateIndicatorFrame(frame)
+function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 --debugprofilestart()
 	local currentTime = GetTime()
 	local unit = frame.unit
@@ -221,7 +289,7 @@ function Indicators.UpdateIndicatorFrame(frame)
 	
 	-- Check if the indicator frame exists, else create it
 	if not f[frameName] then
-		Indicators.CreateIndicator(frame)
+		RaidFrameIndicators.CreateIndicator(frame)
 	end	
 	
 	-- Check if unit is alive/connected
@@ -235,7 +303,7 @@ function Indicators.UpdateIndicatorFrame(frame)
 	end
 	
 	-- Update unit auras
-	Indicators:UpdateUnitAuras(unit)
+	RaidFrameIndicators:UpdateUnitAuras(unit)
 	
 	-- Loop over the indicators and see if we get a hit
 	local remainingTime, remainingTimeAsText, showIndicator, auraName, count, expirationTime, castBy, icon, debuffType, n
@@ -247,7 +315,7 @@ function Indicators.UpdateIndicatorFrame(frame)
 		n = nil
 		
 		-- If we only are to show the indicator on me, then don't bother if I'm not the unit
-		if Indicators.db.profile["me"..i] then 
+		if RaidFrameIndicators.db.profile["me"..i] then
 			local uName, uRealm
 			uName, uRealm = UnitName(unit)
 			if uName ~= playerName or uRealm ~= nil then
@@ -269,7 +337,7 @@ function Indicators.UpdateIndicatorFrame(frame)
 					if n and unitBuffs[unit][j].castBy == "player" then break end -- Keep looking if it's not cast by the player
 				end
 				if n then
-					buff = true --  Flag that we found a matching buff and don't bother checking debuffs
+					local buff = true --  Flag that we found a matching buff and don't bother checking debuffs
 					count = unitBuffs[unit][n].count
 					expirationTime = unitBuffs[unit][n].expirationTime
 					castBy = unitBuffs[unit][n].castBy
@@ -319,22 +387,22 @@ function Indicators.UpdateIndicatorFrame(frame)
 
 				if n then -- We found a matching spell
 					-- If we only are to show spells cast by me, make sure the spell is
-					if (Indicators.db.profile["mine"..i] and castBy ~= "player") then
+					if (RaidFrameIndicators.db.profile["mine"..i] and castBy ~= "player") then
 						n = nil
 						icon = ""
 					else
-						if not Indicators.db.profile["showIcon"..i] then icon = "" end -- Hide icon
+						if not RaidFrameIndicators.db.profile["showIcon"..i] then icon = "" end -- Hide icon
 						if expirationTime == 0 then -- No expiration time = permanent
-							if not Indicators.db.profile["showIcon"..i] then
+							if not RaidFrameIndicators.db.profile["showIcon"..i] then
 								remainingTimeAsText = "■" -- Only show the blob if we don't show the icon
 							end
 						else
-							if Indicators.db.profile["showText"..i] then
+							if RaidFrameIndicators.db.profile["showText"..i] then
 								-- Pretty formating of the remaining time text
 								remainingTime = expirationTime - currentTime
 								if remainingTime > 60 then 
 									remainingTimeAsText = ceil(remainingTime / 60).."m" -- Show minutes without seconds
-								elseif remainingTime > 10 or not Indicators.db.profile["showDecimals"..i] then 
+								elseif remainingTime > 10 or not RaidFrameIndicators.db.profile["showDecimals"..i] then
 									remainingTimeAsText = string.format("%d", floor(remainingTime*10+0.5)/10) -- Show seconds without decimals
 								else
 									remainingTimeAsText = string.format("%.1f", floor(remainingTime*10+0.5)/10) -- Show seconds with one decimal
@@ -346,8 +414,8 @@ function Indicators.UpdateIndicatorFrame(frame)
 						end
 						
 						-- Add stack count
-						if Indicators.db.profile["stack"..i] and count > 0 then
-							if Indicators.db.profile["showText"..i] and expirationTime > 0 then
+						if RaidFrameIndicators.db.profile["stack"..i] and count > 0 then
+							if RaidFrameIndicators.db.profile["showText"..i] and expirationTime > 0 then
 								remainingTimeAsText = count.."-"..remainingTimeAsText
 							else
 								remainingTimeAsText = count
@@ -355,7 +423,7 @@ function Indicators.UpdateIndicatorFrame(frame)
 						end
 							
 						-- Set color
-						if Indicators.db.profile["stackColor"..i] then -- Color by stack
+						if RaidFrameIndicators.db.profile["stackColor"..i] then -- Color by stack
 							if count == 1 then 
 								f[frameName][i].text:SetTextColor(1,0,0,1)
 							elseif count == 2 then 
@@ -363,7 +431,7 @@ function Indicators.UpdateIndicatorFrame(frame)
 							else
 								f[frameName][i].text:SetTextColor(0,1,0,1) 
 							end
-						elseif Indicators.db.profile["debuffColor"..i] then -- Color by debuff type
+						elseif RaidFrameIndicators.db.profile["debuffColor"..i] then -- Color by debuff type
 							if debuffType then
 								if debuffType == "Curse" then
 									f[frameName][i].text:SetTextColor(0.6,0,1,1)
@@ -375,13 +443,13 @@ function Indicators.UpdateIndicatorFrame(frame)
 									f[frameName][i].text:SetTextColor(0,0.6,0,1)
 								end
 							end
-						elseif Indicators.db.profile["colorByTime"..i] then -- Color by remaining time
+						elseif RaidFrameIndicators.db.profile["colorByTime"..i] then -- Color by remaining time
 							if remainingTime and remainingTime < 3 then 
 								f[frameName][i].text:SetTextColor(1,0,0,1) 
 							elseif remainingTime and remainingTime < 5 then 
 								f[frameName][i].text:SetTextColor(1,1,0,1) 
 							else
-								f[frameName][i].text:SetTextColor(Indicators.db.profile["color"..i].r, Indicators.db.profile["color"..i].g, Indicators.db.profile["color"..i].b, Indicators.db.profile["color"..i].a)
+								f[frameName][i].text:SetTextColor(RaidFrameIndicators.db.profile["color"..i].r, RaidFrameIndicators.db.profile["color"..i].g, RaidFrameIndicators.db.profile["color"..i].b, RaidFrameIndicators.db.profile["color"..i].a)
 							end
 						end
 						
@@ -392,7 +460,7 @@ function Indicators.UpdateIndicatorFrame(frame)
 			end
 		
 			-- Only show when it's missing?
-			if Indicators.db.profile["missing"..i] then
+			if RaidFrameIndicators.db.profile["missing"..i] then
 				icon = ""
 				remainingTimeAsText = ""
 				if not n then -- No n means we didn't find the spell
@@ -411,13 +479,13 @@ function Indicators.UpdateIndicatorFrame(frame)
 
 	-- Show tooltip
 	if f[frameName].tipShowing then
-		Indicators:SetTooltip (frame)
+		RaidFrameIndicators:SetTooltip (frame)
 	end
 		--DEFAULT_CHAT_FRAME:AddMessage("Indicators: ".. tostring(debugprofilestop()))
 end
 
 -- Sets the tooltip to the spell currently hovered over
-function Indicators:SetTooltip (frame)
+function RaidFrameIndicators:SetTooltip(frame)
 	local x, y = GetCursorPosition()
 	local s = frame:GetEffectiveScale()
 	local fL = frame:GetLeft()
@@ -429,9 +497,9 @@ function Indicators:SetTooltip (frame)
 
 	x, y = x/s, y/s
 	for i = 1, 9 do -- Loop over all indicators
-		if f[frameName][i].icon:GetTexture() and Indicators.db.profile["showTooltip"..i] then -- Only show a tooltip if we have an icon
+		if f[frameName][i].icon:GetTexture() and RaidFrameIndicators.db.profile["showTooltip"..i] then -- Only show a tooltip if we have an icon
 			-- Check if we are hovering above the area where an icon is shown
-			local size = Indicators.db.profile["iconSize"..i]
+			local size = RaidFrameIndicators.db.profile["iconSize"..i]
 			if (i == 1 and (x > fL + pad) and (x < fL + pad + size) and (y > fT - pad - size) and (y < fT - pad)) or -- Top left
 			(i == 2 and (x > fL + (fR - fL - size)/2) and (x < fL + (fR -fL + size)/2) and (y > fT - pad - size) and (y < fT - pad)) or -- Top mid
 			(i == 3 and (x > fR - pad - size) and (x < fR - pad) and (y > fT - pad - size) and (y < fT - pad)) or -- Top right
@@ -463,11 +531,11 @@ function Indicators:SetTooltip (frame)
 end
 
 -- Used to update everything that is affected by the configuration
-function Indicators:RefreshConfig()
+function RaidFrameIndicators:RefreshConfig()
 	local i
 	
 	-- Set the appearance of the indicators
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", Indicators.SetIndicatorAppearance)
+	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", RaidFrameIndicators.SetIndicatorAppearance)
 	
 	-- Show/hide default icons
 	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function (frame)
@@ -481,7 +549,7 @@ function Indicators:RefreshConfig()
 	local auraName, i
 	for i = 1, 9 do
 		local j = 1
-		for auraName in string.gmatch(Indicators.db.profile["auras"..i], "[^\n]+") do -- Grab each line
+		for auraName in string.gmatch(RaidFrameIndicators.db.profile["auras"..i], "[^\n]+") do -- Grab each line
 			auraName = string.gsub(auraName, "^%s*(.-)%s*$", "%1") -- Strip any whitespaces
 			allAuras = allAuras.."+"..auraName.."+" -- Add each watched aura to a string so we later can quickly determine if we need to look for one
 			auraStrings[i][j] = auraName
@@ -491,45 +559,7 @@ function Indicators:RefreshConfig()
 	--DEFAULT_CHAT_FRAME:AddMessage(allAuras)
 end
 
-function Indicators:OnInitialize()
-	-- Set up config pane
-	self:SetupOptions()
-	
-	-- Get the player name
-	playerName = UnitName("player")
-	
-	-- Register callbacks for profile switching
-	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
-	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
-	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
-	--dPrint ("Initialized")
-end
 
-function Indicators:OnEnable()
-	if self.db.profile.enabled then
-		-- Start update
-		self.updateTimer = self:ScheduleRepeatingTimer("UpdateAllIndicators", 0.11)
-		Indicators:RefreshConfig()
-		--dPrint ("Enabled")
-	end
-end
-
-function Indicators:OnDisable()
-	local i
-
-	-- Stop update
-	self:CancelAllTimers()
-	
-	-- Hide all indicators
-	for frameName, _ in pairs(f) do
-		for i = 1, 9 do
-			f[frameName][i].text:SetText("")
-			f[frameName][i].icon:SetTexture("")
-		end
-	end
-	--dPrint ("Disabled")
-end
-
-function dPrint(s)
+local function dPrint(s)
 	DEFAULT_CHAT_FRAME:AddMessage("Indicators: ".. tostring(s))
 end

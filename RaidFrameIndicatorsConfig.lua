@@ -1,6 +1,10 @@
 ﻿local Defaults = {}
+local Options = {}
 
-function CreateDefaults ()
+local RaidFrameIndicators = RaidFrameIndicators_Global
+
+
+function RaidFrameIndicators:CreateDefaults ()
 	Defaults.profile = {
 		indicatorFont = "Arial Narrow",
 		showIcons = true,
@@ -25,13 +29,12 @@ function CreateDefaults ()
 	end
 end
 
-local Options = {}
-function CreateOptions ()
+function RaidFrameIndicators:CreateOptions ()
 	Options = {
 		type = 'group',
 		childGroups = 'tree',
-		get = function(item) return Indicators.db.profile[item[#item]] end,
-		set = function(item, value) Indicators.db.profile[item[#item]] = value; Indicators:RefreshConfig() end,
+		get = function(item) return RaidFrameIndicators.db.profile[item[#item]] end,
+		set = function(item, value) RaidFrameIndicators.db.profile[item[#item]] = value; RaidFrameIndicators:RefreshConfig() end,
 		args  = {
 
 			showBuffs = {
@@ -65,12 +68,12 @@ function CreateOptions ()
 				name = "Enabled",
 				desc = "Enable/Disable indicators",
 				order = 18,
-				set = function(item, value) 
-					Indicators.db.profile[item[#item]] = value
-					if value == true then 
-						Indicators:OnEnable() 
+				set = function(item, value)
+					RaidFrameIndicators.db.profile[item[#item]] = value
+					if value == true then
+						RaidFrameIndicators:OnEnable()
 					else
-						Indicators:OnDisable()
+						RaidFrameIndicators:OnDisable()
 					end
 				end,
 			}
@@ -126,7 +129,7 @@ function CreateOptions ()
 			type = "toggle",
 			name = "Show decimals",
 			desc = "Show decimals on the text counter",
-			disabled = function () return (not Indicators.db.profile["showText"..i]) end,
+			disabled = function () return (not RaidFrameIndicators.db.profile["showText"..i]) end,
 			order = 115,
 		}
 		Options.args["i"..i].args["size"..i] = {
@@ -154,7 +157,7 @@ function CreateOptions ()
 			type = "toggle",
 			name = "Color by debuff type",
 			desc = "Color the text depending on the debuff type, will override any other coloring (poison = green, magic = blue etc)",
-			disabled = function () return Indicators.db.profile["stackColor"..i] end,
+			disabled = function () return RaidFrameIndicators.db.profile["stackColor"..i] end,
 			order = 165,
 		}
 		Options.args["i"..i].args["color"..i] = {
@@ -162,22 +165,22 @@ function CreateOptions ()
 			name = "Color",
 			desc = "Color of the indicator",
 			get = function(item)
-				local t = Indicators.db.profile[item[#item]]
+				local t = RaidFrameIndicators.db.profile[item[#item]]
 				return t.r, t.g, t.b, t.a
 			end,
 			set = function(item, r, g, b, a)
-				local t = Indicators.db.profile[item[#item]]
+				local t = RaidFrameIndicators.db.profile[item[#item]]
 				t.r, t.g, t.b, t.a = r, g, b, a
-				Indicators:RefreshConfig()
+				RaidFrameIndicators:RefreshConfig()
 			end,
-			disabled = function () return (Indicators.db.profile["stackColor"..i] or Indicators.db.profile["debuffColor"..i]) end,
+			disabled = function () return (RaidFrameIndicators.db.profile["stackColor"..i] or RaidFrameIndicators.db.profile["debuffColor"..i]) end,
 			order = 170,
 		}
 		Options.args["i"..i].args["colorByTime"..i] = {
 			type = "toggle",
 			name = "Color by remaining time",
 			desc = "Color the counter based on remaining time (5s+: Selected color, 3-5s: Yellow, 3s-: Red)",
-			disabled = function () return (Indicators.db.profile["stackColor"..i] or Indicators.db.profile["debuffColor"..i]) end,
+			disabled = function () return (RaidFrameIndicators.db.profile["stackColor"..i] or RaidFrameIndicators.db.profile["debuffColor"..i]) end,
 			order = 180,
 		}
 		Options.args["i"..i].args.stackHeader = {
@@ -206,7 +209,7 @@ function CreateOptions ()
 			type = "toggle",
 			name = "Show tooltip",
 			desc = "Show tooltip for the buff/debuff",
-			disabled = function () return (not Indicators.db.profile["showIcon"..i]) end,
+			disabled = function () return (not RaidFrameIndicators.db.profile["showIcon"..i]) end,
 			order = 315,
 		}
 		Options.args["i"..i].args["iconSize"..i] = {
@@ -229,38 +232,38 @@ local SlashCommands = {
 			type = "execute",
 			name = "enable",
 			desc = "Enable indicators",
-			func = function() Indicators.db.profile.enabled = true; Indicators:OnEnable() end,
+			func = function() RaidFrameIndicators.db.profile.enabled = true; RaidFrameIndicators:OnEnable() end,
 		},
 		disable = {
 			type = "execute",
 			name = "disable",
 			desc = "Disable indicators",
-			func = function() Indicators.db.profile.enabled = false; Indicators:OnDisable() end,
+			func = function() RaidFrameIndicators.db.profile.enabled = false; RaidFrameIndicators:OnDisable() end,
 		},
 		config = {
 			type = "execute",
 			name = "config",
 			desc = "Show config",
-			func = function() Indicators:ShowConfig() end,
+			func = function() RaidFrameIndicators:ShowConfig() end,
 		},
 	}
 }
 
-function Indicators:ShowConfig()
+function RaidFrameIndicators:ShowConfig()
 	InterfaceOptionsFrame_OpenToCategory(self.optionsFrames.Profile)
 	InterfaceOptionsFrame_OpenToCategory(self.optionsFrames.Indicators)
 end
 
-function Indicators:SetupOptions()
+function RaidFrameIndicators:SetupOptions()
 	-- Set up defaults
-	CreateDefaults()
+	RaidFrameIndicators:CreateDefaults()
 	self.db = LibStub("AceDB-3.0"):New("IndicatorsDB", Defaults)
 	
 	-- Profile handling
 	local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 	
 	-- Get the config up
-	CreateOptions()
+	RaidFrameIndicators:CreateOptions()
 	local config = LibStub("AceConfig-3.0")
 	config:RegisterOptionsTable("Raid Frame Indicators", Options)
 	config:RegisterOptionsTable("Raid Frame Indicators Profiles", profiles)

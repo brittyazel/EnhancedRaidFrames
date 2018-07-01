@@ -1,13 +1,12 @@
 ﻿## Interface: 70300
 ## Title: Raid Frame Indicators
-## Version: @project-version
+## Notes: Adds indicators to the standard raid frames
 ## Author: Szandos
 ## X-Credits-Maintainer: Soyier
-## Notes: Adds indicators to the standard raid frames
-## SavedVariables: IndicatorsDB
+## Version: @project-version
 ## DefaultState: enabled
+## SavedVariables: IndicatorsDB
 ## X-Email: bwyazel@gmail.com
-
 
 
 embeds.xml
