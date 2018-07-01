@@ -1,10 +1,16 @@
 ﻿## Interface: 70300
 ## Title: Raid Frame Indicators
-
-## Version: 1.14
+## Version: @project-version
 ## Author: Szandos
+## X-Credits-Maintainer: Soyier
 ## Notes: Adds indicators to the standard raid frames
 ## SavedVariables: IndicatorsDB
+## DefaultState: enabled
+## X-Email: bwyazel@gmail.com
+
+
+
 embeds.xml
+
 RaidFrameIndicators.lua
 RaidFrameIndicatorsConfig.lua
