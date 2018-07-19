@@ -3,7 +3,7 @@
 ## Notes: Adds indicators to the standard raid frames
 ## Author: Szandos
 ## X-Credits-Maintainer: Soyier
-## Version: @project-version
+## Version: @project-version@
 ## DefaultState: enabled
 ## SavedVariables: IndicatorsDB
 ## X-Email: bwyazel@gmail.com
