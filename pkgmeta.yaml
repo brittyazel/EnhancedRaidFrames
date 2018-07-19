@@ -24,4 +24,4 @@ ignore:
   #- RaidFrameIndicators/Libs/
 
 optional-dependencies:
-    - blizzard-raid-frame-icons
+    - enhanced-raid-frame-icons
