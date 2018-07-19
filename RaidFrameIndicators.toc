@@ -9,7 +9,7 @@
 ## X-Email: bwyazel@gmail.com
 
 
-libs\embeds.xml
+Libs\embeds.xml
 
 RaidFrameIndicators.lua
 RaidFrameIndicatorsConfig.lua
