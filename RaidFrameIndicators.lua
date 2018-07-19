@@ -238,7 +238,7 @@ function RaidFrameIndicators:UpdateUnitAuras(unit)
 	local i = 1
 	local j = 1
 	while true do
-		auraName, _, icon, count, _, _, expirationTime, castBy, _, _, spellId = UnitBuff(unit, i)
+		auraName, icon, count, _, _, expirationTime, castBy, _, _, spellId = UnitBuff(unit, i)
 		if not spellId then break end
 		if string.find (allAuras, "+"..auraName.."+") or string.find (allAuras, "+"..spellId.."+") then -- Only add the spell if we're watching for it
 			if not unitBuffs[unit][j] then unitBuffs[unit][j] = {} end
@@ -259,7 +259,7 @@ function RaidFrameIndicators:UpdateUnitAuras(unit)
 	i = 1
 	j = 1
 	while true do
-		auraName, _, icon, count, debuffType, _, expirationTime, castBy, _, _, spellId  = UnitDebuff(unit, i)
+		auraName, icon, count, debuffType, _, expirationTime, castBy, _, _, spellId  = UnitDebuff(unit, i)
 		if not spellId then break end
 		if string.find (allAuras, "+"..auraName.."+") or string.find (allAuras, "+"..spellId.."+") or string.find (allAuras, "+"..tostring(debuffType).."+") then -- Only add the spell if we're watching for it
 			if not unitDebuffs[unit][j] then unitDebuffs[unit][j] = {} end

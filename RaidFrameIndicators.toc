@@ -1,4 +1,4 @@
-﻿## Interface: 70300
+﻿## Interface: 80000
 ## Title: Raid Frame Indicators
 ## Notes: Adds indicators to the standard raid frames
 ## Author: Szandos
@@ -9,7 +9,7 @@
 ## X-Email: bwyazel@gmail.com
 
 
-embeds.xml
+libs\embeds.xml
 
 RaidFrameIndicators.lua
 RaidFrameIndicatorsConfig.lua
