@@ -1,7 +1,7 @@
 ﻿-- ----------------------------------------------------------------------------
 -- Raid Frame Indicators by Szandos
 -- ----------------------------------------------------------------------------
-RaidFrameIndicators_Global = LibStub( "AceAddon-3.0" ):NewAddon( "Indicators", "AceTimer-3.0")
+RaidFrameIndicators_Global = LibStub( "AceAddon-3.0" ):NewAddon( "Indicators", "AceTimer-3.0", "AceHook-3.0")
 local RaidFrameIndicators = RaidFrameIndicators_Global
 
 
@@ -46,15 +46,15 @@ function RaidFrameIndicators:OnEnable()
 
 	if RaidFrameIndicators.db.profile.enabled then
 		-- Start update
-		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.11)
+		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.5)
 		RaidFrameIndicators:RefreshConfig()
 	end
 
-	hooksecurefunc("CompactUnitFrame_UpdateBuffs", function(frame) RaidFrameIndicators:HideBuffs(frame) end)
-	hooksecurefunc("CompactUnitFrame_UpdateDebuffs", function(frame) RaidFrameIndicators:HideDebuffs(frame) end)
-	hooksecurefunc("CompactUnitFrame_UpdateDispellableDebuffs", function(frame) RaidFrameIndicators:HideDispelDebuffs(frame) end)
-	hooksecurefunc("UnitFrame_OnEnter", function(frame) RaidFrameIndicators:TipHook_OnEnter(frame) end)
-	hooksecurefunc("UnitFrame_OnLeave", function(frame) RaidFrameIndicators:TipHook_OnLeave(frame) end)
+	RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateBuffs", function(frame) RaidFrameIndicators:HideBuffs(frame) end)
+	RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateDebuffs", function(frame) RaidFrameIndicators:HideDebuffs(frame) end)
+	RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateDispellableDebuffs", function(frame) RaidFrameIndicators:HideDispelDebuffs(frame) end)
+	RaidFrameIndicators:SecureHook("UnitFrame_OnEnter", function(frame) RaidFrameIndicators:TipHook_OnEnter(frame) end)
+	RaidFrameIndicators:SecureHook("UnitFrame_OnLeave", function(frame) RaidFrameIndicators:TipHook_OnLeave(frame) end)
 
 end
 
@@ -63,9 +63,6 @@ end
 --- You would probably only use an OnDisable if you want to
 --- build a "standby" mode, or be able to toggle modules on/off.
 function RaidFrameIndicators:OnDisable()
-
-	local i
-
 	-- Stop update
 	RaidFrameIndicators:CancelAllTimers()
 
@@ -129,10 +126,14 @@ function RaidFrameIndicators:TipHook_OnLeave(frame)
 	local frameName = frame:GetName()
 
 	-- Check if the frame is poiting at anything
-	if not unit then return end
-	if not f[frameName] then return end
+	if not unit then
+		return
+	end
 
-	local frameName = frame:GetName()
+	if not f[frameName] then
+		return
+	end
+
 	if string.find(frameName, "Compact") then
 		f[frameName].tipShowing = false
 	end
@@ -143,9 +144,7 @@ end
 
 -- Create the FontStrings used for indicators
 function RaidFrameIndicators:CreateIndicator(frame)
-	local unit = frame.unit
 	local frameName = frame:GetName()
-	local i
 
 	f[frameName] = {}
 
@@ -200,7 +199,6 @@ end
 function RaidFrameIndicators:SetIndicatorAppearance(frame)
 	local unit = frame.unit
 	local frameName = frame:GetName()
-	local i
 
 	-- Check if the frame is poiting at anything
 	if not unit then return end
@@ -226,68 +224,18 @@ function RaidFrameIndicators:UpdateAllIndicators()
 	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame) RaidFrameIndicators:UpdateIndicatorFrame(frame) end)
 end
 
--- Get all unit auras
-function RaidFrameIndicators:UpdateUnitAuras(unit)
-	--debugprofilestart()
-	-- Create tables for the unit
-	if not unitBuffs[unit] then unitBuffs[unit] = {} end
-	if not unitDebuffs[unit] then unitDebuffs[unit] = {} end
-
-	-- Get all unit buffs
-	local auraName, icon, count, expirationTime, castBy, debuffType, spellId
-	local i = 1
-	local j = 1
-	while true do
-		auraName, icon, count, _, _, expirationTime, castBy, _, _, spellId = UnitBuff(unit, i)
-		if not spellId then break end
-		if string.find (allAuras, "+"..auraName.."+") or string.find (allAuras, "+"..spellId.."+") then -- Only add the spell if we're watching for it
-			if not unitBuffs[unit][j] then unitBuffs[unit][j] = {} end
-			unitBuffs[unit][j].auraName = auraName
-			unitBuffs[unit][j].spellId = spellId
-			unitBuffs[unit][j].count = count
-			unitBuffs[unit][j].expirationTime = expirationTime
-			unitBuffs[unit][j].castBy = castBy
-			unitBuffs[unit][j].icon = icon
-			unitBuffs[unit][j].index = i
-			j = j + 1
-		end
-		i = i + 1
-	end
-	unitBuffs[unit].len = j -1
-
-	-- Get all unit debuffs
-	i = 1
-	j = 1
-	while true do
-		auraName, icon, count, debuffType, _, expirationTime, castBy, _, _, spellId  = UnitDebuff(unit, i)
-		if not spellId then break end
-		if string.find (allAuras, "+"..auraName.."+") or string.find (allAuras, "+"..spellId.."+") or string.find (allAuras, "+"..tostring(debuffType).."+") then -- Only add the spell if we're watching for it
-			if not unitDebuffs[unit][j] then unitDebuffs[unit][j] = {} end
-			unitDebuffs[unit][j].auraName = auraName
-			unitDebuffs[unit][j].spellId = spellId
-			unitDebuffs[unit][j].count = count
-			unitDebuffs[unit][j].expirationTime = expirationTime
-			unitDebuffs[unit][j].castBy = castBy
-			unitDebuffs[unit][j].icon = icon
-			unitDebuffs[unit][j].index = i
-			unitDebuffs[unit][j].debuffType= debuffType
-			j = j + 1
-		end
-		i = i + 1
-	end
-	unitDebuffs[unit].len = j -1
-end
 
 -- Check the indicators on a frame and update the times on them
 function RaidFrameIndicators:UpdateIndicatorFrame(frame)
-	--debugprofilestart()
+
 	local currentTime = GetTime()
 	local unit = frame.unit
 	local frameName = frame:GetName()
-	local i, tot
 
 	-- Check if the frame is pointing at anything
-	if not unit then return end
+	if not unit then
+		return
+	end
 
 	-- Check if the indicator frame exists, else create it
 	if not f[frameName] then
@@ -308,7 +256,7 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 	RaidFrameIndicators:UpdateUnitAuras(unit)
 
 	-- Loop over the indicators and see if we get a hit
-	local remainingTime, remainingTimeAsText, showIndicator, auraName, count, expirationTime, castBy, icon, debuffType, n
+	local remainingTime, remainingTimeAsText, showIndicator, count, expirationTime, castBy, icon, debuffType, n
 	for i = 1, 9 do
 		remainingTime = nil
 		remainingTimeAsText = ""
@@ -325,10 +273,9 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 			end
 		end
 		if showIndicator then
-			--debugprofilestart()
+
 			-- Go through the aura strings
 			for _, auraName in ipairs(auraStrings[i]) do -- Grab each line
-				local j
 				-- Check if the aura exist on the unit
 				for j = 1, unitBuffs[unit].len do -- Check buffs
 					if tonumber(auraName) then  -- Use spell id
@@ -339,7 +286,6 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 					if n and unitBuffs[unit][j].castBy == "player" then break end -- Keep looking if it's not cast by the player
 				end
 				if n then
-					local buff = true --  Flag that we found a matching buff and don't bother checking debuffs
 					count = unitBuffs[unit][n].count
 					expirationTime = unitBuffs[unit][n].expirationTime
 					castBy = unitBuffs[unit][n].castBy
@@ -403,11 +349,14 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 								-- Pretty formating of the remaining time text
 								remainingTime = expirationTime - currentTime
 								if remainingTime > 60 then
-									remainingTimeAsText = ceil(remainingTime / 60).."m" -- Show minutes without seconds
-								elseif remainingTime > 10 or not RaidFrameIndicators.db.profile["showDecimals"..i] then
-									remainingTimeAsText = string.format("%d", floor(remainingTime*10+0.5)/10) -- Show seconds without decimals
-								else
-									remainingTimeAsText = string.format("%.1f", floor(remainingTime*10+0.5)/10) -- Show seconds with one decimal
+									remainingTimeAsText = string.format("%.0f", (remainingTime / 60)).."m" -- Show minutes without seconds
+									--[[elseif remainingTime > 10 or not RaidFrameIndicators.db.profile["showDecimals"..i] then
+										remainingTimeAsText = string.format("%d", floor(remainingTime*10+0.5)/10) -- Show seconds without decimals
+									else
+										remainingTimeAsText = string.format("%.1f", floor(remainingTime*10+0.5)/10) -- Show seconds with one decimal
+									end]]
+								elseif remainingTime >= 1 then
+									remainingTimeAsText = floor(remainingTime) -- Show seconds without decimals
 								end
 							else
 								remainingTimeAsText = ""
@@ -468,7 +417,7 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 					remainingTimeAsText = "■"
 				end
 			end
-			--DEFAULT_CHAT_FRAME:AddMessage("Indicators: ".. tostring(debugprofilestop()))
+
 		end
 
 		-- Show the text
@@ -482,8 +431,63 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 	if f[frameName].tipShowing then
 		RaidFrameIndicators:SetTooltip (frame)
 	end
-	--DEFAULT_CHAT_FRAME:AddMessage("Indicators: ".. tostring(debugprofilestop()))
+
 end
+
+
+
+-- Get all unit auras
+function RaidFrameIndicators:UpdateUnitAuras(unit)
+
+	-- Create tables for the unit
+	if not unitBuffs[unit] then unitBuffs[unit] = {} end
+	if not unitDebuffs[unit] then unitDebuffs[unit] = {} end
+
+	-- Get all unit buffs
+	local auraName, icon, count, expirationTime, castBy, debuffType, spellId
+	local i = 1
+	local j = 1
+	while true do
+		auraName, icon, count, _, _, expirationTime, castBy, _, _, spellId = UnitBuff(unit, i)
+		if not spellId then break end
+		if string.find (allAuras, "+"..auraName.."+") or string.find (allAuras, "+"..spellId.."+") then -- Only add the spell if we're watching for it
+			if not unitBuffs[unit][j] then unitBuffs[unit][j] = {} end
+			unitBuffs[unit][j].auraName = auraName
+			unitBuffs[unit][j].spellId = spellId
+			unitBuffs[unit][j].count = count
+			unitBuffs[unit][j].expirationTime = expirationTime
+			unitBuffs[unit][j].castBy = castBy
+			unitBuffs[unit][j].icon = icon
+			unitBuffs[unit][j].index = i
+			j = j + 1
+		end
+		i = i + 1
+	end
+	unitBuffs[unit].len = j -1
+
+	-- Get all unit debuffs
+	i = 1
+	j = 1
+	while true do
+		auraName, icon, count, debuffType, _, expirationTime, castBy, _, _, spellId  = UnitDebuff(unit, i)
+		if not spellId then break end
+		if string.find (allAuras, "+"..auraName.."+") or string.find (allAuras, "+"..spellId.."+") or string.find (allAuras, "+"..tostring(debuffType).."+") then -- Only add the spell if we're watching for it
+			if not unitDebuffs[unit][j] then unitDebuffs[unit][j] = {} end
+			unitDebuffs[unit][j].auraName = auraName
+			unitDebuffs[unit][j].spellId = spellId
+			unitDebuffs[unit][j].count = count
+			unitDebuffs[unit][j].expirationTime = expirationTime
+			unitDebuffs[unit][j].castBy = castBy
+			unitDebuffs[unit][j].icon = icon
+			unitDebuffs[unit][j].index = i
+			unitDebuffs[unit][j].debuffType= debuffType
+			j = j + 1
+		end
+		i = i + 1
+	end
+	unitDebuffs[unit].len = j -1
+end
+
 
 -- Sets the tooltip to the spell currently hovered over
 function RaidFrameIndicators:SetTooltip(frame)
@@ -494,7 +498,7 @@ function RaidFrameIndicators:SetTooltip(frame)
 	local fT = frame:GetTop()
 	local fB = frame:GetBottom()
 	local frameName = frame:GetName()
-	local i, index, buff
+	local index, buff
 
 	x, y = x/s, y/s
 	for i = 1, 9 do -- Loop over all indicators
@@ -517,7 +521,7 @@ function RaidFrameIndicators:SetTooltip(frame)
 		end
 	end
 
-	-- Set the tooptip
+	-- Set the tooltip
 	if index and index ~= -1 then -- -1 is the pvp icon, no tooltip for that
 		-- Set the buff/debuff as tooltip and anchor to the cursor
 		GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
@@ -533,7 +537,6 @@ end
 
 -- Used to update everything that is affected by the configuration
 function RaidFrameIndicators:RefreshConfig()
-	local i
 
 	-- Set the appearance of the indicators
 	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame) RaidFrameIndicators:SetIndicatorAppearance(frame) end)
@@ -547,7 +550,7 @@ function RaidFrameIndicators:RefreshConfig()
 
 	-- Format aura strings
 	allAuras = ""
-	local auraName, i
+
 	for i = 1, 9 do
 		local j = 1
 		for auraName in string.gmatch(RaidFrameIndicators.db.profile["auras"..i], "[^\n]+") do -- Grab each line
