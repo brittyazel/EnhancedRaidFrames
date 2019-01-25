@@ -46,7 +46,7 @@ function RaidFrameIndicators:OnEnable()
 
 	if RaidFrameIndicators.db.profile.enabled then
 		-- Start update
-		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.5)
+		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.1)
 		RaidFrameIndicators:RefreshConfig()
 	end
 
