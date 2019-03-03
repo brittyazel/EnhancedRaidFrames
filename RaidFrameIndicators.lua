@@ -1,7 +1,7 @@
 ﻿-- ----------------------------------------------------------------------------
 -- Raid Frame Indicators by Szandos
 -- ----------------------------------------------------------------------------
-RaidFrameIndicators_Global = LibStub( "AceAddon-3.0" ):NewAddon( "Indicators", "AceTimer-3.0", "AceHook-3.0")
+RaidFrameIndicators_Global = LibStub( "AceAddon-3.0" ):NewAddon( "Indicators", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local RaidFrameIndicators = RaidFrameIndicators_Global
 
 
@@ -46,7 +46,7 @@ function RaidFrameIndicators:OnEnable()
 
 	if RaidFrameIndicators.db.profile.enabled then
 		-- Start update
-		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.1)
+		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.95)
 		RaidFrameIndicators:RefreshConfig()
 	end
 
@@ -55,6 +55,8 @@ function RaidFrameIndicators:OnEnable()
 	RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateDispellableDebuffs", function(frame) RaidFrameIndicators:HideDispelDebuffs(frame) end)
 	RaidFrameIndicators:SecureHook("UnitFrame_OnEnter", function(frame) RaidFrameIndicators:TipHook_OnEnter(frame) end)
 	RaidFrameIndicators:SecureHook("UnitFrame_OnLeave", function(frame) RaidFrameIndicators:TipHook_OnLeave(frame) end)
+
+	self:RegisterBucketEvent({"COMBAT_LOG_EVENT_UNFILTERED"}, .1, "UpdateAllIndicators")
 
 end
 
@@ -350,11 +352,6 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 								remainingTime = expirationTime - currentTime
 								if remainingTime > 60 then
 									remainingTimeAsText = string.format("%.0f", (remainingTime / 60)).."m" -- Show minutes without seconds
-									--[[elseif remainingTime > 10 or not RaidFrameIndicators.db.profile["showDecimals"..i] then
-										remainingTimeAsText = string.format("%d", floor(remainingTime*10+0.5)/10) -- Show seconds without decimals
-									else
-										remainingTimeAsText = string.format("%.1f", floor(remainingTime*10+0.5)/10) -- Show seconds with one decimal
-									end]]
 								elseif remainingTime >= 1 then
 									remainingTimeAsText = floor(remainingTime) -- Show seconds without decimals
 								end

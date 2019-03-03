@@ -125,13 +125,6 @@ function RaidFrameIndicators:CreateOptions ()
 			desc = "Show a text counter specifying the time left of the buff/debuff",
 			order = 110,
 		}
-		--[[Options.args["i"..i].args["showDecimals"..i] = {
-			type = "toggle",
-			name = "Show decimals",
-			desc = "Show decimals on the text counter",
-			disabled = function () return (not RaidFrameIndicators.db.profile["showText"..i]) end,
-			order = 115,
-		}]]
 		Options.args["i"..i].args["size"..i] = {
 			type = "range",
 			name = "Size",
