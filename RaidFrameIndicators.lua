@@ -16,6 +16,8 @@ local _
 local allAuras
 
 
+local tooltipTimer
+
 -------------------------------------------------------------------------
 --------------------Start of Functions-----------------------------------
 -------------------------------------------------------------------------
@@ -53,8 +55,6 @@ function RaidFrameIndicators:OnEnable()
 	RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateBuffs", function(frame) RaidFrameIndicators:HideBuffs(frame) end)
 	RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateDebuffs", function(frame) RaidFrameIndicators:HideDebuffs(frame) end)
 	RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateDispellableDebuffs", function(frame) RaidFrameIndicators:HideDispelDebuffs(frame) end)
-	RaidFrameIndicators:SecureHook("UnitFrame_OnEnter", function(frame) RaidFrameIndicators:TipHook_OnEnter(frame) end)
-	RaidFrameIndicators:SecureHook("UnitFrame_OnLeave", function(frame) RaidFrameIndicators:TipHook_OnLeave(frame) end)
 
 	self:RegisterBucketEvent({"COMBAT_LOG_EVENT_UNFILTERED"}, .1, "UpdateAllIndicators")
 
@@ -109,40 +109,6 @@ function RaidFrameIndicators:HideDispelDebuffs(frame)
 	end
 end
 
--- Hook CompactUnitFrame_OnEnter and OnLeave so we know if a tooltip is showing or not.
-function RaidFrameIndicators:TipHook_OnEnter(frame)
-	local unit = frame.unit
-	local frameName = frame:GetName()
-
-	-- Check if the frame is poiting at anything
-	if not unit then return end
-	if not f[frameName] then return end
-
-	if string.find(frameName, "Compact") then
-		f[frameName].tipShowing = true
-	end
-end
-
-function RaidFrameIndicators:TipHook_OnLeave(frame)
-	local unit = frame.unit
-	local frameName = frame:GetName()
-
-	-- Check if the frame is poiting at anything
-	if not unit then
-		return
-	end
-
-	if not f[frameName] then
-		return
-	end
-
-	if string.find(frameName, "Compact") then
-		f[frameName].tipShowing = false
-	end
-end
-
-
-
 
 -- Create the FontStrings used for indicators
 function RaidFrameIndicators:CreateIndicator(frame)
@@ -195,6 +161,10 @@ function RaidFrameIndicators:CreateIndicator(frame)
 
 	-- Set appearance
 	RaidFrameIndicators:SetIndicatorAppearance(frame)
+
+	-- hook enter and leave for showing ability tooltips
+	RaidFrameIndicators:SecureHookScript(frame, "OnEnter", function() RaidFrameIndicators:Tooltip_OnEnter(frame) end)
+	RaidFrameIndicators:SecureHookScript(frame, "OnLeave", function() RaidFrameIndicators:Tooltip_OnLeave(frame) end)
 end
 
 -- Set the appearance of the FontStrings
@@ -424,11 +394,6 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 		f[frameName][i].icon:SetTexture(icon)
 	end
 
-	-- Show tooltip
-	if f[frameName].tipShowing then
-		RaidFrameIndicators:SetTooltip (frame)
-	end
-
 end
 
 
@@ -485,6 +450,29 @@ function RaidFrameIndicators:UpdateUnitAuras(unit)
 	unitDebuffs[unit].len = j -1
 end
 
+-- Hook CompactUnitFrame_OnEnter and OnLeave so we know if a tooltip is showing or not.
+function RaidFrameIndicators:Tooltip_OnEnter(frame)
+	local unit = frame.unit
+	local frameName = frame:GetName()
+
+	-- Check if the frame is poiting at anything
+	if not unit then return end
+	if not f[frameName] then return end
+
+	if string.find(frameName, "Compact") then
+		--set a timer to run in a loop as long as we are inside a given frame. This is because each indicator isn't its own frame, but rather are all contained in the one frame thus have to share a single OnEnter event
+		tooltipTimer = RaidFrameIndicators:ScheduleRepeatingTimer('SetTooltip', .1, frame)
+	end
+end
+
+function RaidFrameIndicators:Tooltip_OnLeave(frame)
+
+	--check if we have a running timer, and if we do, kill it
+	if RaidFrameIndicators:TimeLeft(tooltipTimer) ~= 0 then
+		RaidFrameIndicators:CancelTimer(tooltipTimer)
+		GameTooltip:Hide()
+	end
+end
 
 -- Sets the tooltip to the spell currently hovered over
 function RaidFrameIndicators:SetTooltip(frame)
@@ -497,7 +485,9 @@ function RaidFrameIndicators:SetTooltip(frame)
 	local frameName = frame:GetName()
 	local index, buff
 
-	x, y = x/s, y/s
+	x = x/s
+	y = y/s
+
 	for i = 1, 9 do -- Loop over all indicators
 		if f[frameName][i].icon:GetTexture() and RaidFrameIndicators.db.profile["showTooltip"..i] then -- Only show a tooltip if we have an icon
 			-- Check if we are hovering above the area where an icon is shown
@@ -531,6 +521,11 @@ function RaidFrameIndicators:SetTooltip(frame)
 		UnitFrame_UpdateTooltip(frame)
 	end
 end
+
+
+
+
+
 
 -- Used to update everything that is affected by the configuration
 function RaidFrameIndicators:RefreshConfig()
