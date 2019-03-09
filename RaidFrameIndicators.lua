@@ -48,7 +48,7 @@ function RaidFrameIndicators:OnEnable()
 
 	if RaidFrameIndicators.db.profile.enabled then
 		-- Start update
-		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.95)
+		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.8)
 		RaidFrameIndicators:RefreshConfig()
 	end
 
@@ -323,7 +323,7 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 								if remainingTime > 60 then
 									remainingTimeAsText = string.format("%.0f", (remainingTime / 60)).."m" -- Show minutes without seconds
 								elseif remainingTime >= 1 then
-									remainingTimeAsText = floor(remainingTime) -- Show seconds without decimals
+									remainingTimeAsText = string.format("%.0f",remainingTime) -- Show seconds without decimals
 								end
 							else
 								remainingTimeAsText = ""
