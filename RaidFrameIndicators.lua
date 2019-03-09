@@ -450,6 +450,12 @@ function RaidFrameIndicators:UpdateUnitAuras(unit)
 	unitDebuffs[unit].len = j -1
 end
 
+
+
+-------------------------------
+---Tooltip Code
+-------------------------------
+
 -- Hook CompactUnitFrame_OnEnter and OnLeave so we know if a tooltip is showing or not.
 function RaidFrameIndicators:Tooltip_OnEnter(frame)
 	local unit = frame.unit
@@ -460,17 +466,22 @@ function RaidFrameIndicators:Tooltip_OnEnter(frame)
 	if not f[frameName] then return end
 
 	if string.find(frameName, "Compact") then
+
+		--safety check to see if we have a running timer, and if we do, kill it
+		--this would be because the OnLeave function didn't get called or something
+		if RaidFrameIndicators:TimeLeft(tooltipTimer) ~= 0 then
+			RaidFrameIndicators:CancelTimer(tooltipTimer)
+		end
+
 		--set a timer to run in a loop as long as we are inside a given frame. This is because each indicator isn't its own frame, but rather are all contained in the one frame thus have to share a single OnEnter event
 		tooltipTimer = RaidFrameIndicators:ScheduleRepeatingTimer('SetTooltip', .1, frame)
 	end
 end
 
 function RaidFrameIndicators:Tooltip_OnLeave(frame)
-
 	--check if we have a running timer, and if we do, kill it
 	if RaidFrameIndicators:TimeLeft(tooltipTimer) ~= 0 then
 		RaidFrameIndicators:CancelTimer(tooltipTimer)
-		GameTooltip:Hide()
 	end
 end
 
@@ -518,13 +529,13 @@ function RaidFrameIndicators:SetTooltip(frame)
 			GameTooltip:SetUnitDebuff(frame.displayedUnit, index)
 		end
 	else
+		--causes the tooltip to reset to the "default" tooltip which is usually information about the character
 		UnitFrame_UpdateTooltip(frame)
 	end
 end
 
-
-
-
+----------------------------------
+----------------------------------
 
 
 -- Used to update everything that is affected by the configuration
