@@ -467,11 +467,9 @@ function RaidFrameIndicators:Tooltip_OnEnter(frame)
 
 	if string.find(frameName, "Compact") then
 
-		--safety check to see if we have a running timer, and if we do, kill it
+		--safety check to kill any running indicator before starting a new one
 		--this would be because the OnLeave function didn't get called or something
-		if RaidFrameIndicators:TimeLeft(tooltipTimer) ~= 0 then
-			RaidFrameIndicators:CancelTimer(tooltipTimer)
-		end
+		RaidFrameIndicators:CancelTimer(tooltipTimer)
 
 		--set a timer to run in a loop as long as we are inside a given frame. This is because each indicator isn't its own frame, but rather are all contained in the one frame thus have to share a single OnEnter event
 		tooltipTimer = RaidFrameIndicators:ScheduleRepeatingTimer('SetTooltip', .1, frame)
@@ -479,10 +477,8 @@ function RaidFrameIndicators:Tooltip_OnEnter(frame)
 end
 
 function RaidFrameIndicators:Tooltip_OnLeave(frame)
-	--check if we have a running timer, and if we do, kill it
-	if RaidFrameIndicators:TimeLeft(tooltipTimer) ~= 0 then
-		RaidFrameIndicators:CancelTimer(tooltipTimer)
-	end
+	--kill our running timer once we leave the raid frame
+	RaidFrameIndicators:CancelTimer(tooltipTimer)
 end
 
 -- Sets the tooltip to the spell currently hovered over
