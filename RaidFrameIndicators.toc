@@ -1,4 +1,4 @@
-﻿## Interface: 80100
+﻿## Interface: 80105
 ## Title: Raid Frame Indicators
 ## Notes: Adds indicators to the standard raid frames
 ## Author: Szandos
