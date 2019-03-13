@@ -13,7 +13,7 @@ local unitBuffs = {} -- Matrix to keep a list of all buffs on all units
 local unitDebuffs = {} -- Matrix to keep a list of all debuffs on all units
 local auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}} -- Matrix to keep all aura strings to watch for
 local _
-local allAuras
+local allAuras = " "
 
 
 local tooltipTimer
@@ -417,7 +417,7 @@ function RaidFrameIndicators:UpdateUnitAuras(unit)
 			break
 		end
 
-		if allAuras and (string.find(allAuras, "+"..auraName.."+") or string.find(allAuras, "+"..spellId.."+")) then -- Only add the spell if we're watching for it
+		if string.find(allAuras, "+"..auraName.."+") or string.find(allAuras, "+"..spellId.."+") then -- Only add the spell if we're watching for it
 			if not unitBuffs[unit][j] then unitBuffs[unit][j] = {} end
 			unitBuffs[unit][j].auraName = auraName
 			unitBuffs[unit][j].spellId = spellId
@@ -442,7 +442,7 @@ function RaidFrameIndicators:UpdateUnitAuras(unit)
 			break
 		end
 
-		if allAuras and (string.find(allAuras, "+"..auraName.."+") or string.find(allAuras, "+"..spellId.."+") or string.find(allAuras, "+"..tostring(debuffType).."+")) then -- Only add the spell if we're watching for it
+		if string.find(allAuras, "+"..auraName.."+") or string.find(allAuras, "+"..spellId.."+") or string.find(allAuras, "+"..tostring(debuffType).."+") then -- Only add the spell if we're watching for it
 			if not unitDebuffs[unit][j] then unitDebuffs[unit][j] = {} end
 			unitDebuffs[unit][j].auraName = auraName
 			unitDebuffs[unit][j].spellId = spellId
@@ -557,7 +557,7 @@ function RaidFrameIndicators:RefreshConfig()
 	end)
 
 	-- Format aura strings
-	allAuras = ""
+	allAuras = " "
 
 	for i = 1, 9 do
 		local j = 1
