@@ -48,15 +48,10 @@ function RaidFrameIndicators:OnEnable()
 
 	if RaidFrameIndicators.db.profile.enabled then
 		-- Start update
-		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.8)
+		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.8) --this is so countdown text is smooth
+		RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) RaidFrameIndicators:UpdateIndicatorFrame(frame) end) --this hooks our frame update function onto the game equivalent function
 		RaidFrameIndicators:RefreshConfig()
 	end
-
-	RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateBuffs", function(frame) RaidFrameIndicators:HideBuffs(frame) end)
-	RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateDebuffs", function(frame) RaidFrameIndicators:HideDebuffs(frame) end)
-	RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateDispellableDebuffs", function(frame) RaidFrameIndicators:HideDispelDebuffs(frame) end)
-
-	self:RegisterBucketEvent({"COMBAT_LOG_EVENT_UNFILTERED"}, .1, "UpdateAllIndicators")
 
 end
 
@@ -80,35 +75,25 @@ end
 
 -------------------------------------------------
 
+function RaidFrameIndicators:UpdateStockAuraVisibility(frame)
+	if not RaidFrameIndicators.db.profile.showBuffs then
+		frame.optionTable.displayBuffs = false
+	else
+		frame.optionTable.displayBuffs = true
+	end
 
+	if not RaidFrameIndicators.db.profile.showDebuffs then
+		frame.optionTable.displayDebuffs = false
+	else
+		frame.optionTable.displayDebuffs = true
+	end
 
--- Hide buff/debuff icons
-function RaidFrameIndicators:HideBuffs(frame)
-	if frame.optionTable.displayBuffs then -- Normal frame
-		if not RaidFrameIndicators.db.profile.showBuffs then
-			CompactUnitFrame_HideAllBuffs(frame)
-		end
+	if not RaidFrameIndicators.db.profile.showDispelDebuffs then
+		frame.optionTable.displayDispelDebuffs = false
+	else
+		frame.optionTable.displayDispelDebuffs = true
 	end
 end
-
-
-function RaidFrameIndicators:HideDebuffs(frame)
-	if frame.optionTable.displayBuffs then -- Normal frame
-		if not RaidFrameIndicators.db.profile.showDebuffs then
-			CompactUnitFrame_HideAllDebuffs(frame)
-		end
-	end
-end
-
-
-function RaidFrameIndicators:HideDispelDebuffs(frame)
-	if frame.optionTable.displayBuffs then -- Normal frame
-		if not RaidFrameIndicators.db.profile.showDispelDebuffs then
-			CompactUnitFrame_HideAllDispelDebuffs(frame)
-		end
-	end
-end
-
 
 -- Create the FontStrings used for indicators
 function RaidFrameIndicators:CreateIndicator(frame)
@@ -549,11 +534,9 @@ function RaidFrameIndicators:RefreshConfig()
 	-- Set the appearance of the indicators
 	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame) RaidFrameIndicators:SetIndicatorAppearance(frame) end)
 
-	-- Show/hide default icons
+	-- Show/hide stock icons
 	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-		RaidFrameIndicators:HideDebuffs(frame)
-		RaidFrameIndicators:HideDispelDebuffs(frame)
-		RaidFrameIndicators:HideBuffs(frame)
+		RaidFrameIndicators:UpdateStockAuraVisibility(frame)
 	end)
 
 	-- Format aura strings
