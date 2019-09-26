@@ -50,9 +50,9 @@ function RaidFrameIndicators:OnEnable()
 		-- Start update
 		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.8) --this is so countdown text is smooth
 		RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) RaidFrameIndicators:UpdateIndicatorFrame(frame) end) --this hooks our frame update function onto the game equivalent function
-		RaidFrameIndicators:RefreshConfig()
 	end
 
+	RaidFrameIndicators:RefreshConfig()
 end
 
 --- **OnDisable**, which is only called when your addon is manually being disabled.
@@ -76,6 +76,7 @@ end
 -------------------------------------------------
 
 function RaidFrameIndicators:UpdateStockAuraVisibility(frame)
+
 	if not RaidFrameIndicators.db.profile.showBuffs then
 		frame.optionTable.displayBuffs = false
 	else
@@ -93,6 +94,7 @@ function RaidFrameIndicators:UpdateStockAuraVisibility(frame)
 	else
 		frame.optionTable.displayDispelDebuffs = true
 	end
+
 end
 
 -- Create the FontStrings used for indicators
@@ -184,13 +186,15 @@ end
 
 -- Check the indicators on a frame and update the times on them
 function RaidFrameIndicators:UpdateIndicatorFrame(frame)
-
 	local currentTime = GetTime()
 	local unit = frame.unit
 	local frameName = frame:GetName()
 
-	-- Check if the frame is pointing at anything
-	if not unit then
+	--check to see if the bar is even targeting a unit, bail if it isn't
+	--also, tanks have two bars below their frame that have a frame.unit that ends in "target" and "targettarget".
+	--Normal raid members have frame.unit that says "Raid1", "Raid5", etc.
+	--We don't want to put icons over these tiny little target and target of target bars
+	if not unit or string.find(unit, "target") then
 		return
 	end
 
