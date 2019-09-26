@@ -71,8 +71,13 @@ end
 function RaidFrameIndicators:PLAYER_ENTERING_WORLD()
 	if RaidFrameIndicators.db.profile.enabled then
 		-- Start update
+		RaidFrameIndicators:CancelAllTimers()
 		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.8) --this is so countdown text is smooth
-		RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) RaidFrameIndicators:UpdateIndicatorFrame(frame) end) --this hooks our frame update function onto the game equivalent function
+
+		if RaidFrameIndicators:IsHooked("CompactUnitFrame_UpdateAuras") then
+			RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) RaidFrameIndicators:UpdateIndicatorFrame(frame) end) --this hooks our frame update function onto the game equivalent function
+		end
+
 		RaidFrameIndicators:RefreshConfig()
 	end
 end
