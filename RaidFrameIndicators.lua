@@ -45,13 +45,7 @@ end
 --- Register Events, Hook functions, Create Frames, Get information from
 --- the game that wasn't available in OnInitialize
 function RaidFrameIndicators:OnEnable()
-
-	if RaidFrameIndicators.db.profile.enabled then
-		-- Start update
-		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.8) --this is so countdown text is smooth
-		RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) RaidFrameIndicators:UpdateIndicatorFrame(frame) end) --this hooks our frame update function onto the game equivalent function
-		RaidFrameIndicators:RefreshConfig()
-	end
+	RaidFrameIndicators:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 --- **OnDisable**, which is only called when your addon is manually being disabled.
@@ -73,6 +67,15 @@ function RaidFrameIndicators:OnDisable()
 end
 
 -------------------------------------------------
+
+function RaidFrameIndicators:PLAYER_ENTERING_WORLD()
+	if RaidFrameIndicators.db.profile.enabled then
+		-- Start update
+		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.8) --this is so countdown text is smooth
+		RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) RaidFrameIndicators:UpdateIndicatorFrame(frame) end) --this hooks our frame update function onto the game equivalent function
+		RaidFrameIndicators:RefreshConfig()
+	end
+end
 
 function RaidFrameIndicators:UpdateStockAuraVisibility(frame)
 
@@ -99,6 +102,8 @@ end
 -- Create the FontStrings used for indicators
 function RaidFrameIndicators:CreateIndicator(frame)
 	local frameName = frame:GetName()
+
+	RaidFrameIndicators:UpdateStockAuraVisibility(frame)
 
 	f[frameName] = {}
 
@@ -179,10 +184,7 @@ end
 
 -- Update all indicators
 function RaidFrameIndicators:UpdateAllIndicators()
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal",
-			function(frame) RaidFrameIndicators:UpdateStockAuraVisibility(frame);
-				RaidFrameIndicators:UpdateIndicatorFrame(frame)
-			end)
+	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame) RaidFrameIndicators:UpdateIndicatorFrame(frame)  end)
 end
 
 -- Check the indicators on a frame and update the times on them
