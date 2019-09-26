@@ -185,20 +185,22 @@ function RaidFrameIndicators:UpdateAllIndicators()
 			end)
 end
 
-
 -- Check the indicators on a frame and update the times on them
 function RaidFrameIndicators:UpdateIndicatorFrame(frame)
-	local currentTime = GetTime()
+
 	local unit = frame.unit
-	local frameName = frame:GetName()
 
 	--check to see if the bar is even targeting a unit, bail if it isn't
 	--also, tanks have two bars below their frame that have a frame.unit that ends in "target" and "targettarget".
 	--Normal raid members have frame.unit that says "Raid1", "Raid5", etc.
 	--We don't want to put icons over these tiny little target and target of target bars
-	if not unit or string.find(unit, "target") then
+	--Also, in 8.2.5 blizzard unified the nameplate code with the raid frame code. Don't display icons on nameplates
+	if not unit or string.find(unit, "target") or string.find(unit, "nameplate") then
 		return
 	end
+
+	local currentTime = GetTime()
+	local frameName = frame:GetName()
 
 	-- Check if the indicator frame exists, else create it
 	if not f[frameName] then
