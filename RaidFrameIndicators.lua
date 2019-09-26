@@ -50,9 +50,8 @@ function RaidFrameIndicators:OnEnable()
 		-- Start update
 		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.8) --this is so countdown text is smooth
 		RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) RaidFrameIndicators:UpdateIndicatorFrame(frame) end) --this hooks our frame update function onto the game equivalent function
+		RaidFrameIndicators:RefreshConfig()
 	end
-
-	RaidFrameIndicators:RefreshConfig()
 end
 
 --- **OnDisable**, which is only called when your addon is manually being disabled.
@@ -180,7 +179,10 @@ end
 
 -- Update all indicators
 function RaidFrameIndicators:UpdateAllIndicators()
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame) RaidFrameIndicators:UpdateIndicatorFrame(frame) end)
+	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal",
+			function(frame) RaidFrameIndicators:UpdateStockAuraVisibility(frame);
+				RaidFrameIndicators:UpdateIndicatorFrame(frame)
+			end)
 end
 
 
