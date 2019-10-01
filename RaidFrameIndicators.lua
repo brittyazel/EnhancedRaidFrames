@@ -125,7 +125,6 @@ function RaidFrameIndicators:CreateIndicator(frame)
 		f[frameName][i].icon:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
 
 		f[frameName][i]:SetFrameStrata("HIGH")
-
 		f[frameName][i]:Show()
 
 		if i == 1 then
@@ -176,6 +175,9 @@ function RaidFrameIndicators:SetIndicatorAppearance(frame)
 
 		f[frameName][i].text:SetFont(font, RaidFrameIndicators.db.profile["size"..i], "OUTLINE")
 		f[frameName][i].text:SetTextColor(RaidFrameIndicators.db.profile["color"..i].r, RaidFrameIndicators.db.profile["color"..i].g, RaidFrameIndicators.db.profile["color"..i].b, RaidFrameIndicators.db.profile["color"..i].a)
+
+		--decrease the darkness of the cooldown animation layer
+		f[frameName][i].cooldown:SetAlpha(.8)
 
 		if RaidFrameIndicators.db.profile["showIcon"..i] then
 			f[frameName][i].icon:Show()
@@ -390,12 +392,12 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 		f[frameName][i].icon:SetTexture(icon)
 
 		--set cooldown animation
-		if expirationTime and expirationTime ~= 0 then
-			local startTime = expirationTime - duration;
-			CooldownFrame_Set(f[frameName][i].cooldown, startTime, duration, true)
+		if RaidFrameIndicators.db.profile["showCooldownAnimation"..i] and expirationTime and expirationTime ~= 0 then
+			CooldownFrame_Set(f[frameName][i].cooldown, expirationTime - duration, duration, true)
 		else
 			CooldownFrame_Clear(f[frameName][i].cooldown);
 		end
+
 
 	end
 

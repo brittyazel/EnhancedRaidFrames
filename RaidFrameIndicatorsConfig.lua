@@ -22,6 +22,7 @@ function RaidFrameIndicators:CreateDefaults ()
 		Defaults.profile["missing"..i] = false
 		Defaults.profile["me"..i] = false
 		Defaults.profile["showText"..i] = true
+		Defaults.profile["showCooldownAnimation"..i] = true
 		Defaults.profile["showDecimals"..i] = true
 		Defaults.profile["showIcon"..i] = true
 		Defaults.profile["showTooltip"..i] = true
@@ -124,6 +125,12 @@ function RaidFrameIndicators:CreateOptions ()
 			name = "Show text counter",
 			desc = "Show a text counter specifying the time left of the buff/debuff",
 			order = 110,
+		}
+		Options.args["i"..i].args["showCooldownAnimation"..i] = {
+			type = "toggle",
+			name = "Show CD animation",
+			desc = "Show the cooldown animation specifying the time left of the buff/debuff",
+			order = 111,
 		}
 		Options.args["i"..i].args["size"..i] = {
 			type = "range",
