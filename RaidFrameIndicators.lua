@@ -114,7 +114,8 @@ function RaidFrameIndicators:CreateIndicator(frame)
 
 	-- Create indicators
 	for i = 1, 9 do
-		f[frameName][i] = CreateFrame("Frame", nil, frame)
+		--We have to use this template to allow for our clicks to be passed through, otherwise our frames won't allow selecting the raidframe behind it
+		f[frameName][i] = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
 
 		f[frameName][i].text = f[frameName][i]:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 		f[frameName][i].icon = f[frameName][i]:CreateTexture(nil, "OVERLAY")
@@ -123,6 +124,7 @@ function RaidFrameIndicators:CreateIndicator(frame)
 		f[frameName][i].icon:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
 
 		f[frameName][i]:SetFrameStrata("HIGH")
+
 		f[frameName][i]:Show()
 
 		if i == 1 then
@@ -146,8 +148,8 @@ function RaidFrameIndicators:CreateIndicator(frame)
 		end
 
 		-- hook enter and leave for showing ability tooltips
-		RaidFrameIndicators:SecureHookScript(f[frameName][i], "OnEnter", function(frame) RaidFrameIndicators:Tooltip_OnEnter(frame) end)
-		RaidFrameIndicators:SecureHookScript(f[frameName][i], "OnLeave", function(frame) RaidFrameIndicators:Tooltip_OnLeave(frame) end)
+		RaidFrameIndicators:SecureHookScript(f[frameName][i], "OnEnter", function(buffFrame) RaidFrameIndicators:Tooltip_OnEnter(buffFrame) end)
+		RaidFrameIndicators:SecureHookScript(f[frameName][i], "OnLeave", function(buffFrame) RaidFrameIndicators:Tooltip_OnLeave(buffFrame) end)
 	end
 
 	-- Set appearance
@@ -461,26 +463,32 @@ end
 -------------------------------
 
 -- Hook CompactUnitFrame_OnEnter and OnLeave so we know if a tooltip is showing or not.
-function RaidFrameIndicators:Tooltip_OnEnter(frame)
-	local index = frame.index
-	local buff = frame.buff
+function RaidFrameIndicators:Tooltip_OnEnter(buffFrame)
+	local index = buffFrame.index
+	local buff = buffFrame.buff
 
-	local displayedUnit = frame:GetParent().displayedUnit
+	local displayedUnit = buffFrame:GetParent().displayedUnit
 
 	-- Set the tooltip
-	if index and index ~= -1 then -- -1 is the pvp icon, no tooltip for that
+	if index and index ~= -1 and buffFrame.icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
 		-- Set the buff/debuff as tooltip and anchor to the cursor
-		GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
+		GameTooltip:SetOwner(buffFrame, "ANCHOR_CURSOR")
 		if buff then
 			GameTooltip:SetUnitBuff(displayedUnit, index)
 		else
 			GameTooltip:SetUnitDebuff(displayedUnit, index)
 		end
+	else
+		--causes the tooltip to reset to the "default" tooltip which is usually information about the character
+		UnitFrame_UpdateTooltip(buffFrame:GetParent())
 	end
+
+	GameTooltip:Show()
+
 end
 
-function RaidFrameIndicators:Tooltip_OnLeave(frame)
-
+function RaidFrameIndicators:Tooltip_OnLeave(buffFrame)
+	GameTooltip:Hide()
 end
 
 ----------------------------------
