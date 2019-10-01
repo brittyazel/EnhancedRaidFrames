@@ -102,22 +102,18 @@ end
 
 function RaidFrameIndicators:UpdateStockAuraVisibility(frame)
 
+	test = frame
+
 	if not RaidFrameIndicators.db.profile.showBuffs then
-		frame.optionTable.displayBuffs = false
-	else
-		frame.optionTable.displayBuffs = true
+		CompactUnitFrame_HideAllBuffs(frame)
 	end
 
 	if not RaidFrameIndicators.db.profile.showDebuffs then
-		frame.optionTable.displayDebuffs = false
-	else
-		frame.optionTable.displayDebuffs = true
+		CompactUnitFrame_HideAllDebuffs(frame)
 	end
 
 	if not RaidFrameIndicators.db.profile.showDispelDebuffs then
-		frame.optionTable.displayDispelDebuffs = false
-	else
-		frame.optionTable.displayDispelDebuffs = true
+		CompactUnitFrame_HideAllDispelDebuffs(frame)
 	end
 
 end
@@ -126,15 +122,13 @@ end
 function RaidFrameIndicators:CreateIndicator(frame)
 	local frameName = frame:GetName()
 
-	RaidFrameIndicators:UpdateStockAuraVisibility(frame)
-
 	f[frameName] = {}
 
 	-- Create indicators
 	for i = 1, 9 do
 		--We have to use this template to allow for our clicks to be passed through, otherwise our frames won't allow selecting the raidframe behind it
 		f[frameName][i] = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
-		
+
 		f[frameName][i].text = f[frameName][i]:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 		f[frameName][i].icon = f[frameName][i]:CreateTexture(nil, "OVERLAY")
 
@@ -142,7 +136,6 @@ function RaidFrameIndicators:CreateIndicator(frame)
 		f[frameName][i].icon:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
 
 		f[frameName][i]:SetFrameStrata("HIGH")
-		f[frameName][i]:Show()
 
 		if i == 1 then
 			f[frameName][i]:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, -PAD)
@@ -223,6 +216,8 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 		return
 	end
 
+	RaidFrameIndicators:UpdateStockAuraVisibility(frame)
+
 	local currentTime = GetTime()
 	local frameName = frame:GetName()
 
@@ -251,7 +246,6 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 
 		remainingTimeAsText = ""
 		icon = ""
-
 
 		-- If we only are to show the indicator on me, then don't bother if I'm not the unit
 		if RaidFrameIndicators.db.profile["me"..i] then
@@ -450,8 +444,8 @@ function RaidFrameIndicators:UpdateUnitAuras(unit)
 			unitBuffs[unit][j].auraName = auraName
 			unitBuffs[unit][j].spellId = spellId
 			unitBuffs[unit][j].count = count
-			unitBuffs[unit][j].duration = duration
-			unitBuffs[unit][j].expirationTime = expirationTime
+			unitBuffs[unit][j].duration = duration or 0
+			unitBuffs[unit][j].expirationTime = expirationTime or 0
 			unitBuffs[unit][j].castBy = castBy
 			unitBuffs[unit][j].icon = icon
 			unitBuffs[unit][j].index = i
@@ -493,8 +487,6 @@ end
 -------------------------------
 ---Tooltip Code
 -------------------------------
-
--- Hook CompactUnitFrame_OnEnter and OnLeave so we know if a tooltip is showing or not.
 function RaidFrameIndicators:Tooltip_OnEnter(buffFrame)
 	local frame = buffFrame:GetParent() --this is the parent raid frame that holds all the buffFrames
 	local index = buffFrame.index
@@ -505,7 +497,7 @@ function RaidFrameIndicators:Tooltip_OnEnter(buffFrame)
 	-- Set the tooltip
 	if index and index ~= -1 and buffFrame.icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
 		-- Set the buff/debuff as tooltip and anchor to the cursor
-		GameTooltip:SetOwner(buffFrame, "ANCHOR_CURSOR")
+		GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
 		if buff then
 			GameTooltip:SetUnitBuff(displayedUnit, index)
 		else
@@ -513,11 +505,12 @@ function RaidFrameIndicators:Tooltip_OnEnter(buffFrame)
 		end
 	else
 		--causes the tooltip to reset to the "default" tooltip which is usually information about the character
-		UnitFrame_UpdateTooltip(frame)
+		if frame then
+			UnitFrame_UpdateTooltip(frame)
+		end
 	end
 
 	GameTooltip:Show()
-
 end
 
 function RaidFrameIndicators:Tooltip_OnLeave(buffFrame)
@@ -534,10 +527,6 @@ function RaidFrameIndicators:RefreshConfig()
 	-- Set the appearance of the indicators
 	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame) RaidFrameIndicators:SetIndicatorAppearance(frame) end)
 
-	-- Show/hide stock icons
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-		RaidFrameIndicators:UpdateStockAuraVisibility(frame)
-	end)
 
 	-- Format aura strings
 	allAuras = " "

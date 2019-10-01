@@ -71,12 +71,6 @@ function RaidFrameIndicators:CreateOptions ()
 				desc = "Show the standard raid frame debuff icons",
 				order = 13,
 			},
-			showDispelDebuffs = {
-				type = "toggle",
-				name = "Show Dispellable Icons",
-				desc = "Show the standard raid frame dispellable debuff icons",
-				order = 15,
-			},
 			indicatorFont = {
 				type = 'select',
 				dialogControl = "LSM30_Font",
