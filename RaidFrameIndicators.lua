@@ -231,6 +231,10 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 	for i = 1, 9 do
 
 		local remainingTime, remainingTimeAsText, showIndicator, count, duration, expirationTime, castBy, icon, debuffType, n
+		
+		remainingTimeAsText = ""
+		icon = ""
+
 
 		-- If we only are to show the indicator on me, then don't bother if I'm not the unit
 		if RaidFrameIndicators.db.profile["me"..i] then
