@@ -114,45 +114,44 @@ function RaidFrameIndicators:CreateIndicator(frame)
 
 	-- Create indicators
 	for i = 1, 9 do
-		f[frameName][i] = {}
-		f[frameName][i].text = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall", 6)
-		f[frameName][i].icon = frame:CreateTexture(nil, "OVERLAY", nil,  7)
+		f[frameName][i] = CreateFrame("Frame", nil, frame)
+
+		f[frameName][i].text = f[frameName][i]:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+		f[frameName][i].icon = f[frameName][i]:CreateTexture(nil, "OVERLAY")
+
+		f[frameName][i].text:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
+		f[frameName][i].icon:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
+
+		f[frameName][i]:SetFrameStrata("HIGH")
+		f[frameName][i]:Show()
+
 		if i == 1 then
-			f[frameName][i].text:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD+1, -PAD-2)
-			f[frameName][i].icon:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, -PAD)
+			f[frameName][i]:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, -PAD)
 		elseif i == 2 then
-			f[frameName][i].text:SetPoint("TOP", frame, "TOP", 0, -PAD-2)
-			f[frameName][i].icon:SetPoint("TOP", frame, "TOP", 0, -PAD)
+			f[frameName][i]:SetPoint("TOP", frame, "TOP", 0, -PAD)
 		elseif i == 3 then
-			f[frameName][i].text:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD-1, -PAD-2)
-			f[frameName][i].icon:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD, -PAD)
+			f[frameName][i]:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD, -PAD)
 		elseif i == 4 then
-			f[frameName][i].text:SetPoint("LEFT", frame, "LEFT", PAD+1, 0)
-			f[frameName][i].icon:SetPoint("LEFT", frame, "LEFT", PAD, 0)
+			f[frameName][i]:SetPoint("LEFT", frame, "LEFT", PAD, 0)
 		elseif i == 5 then
-			f[frameName][i].text:SetPoint("CENTER", frame, "CENTER", 0, 0)
-			f[frameName][i].icon:SetPoint("CENTER", frame, "CENTER", 0, 0)
+			f[frameName][i]:SetPoint("CENTER", frame, "CENTER", 0, 0)
 		elseif i == 6 then
-			f[frameName][i].text:SetPoint("RIGHT", frame, "RIGHT", -PAD-1, 0)
-			f[frameName][i].icon:SetPoint("RIGHT", frame, "RIGHT", -PAD, 0)
+			f[frameName][i]:SetPoint("RIGHT", frame, "RIGHT", -PAD, 0)
 		elseif i == 7 then
-			f[frameName][i].text:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD+1, PAD+2)
-			f[frameName][i].icon:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD, PAD)
+			f[frameName][i]:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD, PAD)
 		elseif i == 8 then
-			f[frameName][i].text:SetPoint("BOTTOM", frame, "BOTTOM", 0, PAD+2)
-			f[frameName][i].icon:SetPoint("BOTTOM", frame, "BOTTOM", 0, PAD)
+			f[frameName][i]:SetPoint("BOTTOM", frame, "BOTTOM", 0, PAD)
 		elseif i == 9 then
-			f[frameName][i].text:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD-1, PAD+2)
-			f[frameName][i].icon:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD, PAD)
+			f[frameName][i]:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD, PAD)
 		end
+
+		-- hook enter and leave for showing ability tooltips
+		RaidFrameIndicators:SecureHookScript(f[frameName][i], "OnEnter", function(frame) RaidFrameIndicators:Tooltip_OnEnter(frame) end)
+		RaidFrameIndicators:SecureHookScript(f[frameName][i], "OnLeave", function(frame) RaidFrameIndicators:Tooltip_OnLeave(frame) end)
 	end
 
 	-- Set appearance
 	RaidFrameIndicators:SetIndicatorAppearance(frame)
-
-	-- hook enter and leave for showing ability tooltips
-	RaidFrameIndicators:SecureHookScript(frame, "OnEnter", function() RaidFrameIndicators:Tooltip_OnEnter(frame) end)
-	RaidFrameIndicators:SecureHookScript(frame, "OnLeave", function() RaidFrameIndicators:Tooltip_OnLeave(frame) end)
 end
 
 -- Set the appearance of the FontStrings
@@ -167,10 +166,14 @@ function RaidFrameIndicators:SetIndicatorAppearance(frame)
 	local font = media and media:Fetch('font', RaidFrameIndicators.db.profile.indicatorFont) or STANDARD_TEXT_FONT
 
 	for i = 1, 9 do
-		f[frameName][i].text:SetFont(font, RaidFrameIndicators.db.profile["size"..i], "OUTLINE")
-		f[frameName][i].text:SetTextColor(RaidFrameIndicators.db.profile["color"..i].r, RaidFrameIndicators.db.profile["color"..i].g, RaidFrameIndicators.db.profile["color"..i].b, RaidFrameIndicators.db.profile["color"..i].a)
+		f[frameName][i]:SetWidth(RaidFrameIndicators.db.profile["iconSize"..i])
+		f[frameName][i]:SetHeight(RaidFrameIndicators.db.profile["iconSize"..i])
 		f[frameName][i].icon:SetWidth(RaidFrameIndicators.db.profile["iconSize"..i])
 		f[frameName][i].icon:SetHeight(RaidFrameIndicators.db.profile["iconSize"..i])
+
+		f[frameName][i].text:SetFont(font, RaidFrameIndicators.db.profile["size"..i], "OUTLINE")
+		f[frameName][i].text:SetTextColor(RaidFrameIndicators.db.profile["color"..i].r, RaidFrameIndicators.db.profile["color"..i].g, RaidFrameIndicators.db.profile["color"..i].b, RaidFrameIndicators.db.profile["color"..i].a)
+
 		if RaidFrameIndicators.db.profile["showIcon"..i] then
 			f[frameName][i].icon:Show()
 		else
@@ -459,76 +462,25 @@ end
 
 -- Hook CompactUnitFrame_OnEnter and OnLeave so we know if a tooltip is showing or not.
 function RaidFrameIndicators:Tooltip_OnEnter(frame)
-	local unit = frame.unit
-	local frameName = frame:GetName()
+	local index = frame.index
+	local buff = frame.buff
 
-	-- Check if the frame is poiting at anything
-	if not unit then return end
-	if not f[frameName] then return end
-
-	if string.find(frameName, "Compact") then
-
-		--safety check to kill any running indicator before starting a new one
-		--this would be because the OnLeave function didn't get called or something
-		RaidFrameIndicators:CancelTimer(tooltipTimer)
-
-		--set a timer to run in a loop as long as we are inside a given frame. This is because each indicator isn't its own frame, but rather are all contained in the one frame thus have to share a single OnEnter event
-		tooltipTimer = RaidFrameIndicators:ScheduleRepeatingTimer('SetTooltip', .1, frame)
-	end
-end
-
-function RaidFrameIndicators:Tooltip_OnLeave(frame)
-	--kill our running timer once we leave the raid frame
-	RaidFrameIndicators:CancelTimer(tooltipTimer)
-end
-
--- Sets the tooltip to the spell currently hovered over
-function RaidFrameIndicators:SetTooltip(frame)
-	local x, y = GetCursorPosition()
-	local s = frame:GetEffectiveScale()
-	local fL = frame:GetLeft()
-	local fR = frame:GetRight()
-	local fT = frame:GetTop()
-	local fB = frame:GetBottom()
-	local frameName = frame:GetName()
-	local index, buff
-
-	x = x/s
-	y = y/s
-
-	for i = 1, 9 do -- Loop over all indicators
-		if f[frameName][i].icon:GetTexture() and RaidFrameIndicators.db.profile["showTooltip"..i] then -- Only show a tooltip if we have an icon
-			-- Check if we are hovering above the area where an icon is shown
-			local size = RaidFrameIndicators.db.profile["iconSize"..i]
-			if (i == 1 and (x > fL + PAD) and (x < fL + PAD + size) and (y > fT - PAD - size) and (y < fT - PAD)) or -- Top left
-					(i == 2 and (x > fL + (fR - fL - size)/2) and (x < fL + (fR -fL + size)/2) and (y > fT - PAD - size) and (y < fT - PAD)) or -- Top mid
-					(i == 3 and (x > fR - PAD - size) and (x < fR - PAD) and (y > fT - PAD - size) and (y < fT - PAD)) or -- Top right
-					(i == 4 and (x > fL + PAD) and (x < fL + PAD + size) and (y > fB + (fT - fB - size)/2) and (y < fB + (fT - fB + size)/2)) or -- Mid left
-					(i == 5 and (x > fL + (fR - fL - size)/2) and (x < fL + (fR -fL + size)/2) and (y > fB + (fT - fB - size)/2) and (y < fB + (fT - fB + size)/2)) or -- Mid mid
-					(i == 6 and (x > fR - PAD - size) and (x < fR - PAD) and (y > fB + (fT - fB - size)/2) and (y < fB + (fT - fB + size)/2)) or -- Mid right
-					(i == 7 and (x > fL + PAD) and (x < fL + PAD + size) and (y > fB + PAD) and (y < fB + PAD + size)) or -- Bottom left
-					(i == 8 and (x > fL + (fR - fL - size)/2) and (x < fL + (fR -fL + size)/2) and (y > fB + PAD) and (y < fB + PAD + size)) or -- Bottom mid
-					(i == 9 and (x > fR - PAD - size) and (x < fR - PAD) and (y > fB + PAD) and (y < fB + PAD + size)) then -- Bottom right
-				index = f[frameName][i].index
-				buff = f[frameName][i].buff
-				break -- No need to continue the for loop, the mouse can only be over one icon at a time
-			end
-		end
-	end
+	local displayedUnit = frame:GetParent().displayedUnit
 
 	-- Set the tooltip
 	if index and index ~= -1 then -- -1 is the pvp icon, no tooltip for that
 		-- Set the buff/debuff as tooltip and anchor to the cursor
 		GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
 		if buff then
-			GameTooltip:SetUnitBuff(frame.displayedUnit, index)
+			GameTooltip:SetUnitBuff(displayedUnit, index)
 		else
-			GameTooltip:SetUnitDebuff(frame.displayedUnit, index)
+			GameTooltip:SetUnitDebuff(displayedUnit, index)
 		end
-	else
-		--causes the tooltip to reset to the "default" tooltip which is usually information about the character
-		UnitFrame_UpdateTooltip(frame)
 	end
+end
+
+function RaidFrameIndicators:Tooltip_OnLeave(frame)
+
 end
 
 ----------------------------------
