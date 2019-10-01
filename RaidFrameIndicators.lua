@@ -116,8 +116,7 @@ function RaidFrameIndicators:CreateIndicator(frame)
 	for i = 1, 9 do
 		--We have to use this template to allow for our clicks to be passed through, otherwise our frames won't allow selecting the raidframe behind it
 		f[frameName][i] = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
-
-		test = f[frameName][i]
+		
 		f[frameName][i].text = f[frameName][i]:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 		f[frameName][i].icon = f[frameName][i]:CreateTexture(nil, "OVERLAY")
 
@@ -231,7 +230,7 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 	for i = 1, 9 do
 
 		local remainingTime, remainingTimeAsText, showIndicator, count, duration, expirationTime, castBy, icon, debuffType, n
-		
+
 		remainingTimeAsText = ""
 		icon = ""
 
