@@ -117,6 +117,7 @@ function RaidFrameIndicators:CreateIndicator(frame)
 		--We have to use this template to allow for our clicks to be passed through, otherwise our frames won't allow selecting the raidframe behind it
 		f[frameName][i] = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
 
+		test = f[frameName][i]
 		f[frameName][i].text = f[frameName][i]:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 		f[frameName][i].icon = f[frameName][i]:CreateTexture(nil, "OVERLAY")
 
@@ -148,8 +149,8 @@ function RaidFrameIndicators:CreateIndicator(frame)
 		end
 
 		-- hook enter and leave for showing ability tooltips
-		RaidFrameIndicators:SecureHookScript(f[frameName][i], "OnEnter", function(buffFrame) RaidFrameIndicators:Tooltip_OnEnter(buffFrame) end)
-		RaidFrameIndicators:SecureHookScript(f[frameName][i], "OnLeave", function(buffFrame) RaidFrameIndicators:Tooltip_OnLeave(buffFrame) end)
+		RaidFrameIndicators:SecureHookScript(f[frameName][i], "OnEnter", function() RaidFrameIndicators:Tooltip_OnEnter(f[frameName][i]) end)
+		RaidFrameIndicators:SecureHookScript(f[frameName][i], "OnLeave", function() RaidFrameIndicators:Tooltip_OnLeave(f[frameName][i]) end)
 	end
 
 	-- Set appearance
@@ -225,13 +226,9 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 	RaidFrameIndicators:UpdateUnitAuras(unit)
 
 	-- Loop over the indicators and see if we get a hit
-	local remainingTime, remainingTimeAsText, showIndicator, count, expirationTime, castBy, icon, debuffType, n
 	for i = 1, 9 do
-		remainingTime = nil
-		remainingTimeAsText = ""
-		icon = ""
-		showIndicator = true
-		n = nil
+
+		local remainingTime, remainingTimeAsText, showIndicator, count, duration, expirationTime, castBy, icon, debuffType, n
 
 		-- If we only are to show the indicator on me, then don't bother if I'm not the unit
 		if RaidFrameIndicators.db.profile["me"..i] then
@@ -241,154 +238,165 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 				showIndicator = false
 			end
 		end
-		if showIndicator then
 
-			-- Go through the aura strings
-			for _, auraName in ipairs(auraStrings[i]) do -- Grab each line
-				-- Check if the aura exist on the unit
-				for j = 1, unitBuffs[unit].len do -- Check buffs
+
+		-- Go through the aura strings
+		for _, auraName in ipairs(auraStrings[i]) do -- Grab each line
+			-- Check if the aura exist on the unit
+			for j = 1, unitBuffs[unit].len do -- Check buffs
+				if tonumber(auraName) then  -- Use spell id
+					if unitBuffs[unit][j].spellId == tonumber(auraName) then n = j end
+				elseif unitBuffs[unit][j].auraName == auraName then -- Hit on auraName
+					n = j
+				end
+				if n and unitBuffs[unit][j].castBy == "player" then break end -- Keep looking if it's not cast by the player
+			end
+			if n then
+				count = unitBuffs[unit][n].count
+				duration = unitBuffs[unit][n].duration
+				expirationTime = unitBuffs[unit][n].expirationTime
+				castBy = unitBuffs[unit][n].castBy
+				icon = unitBuffs[unit][n].icon
+				f[frameName][i].index = unitBuffs[unit][n].index
+				f[frameName][i].buff = true
+			else
+				for j = 1, unitDebuffs[unit].len do -- Check debuffs
 					if tonumber(auraName) then  -- Use spell id
-						if unitBuffs[unit][j].spellId == tonumber(auraName) then n = j end
-					elseif unitBuffs[unit][j].auraName == auraName then -- Hit on auraName
+						if unitDebuffs[unit][j].spellId == tonumber(auraName) then n = j end
+					elseif unitDebuffs[unit][j].auraName == auraName then -- Hit on auraName
+						n = j
+					elseif unitDebuffs[unit][j].debuffType == auraName then -- Hit on debufftype
 						n = j
 					end
-					if n and unitBuffs[unit][j].castBy == "player" then break end -- Keep looking if it's not cast by the player
+					if n and unitDebuffs[unit][j].castBy == "player" then break end -- Keep looking if it's not cast by the player
 				end
 				if n then
-					count = unitBuffs[unit][n].count
-					expirationTime = unitBuffs[unit][n].expirationTime
-					castBy = unitBuffs[unit][n].castBy
-					icon = unitBuffs[unit][n].icon
-					f[frameName][i].index = unitBuffs[unit][n].index
-					f[frameName][i].buff = true
-				else
-					for j = 1, unitDebuffs[unit].len do -- Check debuffs
-						if tonumber(auraName) then  -- Use spell id
-							if unitDebuffs[unit][j].spellId == tonumber(auraName) then n = j end
-						elseif unitDebuffs[unit][j].auraName == auraName then -- Hit on auraName
-							n = j
-						elseif unitDebuffs[unit][j].debuffType == auraName then -- Hit on debufftype
-							n = j
-						end
-						if n and unitDebuffs[unit][j].castBy == "player" then break end -- Keep looking if it's not cast by the player
-					end
-					if n then
-						count = unitDebuffs[unit][n].count
-						expirationTime = unitDebuffs[unit][n].expirationTime
-						castBy = unitDebuffs[unit][n].castBy
-						icon = unitDebuffs[unit][n].icon
-						debuffType = unitDebuffs[unit][n].debuffType
-						f[frameName][i].index = unitDebuffs[unit][n].index
-					end
+					count = unitDebuffs[unit][n].count
+					duration = unitBuffs[unit][n].duration
+					expirationTime = unitDebuffs[unit][n].expirationTime
+					castBy = unitDebuffs[unit][n].castBy
+					icon = unitDebuffs[unit][n].icon
+					debuffType = unitDebuffs[unit][n].debuffType
+					f[frameName][i].index = unitDebuffs[unit][n].index
 				end
-				if auraName:upper() == "PVP" then -- Check if we want to show pvp flag
-					if UnitIsPVP(unit) then
-						count = 0
-						expirationTime = 0
-						castBy = "player"
-						n = -1
-						local factionGroup = UnitFactionGroup(unit)
-						if factionGroup then icon = "Interface\\GroupFrame\\UI-Group-PVP-"..factionGroup end
-						f[frameName][i].index = -1
-					end
-				elseif auraName:upper() == "TOT" then -- Check if we want to show ToT flag
-					if UnitIsUnit (unit, "targettarget") then
-						count = 0
-						expirationTime = 0
-						castBy = "player"
-						n = -1
-						icon = "Interface\\Icons\\Ability_Hunter_SniperShot"
-						f[frameName][i].index = -1
-					end
+			end
+			if auraName:upper() == "PVP" then -- Check if we want to show pvp flag
+				if UnitIsPVP(unit) then
+					count = 0
+					expirationTime = 0
+					castBy = "player"
+					n = -1
+					local factionGroup = UnitFactionGroup(unit)
+					if factionGroup then icon = "Interface\\GroupFrame\\UI-Group-PVP-"..factionGroup end
+					f[frameName][i].index = -1
 				end
+			elseif auraName:upper() == "TOT" then -- Check if we want to show ToT flag
+				if UnitIsUnit (unit, "targettarget") then
+					count = 0
+					expirationTime = 0
+					castBy = "player"
+					n = -1
+					icon = "Interface\\Icons\\Ability_Hunter_SniperShot"
+					f[frameName][i].index = -1
+				end
+			end
 
-				if n then -- We found a matching spell
-					-- If we only are to show spells cast by me, make sure the spell is
-					if (RaidFrameIndicators.db.profile["mine"..i] and castBy ~= "player") then
-						n = nil
-						icon = ""
+			if n then -- We found a matching spell
+				-- If we only are to show spells cast by me, make sure the spell is
+				if (RaidFrameIndicators.db.profile["mine"..i] and castBy ~= "player") then
+					n = nil
+					icon = ""
+				else
+					if not RaidFrameIndicators.db.profile["showIcon"..i] then icon = "" end -- Hide icon
+					if expirationTime == 0 then -- No expiration time = permanent
+						if not RaidFrameIndicators.db.profile["showIcon"..i] then
+							remainingTimeAsText = "■" -- Only show the blob if we don't show the icon
+						end
 					else
-						if not RaidFrameIndicators.db.profile["showIcon"..i] then icon = "" end -- Hide icon
-						if expirationTime == 0 then -- No expiration time = permanent
-							if not RaidFrameIndicators.db.profile["showIcon"..i] then
-								remainingTimeAsText = "■" -- Only show the blob if we don't show the icon
+						if RaidFrameIndicators.db.profile["showText"..i] then
+							-- Pretty formating of the remaining time text
+							remainingTime = expirationTime - currentTime
+							if remainingTime > 60 then
+								remainingTimeAsText = string.format("%.0f", (remainingTime / 60)).."m" -- Show minutes without seconds
+							elseif remainingTime >= 1 then
+								remainingTimeAsText = string.format("%.0f",remainingTime) -- Show seconds without decimals
 							end
 						else
-							if RaidFrameIndicators.db.profile["showText"..i] then
-								-- Pretty formating of the remaining time text
-								remainingTime = expirationTime - currentTime
-								if remainingTime > 60 then
-									remainingTimeAsText = string.format("%.0f", (remainingTime / 60)).."m" -- Show minutes without seconds
-								elseif remainingTime >= 1 then
-									remainingTimeAsText = string.format("%.0f",remainingTime) -- Show seconds without decimals
-								end
-							else
-								remainingTimeAsText = ""
-							end
-
+							remainingTimeAsText = ""
 						end
 
-						-- Add stack count
-						if RaidFrameIndicators.db.profile["stack"..i] and count > 0 then
-							if RaidFrameIndicators.db.profile["showText"..i] and expirationTime > 0 then
-								remainingTimeAsText = count.."-"..remainingTimeAsText
-							else
-								remainingTimeAsText = count
-							end
-						end
-
-						-- Set color
-						if RaidFrameIndicators.db.profile["stackColor"..i] then -- Color by stack
-							if count == 1 then
-								f[frameName][i].text:SetTextColor(1,0,0,1)
-							elseif count == 2 then
-								f[frameName][i].text:SetTextColor(1,1,0,1)
-							else
-								f[frameName][i].text:SetTextColor(0,1,0,1)
-							end
-						elseif RaidFrameIndicators.db.profile["debuffColor"..i] then -- Color by debuff type
-							if debuffType then
-								if debuffType == "Curse" then
-									f[frameName][i].text:SetTextColor(0.6,0,1,1)
-								elseif debuffType == "Disease" then
-									f[frameName][i].text:SetTextColor(0.6,0.4,0,1)
-								elseif debuffType == "Magic" then
-									f[frameName][i].text:SetTextColor(0.2,0.6,1,1)
-								elseif debuffType == "Poison" then
-									f[frameName][i].text:SetTextColor(0,0.6,0,1)
-								end
-							end
-						elseif RaidFrameIndicators.db.profile["colorByTime"..i] then -- Color by remaining time
-							if remainingTime and remainingTime < 3 then
-								f[frameName][i].text:SetTextColor(1,0,0,1)
-							elseif remainingTime and remainingTime < 5 then
-								f[frameName][i].text:SetTextColor(1,1,0,1)
-							else
-								f[frameName][i].text:SetTextColor(RaidFrameIndicators.db.profile["color"..i].r, RaidFrameIndicators.db.profile["color"..i].g, RaidFrameIndicators.db.profile["color"..i].b, RaidFrameIndicators.db.profile["color"..i].a)
-							end
-						end
-
-						break -- We found a match, so no need to continue the for loop
 					end
+
+					-- Add stack count
+					if RaidFrameIndicators.db.profile["stack"..i] and count > 0 then
+						if RaidFrameIndicators.db.profile["showText"..i] and expirationTime > 0 then
+							remainingTimeAsText = count.."-"..remainingTimeAsText
+						else
+							remainingTimeAsText = count
+						end
+					end
+
+					-- Set color
+					if RaidFrameIndicators.db.profile["stackColor"..i] then -- Color by stack
+						if count == 1 then
+							f[frameName][i].text:SetTextColor(1,0,0,1)
+						elseif count == 2 then
+							f[frameName][i].text:SetTextColor(1,1,0,1)
+						else
+							f[frameName][i].text:SetTextColor(0,1,0,1)
+						end
+					elseif RaidFrameIndicators.db.profile["debuffColor"..i] then -- Color by debuff type
+						if debuffType then
+							if debuffType == "Curse" then
+								f[frameName][i].text:SetTextColor(0.6,0,1,1)
+							elseif debuffType == "Disease" then
+								f[frameName][i].text:SetTextColor(0.6,0.4,0,1)
+							elseif debuffType == "Magic" then
+								f[frameName][i].text:SetTextColor(0.2,0.6,1,1)
+							elseif debuffType == "Poison" then
+								f[frameName][i].text:SetTextColor(0,0.6,0,1)
+							end
+						end
+					elseif RaidFrameIndicators.db.profile["colorByTime"..i] then -- Color by remaining time
+						if remainingTime and remainingTime < 3 then
+							f[frameName][i].text:SetTextColor(1,0,0,1)
+						elseif remainingTime and remainingTime < 5 then
+							f[frameName][i].text:SetTextColor(1,1,0,1)
+						else
+							f[frameName][i].text:SetTextColor(RaidFrameIndicators.db.profile["color"..i].r, RaidFrameIndicators.db.profile["color"..i].g, RaidFrameIndicators.db.profile["color"..i].b, RaidFrameIndicators.db.profile["color"..i].a)
+						end
+					end
+
+					break -- We found a match, so no need to continue the for loop
 				end
 			end
-
-			-- Only show when it's missing?
-			if RaidFrameIndicators.db.profile["missing"..i] then
-				icon = ""
-				remainingTimeAsText = ""
-				if not n then -- No n means we didn't find the spell
-					remainingTimeAsText = "■"
-				end
-			end
-
 		end
+
+		-- Only show when it's missing?
+		if RaidFrameIndicators.db.profile["missing"..i] then
+			icon = ""
+			remainingTimeAsText = ""
+			if not n then -- No n means we didn't find the spell
+				remainingTimeAsText = "■"
+			end
+		end
+
+
 
 		-- Show the text
 		f[frameName][i].text:SetText(remainingTimeAsText)
 
 		-- Show the icon
 		f[frameName][i].icon:SetTexture(icon)
+
+		--set cooldown animation
+		if expirationTime and expirationTime ~= 0 then
+			local startTime = expirationTime - duration;
+			CooldownFrame_Set(f[frameName][i].cooldown, startTime, duration, true)
+		else
+			CooldownFrame_Clear(f[frameName][i].cooldown);
+		end
+
 	end
 
 end
@@ -403,12 +411,12 @@ function RaidFrameIndicators:UpdateUnitAuras(unit)
 	if not unitDebuffs[unit] then unitDebuffs[unit] = {} end
 
 	-- Get all unit buffs
-	local auraName, icon, count, expirationTime, castBy, debuffType, spellId
+	local auraName, icon, count, duration, expirationTime, castBy, debuffType, spellId
 	local i = 1
 	local j = 1
 
 	while true do
-		auraName, icon, count, _, _, expirationTime, castBy, _, _, spellId = UnitBuff(unit, i)
+		auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellId = UnitBuff(unit, i)
 
 		if not spellId then
 			break
@@ -419,6 +427,7 @@ function RaidFrameIndicators:UpdateUnitAuras(unit)
 			unitBuffs[unit][j].auraName = auraName
 			unitBuffs[unit][j].spellId = spellId
 			unitBuffs[unit][j].count = count
+			unitBuffs[unit][j].duration = duration
 			unitBuffs[unit][j].expirationTime = expirationTime
 			unitBuffs[unit][j].castBy = castBy
 			unitBuffs[unit][j].icon = icon
@@ -464,10 +473,11 @@ end
 
 -- Hook CompactUnitFrame_OnEnter and OnLeave so we know if a tooltip is showing or not.
 function RaidFrameIndicators:Tooltip_OnEnter(buffFrame)
+	local frame = buffFrame:GetParent() --this is the parent raid frame that holds all the buffFrames
 	local index = buffFrame.index
 	local buff = buffFrame.buff
 
-	local displayedUnit = buffFrame:GetParent().displayedUnit
+	local displayedUnit = frame.displayedUnit
 
 	-- Set the tooltip
 	if index and index ~= -1 and buffFrame.icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
@@ -480,7 +490,7 @@ function RaidFrameIndicators:Tooltip_OnEnter(buffFrame)
 		end
 	else
 		--causes the tooltip to reset to the "default" tooltip which is usually information about the character
-		UnitFrame_UpdateTooltip(buffFrame:GetParent())
+		UnitFrame_UpdateTooltip(frame)
 	end
 
 	GameTooltip:Show()
