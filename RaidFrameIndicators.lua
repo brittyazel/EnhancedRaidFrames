@@ -102,8 +102,6 @@ end
 
 function RaidFrameIndicators:UpdateStockAuraVisibility(frame)
 
-	test = frame
-
 	if not RaidFrameIndicators.db.profile.showBuffs then
 		CompactUnitFrame_HideAllBuffs(frame)
 	end
@@ -246,6 +244,10 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 
 		remainingTimeAsText = ""
 		icon = ""
+		count = 0
+		duration = 0
+		expirationTime = 0
+		castBy = ""
 
 		-- If we only are to show the indicator on me, then don't bother if I'm not the unit
 		if RaidFrameIndicators.db.profile["me"..i] then
@@ -444,8 +446,8 @@ function RaidFrameIndicators:UpdateUnitAuras(unit)
 			unitBuffs[unit][j].auraName = auraName
 			unitBuffs[unit][j].spellId = spellId
 			unitBuffs[unit][j].count = count
-			unitBuffs[unit][j].duration = duration or 0
-			unitBuffs[unit][j].expirationTime = expirationTime or 0
+			unitBuffs[unit][j].duration = duration
+			unitBuffs[unit][j].expirationTime = expirationTime
 			unitBuffs[unit][j].castBy = castBy
 			unitBuffs[unit][j].icon = icon
 			unitBuffs[unit][j].index = i
@@ -526,7 +528,6 @@ function RaidFrameIndicators:RefreshConfig()
 
 	-- Set the appearance of the indicators
 	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame) RaidFrameIndicators:SetIndicatorAppearance(frame) end)
-
 
 	-- Format aura strings
 	allAuras = " "
