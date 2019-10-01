@@ -8,7 +8,7 @@ local RaidFrameIndicators = RaidFrameIndicators_Global
 local media = LibStub:GetLibrary("LibSharedMedia-3.0")
 local f = {} -- Indicators for the frames
 local playerName
-local pad = 2
+local PAD = 2
 local unitBuffs = {} -- Matrix to keep a list of all buffs on all units
 local unitDebuffs = {} -- Matrix to keep a list of all debuffs on all units
 local auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}} -- Matrix to keep all aura strings to watch for
@@ -115,43 +115,35 @@ function RaidFrameIndicators:CreateIndicator(frame)
 	-- Create indicators
 	for i = 1, 9 do
 		f[frameName][i] = {}
-		f[frameName][i].text = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-		f[frameName][i].icon = frame:CreateTexture(nil, "OVERLAY")
+		f[frameName][i].text = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall", 6)
+		f[frameName][i].icon = frame:CreateTexture(nil, "OVERLAY", nil,  7)
 		if i == 1 then
-			f[frameName][i].text:SetPoint("TOPLEFT", frame, "TOPLEFT", pad, -pad)
-			f[frameName][i].icon:SetPoint("TOPLEFT", frame, "TOPLEFT", pad, -pad)
-		end
-		if i == 2 then
-			f[frameName][i].text:SetPoint("TOP", frame, "TOP", 0, -pad)
-			f[frameName][i].icon:SetPoint("TOP", frame, "TOP", 0, -pad)
-		end
-		if i == 3 then
-			f[frameName][i].text:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -pad, -pad)
-			f[frameName][i].icon:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -pad, -pad)
-		end
-		if i == 4 then
-			f[frameName][i].text:SetPoint("LEFT", frame, "LEFT", pad, 0)
-			f[frameName][i].icon:SetPoint("LEFT", frame, "LEFT", pad, 0)
-		end
-		if i == 5 then
+			f[frameName][i].text:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD+1, -PAD-2)
+			f[frameName][i].icon:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, -PAD)
+		elseif i == 2 then
+			f[frameName][i].text:SetPoint("TOP", frame, "TOP", 0, -PAD-2)
+			f[frameName][i].icon:SetPoint("TOP", frame, "TOP", 0, -PAD)
+		elseif i == 3 then
+			f[frameName][i].text:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD-1, -PAD-2)
+			f[frameName][i].icon:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD, -PAD)
+		elseif i == 4 then
+			f[frameName][i].text:SetPoint("LEFT", frame, "LEFT", PAD+1, 0)
+			f[frameName][i].icon:SetPoint("LEFT", frame, "LEFT", PAD, 0)
+		elseif i == 5 then
 			f[frameName][i].text:SetPoint("CENTER", frame, "CENTER", 0, 0)
 			f[frameName][i].icon:SetPoint("CENTER", frame, "CENTER", 0, 0)
-		end
-		if i == 6 then
-			f[frameName][i].text:SetPoint("RIGHT", frame, "RIGHT", -pad, 0)
-			f[frameName][i].icon:SetPoint("RIGHT", frame, "RIGHT", -pad, 0)
-		end
-		if i == 7 then
-			f[frameName][i].text:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", pad, pad)
-			f[frameName][i].icon:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", pad, pad)
-		end
-		if i == 8 then
-			f[frameName][i].text:SetPoint("BOTTOM", frame, "BOTTOM", 0, pad)
-			f[frameName][i].icon:SetPoint("BOTTOM", frame, "BOTTOM", 0, pad)
-		end
-		if i == 9 then
-			f[frameName][i].text:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -pad, pad)
-			f[frameName][i].icon:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -pad, pad)
+		elseif i == 6 then
+			f[frameName][i].text:SetPoint("RIGHT", frame, "RIGHT", -PAD-1, 0)
+			f[frameName][i].icon:SetPoint("RIGHT", frame, "RIGHT", -PAD, 0)
+		elseif i == 7 then
+			f[frameName][i].text:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD+1, PAD+2)
+			f[frameName][i].icon:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD, PAD)
+		elseif i == 8 then
+			f[frameName][i].text:SetPoint("BOTTOM", frame, "BOTTOM", 0, PAD+2)
+			f[frameName][i].icon:SetPoint("BOTTOM", frame, "BOTTOM", 0, PAD)
+		elseif i == 9 then
+			f[frameName][i].text:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD-1, PAD+2)
+			f[frameName][i].icon:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD, PAD)
 		end
 	end
 
@@ -168,7 +160,7 @@ function RaidFrameIndicators:SetIndicatorAppearance(frame)
 	local unit = frame.unit
 	local frameName = frame:GetName()
 
-	-- Check if the frame is poiting at anything
+	-- Check if the frame is pointing at anything
 	if not unit then return end
 	if not f[frameName] then return end
 
@@ -508,15 +500,15 @@ function RaidFrameIndicators:SetTooltip(frame)
 		if f[frameName][i].icon:GetTexture() and RaidFrameIndicators.db.profile["showTooltip"..i] then -- Only show a tooltip if we have an icon
 			-- Check if we are hovering above the area where an icon is shown
 			local size = RaidFrameIndicators.db.profile["iconSize"..i]
-			if (i == 1 and (x > fL + pad) and (x < fL + pad + size) and (y > fT - pad - size) and (y < fT - pad)) or -- Top left
-					(i == 2 and (x > fL + (fR - fL - size)/2) and (x < fL + (fR -fL + size)/2) and (y > fT - pad - size) and (y < fT - pad)) or -- Top mid
-					(i == 3 and (x > fR - pad - size) and (x < fR - pad) and (y > fT - pad - size) and (y < fT - pad)) or -- Top right
-					(i == 4 and (x > fL + pad) and (x < fL + pad + size) and (y > fB + (fT - fB - size)/2) and (y < fB + (fT - fB + size)/2)) or -- Mid left
+			if (i == 1 and (x > fL + PAD) and (x < fL + PAD + size) and (y > fT - PAD - size) and (y < fT - PAD)) or -- Top left
+					(i == 2 and (x > fL + (fR - fL - size)/2) and (x < fL + (fR -fL + size)/2) and (y > fT - PAD - size) and (y < fT - PAD)) or -- Top mid
+					(i == 3 and (x > fR - PAD - size) and (x < fR - PAD) and (y > fT - PAD - size) and (y < fT - PAD)) or -- Top right
+					(i == 4 and (x > fL + PAD) and (x < fL + PAD + size) and (y > fB + (fT - fB - size)/2) and (y < fB + (fT - fB + size)/2)) or -- Mid left
 					(i == 5 and (x > fL + (fR - fL - size)/2) and (x < fL + (fR -fL + size)/2) and (y > fB + (fT - fB - size)/2) and (y < fB + (fT - fB + size)/2)) or -- Mid mid
-					(i == 6 and (x > fR - pad - size) and (x < fR - pad) and (y > fB + (fT - fB - size)/2) and (y < fB + (fT - fB + size)/2)) or -- Mid right
-					(i == 7 and (x > fL + pad) and (x < fL + pad + size) and (y > fB + pad) and (y < fB + pad + size)) or -- Bottom left
-					(i == 8 and (x > fL + (fR - fL - size)/2) and (x < fL + (fR -fL + size)/2) and (y > fB + pad) and (y < fB + pad + size)) or -- Bottom mid
-					(i == 9 and (x > fR - pad - size) and (x < fR - pad) and (y > fB + pad) and (y < fB + pad + size)) then -- Bottom right
+					(i == 6 and (x > fR - PAD - size) and (x < fR - PAD) and (y > fB + (fT - fB - size)/2) and (y < fB + (fT - fB + size)/2)) or -- Mid right
+					(i == 7 and (x > fL + PAD) and (x < fL + PAD + size) and (y > fB + PAD) and (y < fB + PAD + size)) or -- Bottom left
+					(i == 8 and (x > fL + (fR - fL - size)/2) and (x < fL + (fR -fL + size)/2) and (y > fB + PAD) and (y < fB + PAD + size)) or -- Bottom mid
+					(i == 9 and (x > fR - PAD - size) and (x < fR - PAD) and (y > fB + PAD) and (y < fB + PAD + size)) then -- Bottom right
 				index = f[frameName][i].index
 				buff = f[frameName][i].buff
 				break -- No need to continue the for loop, the mouse can only be over one icon at a time
