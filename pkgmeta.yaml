@@ -22,6 +22,3 @@ enable-nolib-creation: no
 ignore:
   - README.md
   #- RaidFrameIndicators/Libs/
-
-optional-dependencies:
-    - enhanced-raid-frame-icons
