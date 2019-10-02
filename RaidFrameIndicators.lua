@@ -19,7 +19,7 @@
 --as determined by Szandos. All other copyrights for
 --Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
 
-EnhancedRaidFrames_Global = LibStub( "AceAddon-3.0" ):NewAddon( "Indicators", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0")
+EnhancedRaidFrames_Global = LibStub( "AceAddon-3.0" ):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local EnhancedRaidFrames = EnhancedRaidFrames_Global
 
 
