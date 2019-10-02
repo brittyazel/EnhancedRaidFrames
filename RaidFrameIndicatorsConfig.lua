@@ -28,8 +28,8 @@ local EnhancedRaidFrames = EnhancedRaidFrames_Global
 function EnhancedRaidFrames:CreateDefaults ()
 	Defaults.profile = {
 		indicatorFont = "Arial Narrow",
-		showIcons = true,
-		enabled = true,
+		showBuffs = true,
+		showDebuffs = true,
 	}
 	for i = 1, 9 do
 		Defaults.profile["auras"..i] = ""
@@ -45,7 +45,6 @@ function EnhancedRaidFrames:CreateDefaults ()
 		Defaults.profile["showText"..i] = false
 		Defaults.profile["showCooldownAnimation"..i] = true
 		Defaults.profile["showIcon"..i] = true
-		Defaults.profile["showTooltip"..i] = true
 		Defaults.profile["iconSize"..i] = 16
 	end
 end
@@ -199,13 +198,6 @@ function EnhancedRaidFrames:CreateOptions ()
 			name = "Show CD animation",
 			desc = "Show the cooldown animation specifying the time left of the buff/debuff",
 			order = 311,
-		}
-		Options.args["i"..i].args["showTooltip"..i] = {
-			type = "toggle",
-			name = "Show tooltip",
-			desc = "Show tooltip for the buff/debuff",
-			disabled = function () return (not EnhancedRaidFrames.db.profile["showIcon"..i]) end,
-			order = 315,
 		}
 		Options.args["i"..i].args["iconSize"..i] = {
 			type = "range",
