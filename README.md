@@ -1,6 +1,6 @@
-# Enhanced Raid Frame: Indicators
+# Enhanced Raid Frames
 
-Enhanced Raid Frame: Indicators (formerly Blizzard Raid Frame: Indicators) is a raid frame utility addon for WoW 8.0+ that brings configurable indicators for enhancing the built in raid frames, allowing them to function much closer to add-ons such as Grid or Vuhdo.
+Enhanced Raid Frames is a raid frame utility addon for WoW 8.0+ that brings configurable indicators for enhancing the built in raid frames, allowing them to function much closer to add-ons such as Grid or Vuhdo.
 
 There are 9 indicators for each raid member, forming a 3x3 grid overlaying each unit frame, that allow for showing the presence of and countdown times of buffs and debuffs in any configuration that suits your needs.
 
@@ -29,7 +29,7 @@ Another example, using icons as well as stack size coloring of the Earth Shield 
 ---------------
 
 ### Configuration
-The configuration can be reached through the standard addon options (ESC -&gt; Interface -&gt; Addons -&gt; Raid Frame Indicators) or by typing: /indicators config
+The configuration can be reached through the standard addon options (ESC -&gt; Interface -&gt; Addons -&gt; Raid Frame Indicators)
 
 ![Example 4](https://media.forgecdn.net/attachments/233/56/4.png "Example 4")
 
@@ -71,4 +71,4 @@ Show when Blessing of Kings or Mark of the Wild is missing on the unit
 ## Credits:
 Original Author: Szandos
 
-Enhanced Raid Frame: Indicators is an extension of the amazing Blizzard Raid Frame: Indicators addon started by Szandos, for World of Warcraft prior to Battle for Azeroth. All credit for the bulk of this addon should go to him accordingly. I, Soyier, take no credit for the idea or implementation of this addon prior to my adoption of the code in the Summer of 2018.
+Enhanced Raid Frames is an extension of the amazing Blizzard Raid Frame: Indicators addon started by Szandos, for World of Warcraft prior to Battle for Azeroth. All credit for the bulk of this addon should go to him accordingly. I, Soyier, take no credit for the idea or implementation of this addon prior to my adoption of the code in the Summer of 2018.
