@@ -1,5 +1,5 @@
 ﻿## Interface: 80205
-## Title: Enhanced Raid Frame: Indicators
+## Title: Enhanced Raid Frames
 ## Notes: Enhances the Blizzard raid frames with configurable Buff/Debuff indicators
 ## Author: Soyier and Szandos
 ## X-Credits-Maintainer: Soyier

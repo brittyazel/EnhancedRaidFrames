@@ -1,6 +1,6 @@
---Enhanced Raid Frame, a World of Warcraft® user interface addon.
+--Enhanced Raid Frames, a World of Warcraft® user interface addon.
 
---This file is part of Enhanced Raid Frame.
+--This file is part of Enhanced Raid Frames.
 --
 --Enhanced Raid Frame is free software: you can redistribute it and/or modify
 --it under the terms of the GNU General Public License as published by
@@ -22,10 +22,10 @@
 local Defaults = {}
 local Options = {}
 
-local RaidFrameIndicators = RaidFrameIndicators_Global
+local EnhancedRaidFrames = EnhancedRaidFrames_Global
 
 
-function RaidFrameIndicators:CreateDefaults ()
+function EnhancedRaidFrames:CreateDefaults ()
 	Defaults.profile = {
 		indicatorFont = "Arial Narrow",
 		showIcons = true,
@@ -50,23 +50,23 @@ function RaidFrameIndicators:CreateDefaults ()
 	end
 end
 
-function RaidFrameIndicators:CreateOptions ()
+function EnhancedRaidFrames:CreateOptions ()
 	Options = {
 		type = 'group',
 		childGroups = 'tree',
-		get = function(item) return RaidFrameIndicators.db.profile[item[#item]] end,
-		set = function(item, value) RaidFrameIndicators.db.profile[item[#item]] = value; RaidFrameIndicators:RefreshConfig() end,
+		get = function(item) return EnhancedRaidFrames.db.profile[item[#item]] end,
+		set = function(item, value) EnhancedRaidFrames.db.profile[item[#item]] = value; EnhancedRaidFrames:RefreshConfig() end,
 		args  = {
 
 			showBuffs = {
 				type = "toggle",
-				name = "Show Buff Icons",
+				name = "Stock Buff Icons",
 				desc = "Show the standard raid frame buff icons",
 				order = 11,
 			},
 			showDebuffs = {
 				type = "toggle",
-				name = "Show Debuff Icons",
+				name = "Stock Debuff Icons",
 				desc = "Show the standard raid frame debuff icons",
 				order = 13,
 			},
@@ -78,20 +78,6 @@ function RaidFrameIndicators:CreateOptions ()
 				values = AceGUIWidgetLSMlists.font,
 				order = 17,
 			},
-			enabled = {
-				type = "toggle",
-				name = "Enabled",
-				desc = "Enable/Disable indicators",
-				order = 18,
-				set = function(item, value)
-					RaidFrameIndicators.db.profile[item[#item]] = value
-					if value == true then
-						RaidFrameIndicators:OnEnable()
-					else
-						RaidFrameIndicators:OnDisable()
-					end
-				end,
-			}
 		}
 	}
 
@@ -131,24 +117,24 @@ function RaidFrameIndicators:CreateOptions ()
 		}
 		Options.args["i"..i].args.textHeader = {
 			type = "header",
-			name = "Text Counter",
+			name = "Text",
 			order = 100,
 		}
 		Options.args["i"..i].args["showText"..i] = {
 			type = "toggle",
-			name = "Show text counter",
-			desc = "Show a text counter specifying the time left of the buff/debuff",
+			name = "Show cooldown text",
+			desc = "Show the cooldown text specifying the time left of the buff/debuff",
 			order = 110,
 		}
-		Options.args["i"..i].args["showCooldownAnimation"..i] = {
+		Options.args["i"..i].args["stack"..i] = {
 			type = "toggle",
-			name = "Show CD animation",
-			desc = "Show the cooldown animation specifying the time left of the buff/debuff",
+			name = "Show stack size",
+			desc = "Show stack size for buffs/debuffs that stack",
 			order = 111,
 		}
 		Options.args["i"..i].args["size"..i] = {
 			type = "range",
-			name = "Size",
+			name = "Text Size",
 			desc = "Text size",
 			min = 1,
 			max = 30,
@@ -171,7 +157,7 @@ function RaidFrameIndicators:CreateOptions ()
 			type = "toggle",
 			name = "Color by debuff type",
 			desc = "Color the text depending on the debuff type, will override any other coloring (poison = green, magic = blue etc)",
-			disabled = function () return RaidFrameIndicators.db.profile["stackColor"..i] end,
+			disabled = function () return EnhancedRaidFrames.db.profile["stackColor"..i] end,
 			order = 165,
 		}
 		Options.args["i"..i].args["color"..i] = {
@@ -179,34 +165,23 @@ function RaidFrameIndicators:CreateOptions ()
 			name = "Color",
 			desc = "Color of the indicator",
 			get = function(item)
-				local t = RaidFrameIndicators.db.profile[item[#item]]
+				local t = EnhancedRaidFrames.db.profile[item[#item]]
 				return t.r, t.g, t.b, t.a
 			end,
 			set = function(item, r, g, b, a)
-				local t = RaidFrameIndicators.db.profile[item[#item]]
+				local t = EnhancedRaidFrames.db.profile[item[#item]]
 				t.r, t.g, t.b, t.a = r, g, b, a
-				RaidFrameIndicators:RefreshConfig()
+				EnhancedRaidFrames:RefreshConfig()
 			end,
-			disabled = function () return (RaidFrameIndicators.db.profile["stackColor"..i] or RaidFrameIndicators.db.profile["debuffColor"..i]) end,
+			disabled = function () return (EnhancedRaidFrames.db.profile["stackColor"..i] or EnhancedRaidFrames.db.profile["debuffColor"..i]) end,
 			order = 170,
 		}
 		Options.args["i"..i].args["colorByTime"..i] = {
 			type = "toggle",
 			name = "Color by remaining time",
 			desc = "Color the counter based on remaining time (5s+: Selected color, 3-5s: Yellow, 3s-: Red)",
-			disabled = function () return (RaidFrameIndicators.db.profile["stackColor"..i] or RaidFrameIndicators.db.profile["debuffColor"..i]) end,
+			disabled = function () return (EnhancedRaidFrames.db.profile["stackColor"..i] or EnhancedRaidFrames.db.profile["debuffColor"..i]) end,
 			order = 180,
-		}
-		Options.args["i"..i].args.stackHeader = {
-			type = "header",
-			name = "Stack Size",
-			order = 200,
-		}
-		Options.args["i"..i].args["stack"..i] = {
-			type = "toggle",
-			name = "Show stack size",
-			desc = "Show stack size for buffs/debuffs that stack",
-			order = 210,
 		}
 		Options.args["i"..i].args.iconHeader = {
 			type = "header",
@@ -219,11 +194,17 @@ function RaidFrameIndicators:CreateOptions ()
 			desc = "Show an icon if the buff/debuff are on the unit",
 			order = 310,
 		}
+		Options.args["i"..i].args["showCooldownAnimation"..i] = {
+			type = "toggle",
+			name = "Show CD animation",
+			desc = "Show the cooldown animation specifying the time left of the buff/debuff",
+			order = 311,
+		}
 		Options.args["i"..i].args["showTooltip"..i] = {
 			type = "toggle",
 			name = "Show tooltip",
 			desc = "Show tooltip for the buff/debuff",
-			disabled = function () return (not RaidFrameIndicators.db.profile["showIcon"..i]) end,
+			disabled = function () return (not EnhancedRaidFrames.db.profile["showIcon"..i]) end,
 			order = 315,
 		}
 		Options.args["i"..i].args["iconSize"..i] = {
@@ -239,55 +220,23 @@ function RaidFrameIndicators:CreateOptions ()
 	end
 end
 
-local SlashCommands = {
-	type    = "group",
-	args  = {
-		enable = {
-			type = "execute",
-			name = "enable",
-			desc = "Enable indicators",
-			func = function() RaidFrameIndicators.db.profile.enabled = true; RaidFrameIndicators:OnEnable() end,
-		},
-		disable = {
-			type = "execute",
-			name = "disable",
-			desc = "Disable indicators",
-			func = function() RaidFrameIndicators.db.profile.enabled = false; RaidFrameIndicators:OnDisable() end,
-		},
-		config = {
-			type = "execute",
-			name = "config",
-			desc = "Show config",
-			func = function() RaidFrameIndicators:ShowConfig() end,
-		},
-	}
-}
-
-function RaidFrameIndicators:ShowConfig()
-	InterfaceOptionsFrame_OpenToCategory(self.optionsFrames.Profile)
-	InterfaceOptionsFrame_OpenToCategory(self.optionsFrames.Indicators)
-end
-
-function RaidFrameIndicators:SetupOptions()
+function EnhancedRaidFrames:SetupOptions()
 	-- Set up defaults
-	RaidFrameIndicators:CreateDefaults()
+	EnhancedRaidFrames:CreateDefaults()
 	self.db = LibStub("AceDB-3.0"):New("IndicatorsDB", Defaults)
 
 	-- Profile handling
 	local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 
 	-- Get the config up
-	RaidFrameIndicators:CreateOptions()
+	EnhancedRaidFrames:CreateOptions()
 	local config = LibStub("AceConfig-3.0")
-	config:RegisterOptionsTable("Raid Frame Indicators", Options)
-	config:RegisterOptionsTable("Raid Frame Indicators Profiles", profiles)
-
-	-- Register slash commands
-	config:RegisterOptionsTable("Raid Frame Indicators Options", SlashCommands, {"indicators", "raidrfameindicators"})
+	config:RegisterOptionsTable("Options", Options)
+	config:RegisterOptionsTable("Profiles", profiles)
 
 	-- Add to Blizz option pane
 	local dialog = LibStub("AceConfigDialog-3.0")
 	self.optionsFrames = {}
-	self.optionsFrames.Indicators = dialog:AddToBlizOptions("Raid Frame Indicators","Raid Frame Indicators")
-	self.optionsFrames.Profile = dialog:AddToBlizOptions("Raid Frame Indicators Profiles","Profiles", "Raid Frame Indicators")
+	self.optionsFrames.Indicators = dialog:AddToBlizOptions("Options", "Enhanced Raid Frames")
+	self.optionsFrames.Profile = dialog:AddToBlizOptions("Profiles", "Profiles", "Enhanced Raid Frames")
 end

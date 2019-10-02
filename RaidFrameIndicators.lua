@@ -1,6 +1,6 @@
---Enhanced Raid Frame, a World of Warcraft® user interface addon.
+--Enhanced Raid Frames, a World of Warcraft® user interface addon.
 
---This file is part of Enhanced Raid Frame.
+--This file is part of Enhanced Raid Frames.
 --
 --Enhanced Raid Frame is free software: you can redistribute it and/or modify
 --it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
 --as determined by Szandos. All other copyrights for
 --Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
 
-RaidFrameIndicators_Global = LibStub( "AceAddon-3.0" ):NewAddon( "Indicators", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0")
-local RaidFrameIndicators = RaidFrameIndicators_Global
+EnhancedRaidFrames_Global = LibStub( "AceAddon-3.0" ):NewAddon( "Indicators", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0")
+local EnhancedRaidFrames = EnhancedRaidFrames_Global
 
 
 local media = LibStub:GetLibrary("LibSharedMedia-3.0")
@@ -43,18 +43,18 @@ local tooltipTimer
 --- **OnInitialize**, which is called directly after the addon is fully loaded.
 --- do init tasks here, like loading the Saved Variables
 --- or setting up slash commands.
-function RaidFrameIndicators:OnInitialize()
+function EnhancedRaidFrames:OnInitialize()
 
 	-- Set up config pane
-	RaidFrameIndicators:SetupOptions()
+	EnhancedRaidFrames:SetupOptions()
 
 	-- Get the player name
 	playerName = UnitName("player")
 
 	-- Register callbacks for profile switching
-	RaidFrameIndicators.db.RegisterCallback(RaidFrameIndicators, "OnProfileChanged", "RefreshConfig")
-	RaidFrameIndicators.db.RegisterCallback(RaidFrameIndicators, "OnProfileCopied", "RefreshConfig")
-	RaidFrameIndicators.db.RegisterCallback(RaidFrameIndicators, "OnProfileReset", "RefreshConfig")
+	EnhancedRaidFrames.db.RegisterCallback(EnhancedRaidFrames, "OnProfileChanged", "RefreshConfig")
+	EnhancedRaidFrames.db.RegisterCallback(EnhancedRaidFrames, "OnProfileCopied", "RefreshConfig")
+	EnhancedRaidFrames.db.RegisterCallback(EnhancedRaidFrames, "OnProfileReset", "RefreshConfig")
 
 end
 
@@ -62,17 +62,17 @@ end
 --- Do more initialization here, that really enables the use of your addon.
 --- Register Events, Hook functions, Create Frames, Get information from
 --- the game that wasn't available in OnInitialize
-function RaidFrameIndicators:OnEnable()
-	RaidFrameIndicators:RegisterEvent("PLAYER_ENTERING_WORLD")
+function EnhancedRaidFrames:OnEnable()
+	EnhancedRaidFrames:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 --- **OnDisable**, which is only called when your addon is manually being disabled.
 --- Unhook, Unregister Events, Hide frames that you created.
 --- You would probably only use an OnDisable if you want to
 --- build a "standby" mode, or be able to toggle modules on/off.
-function RaidFrameIndicators:OnDisable()
+function EnhancedRaidFrames:OnDisable()
 	-- Stop update
-	RaidFrameIndicators:CancelAllTimers()
+	EnhancedRaidFrames:CancelAllTimers()
 
 	-- Hide all indicators
 	for frameName, _ in pairs(f) do
@@ -86,38 +86,34 @@ end
 
 -------------------------------------------------
 
-function RaidFrameIndicators:PLAYER_ENTERING_WORLD()
-	if RaidFrameIndicators.db.profile.enabled then
-		-- Start update
-		RaidFrameIndicators:CancelAllTimers()
-		RaidFrameIndicators.updateTimer = RaidFrameIndicators:ScheduleRepeatingTimer("UpdateAllIndicators", 0.8) --this is so countdown text is smooth
+function EnhancedRaidFrames:PLAYER_ENTERING_WORLD()
 
-		if not RaidFrameIndicators:IsHooked("CompactUnitFrame_UpdateAuras") then
-			RaidFrameIndicators:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) RaidFrameIndicators:UpdateIndicatorFrame(frame) end) --this hooks our frame update function onto the game equivalent function
-		end
+	-- Start update
+	EnhancedRaidFrames:CancelAllTimers()
+	EnhancedRaidFrames.updateTimer = EnhancedRaidFrames:ScheduleRepeatingTimer("UpdateAllIndicators", 0.8) --this is so countdown text is smooth
 
-		RaidFrameIndicators:RefreshConfig()
+	if not EnhancedRaidFrames:IsHooked("CompactUnitFrame_UpdateAuras") then
+		EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) EnhancedRaidFrames:UpdateIndicatorFrame(frame) end) --this hooks our frame update function onto the game equivalent function
 	end
+
+	EnhancedRaidFrames:RefreshConfig()
+
 end
 
-function RaidFrameIndicators:UpdateStockAuraVisibility(frame)
+function EnhancedRaidFrames:UpdateStockAuraVisibility(frame)
 
-	if not RaidFrameIndicators.db.profile.showBuffs then
+	if not EnhancedRaidFrames.db.profile.showBuffs then
 		CompactUnitFrame_HideAllBuffs(frame)
 	end
 
-	if not RaidFrameIndicators.db.profile.showDebuffs then
+	if not EnhancedRaidFrames.db.profile.showDebuffs then
 		CompactUnitFrame_HideAllDebuffs(frame)
-	end
-
-	if not RaidFrameIndicators.db.profile.showDispelDebuffs then
-		CompactUnitFrame_HideAllDispelDebuffs(frame)
 	end
 
 end
 
 -- Create the FontStrings used for indicators
-function RaidFrameIndicators:CreateIndicator(frame)
+function EnhancedRaidFrames:CreateIndicator(frame)
 	local frameName = frame:GetName()
 
 	f[frameName] = {}
@@ -156,16 +152,16 @@ function RaidFrameIndicators:CreateIndicator(frame)
 		end
 
 		-- hook enter and leave for showing ability tooltips
-		RaidFrameIndicators:SecureHookScript(f[frameName][i], "OnEnter", function() RaidFrameIndicators:Tooltip_OnEnter(f[frameName][i]) end)
-		RaidFrameIndicators:SecureHookScript(f[frameName][i], "OnLeave", function() RaidFrameIndicators:Tooltip_OnLeave(f[frameName][i]) end)
+		EnhancedRaidFrames:SecureHookScript(f[frameName][i], "OnEnter", function() EnhancedRaidFrames:Tooltip_OnEnter(f[frameName][i]) end)
+		EnhancedRaidFrames:SecureHookScript(f[frameName][i], "OnLeave", function() EnhancedRaidFrames:Tooltip_OnLeave(f[frameName][i]) end)
 	end
 
 	-- Set appearance
-	RaidFrameIndicators:SetIndicatorAppearance(frame)
+	EnhancedRaidFrames:SetIndicatorAppearance(frame)
 end
 
 -- Set the appearance of the FontStrings
-function RaidFrameIndicators:SetIndicatorAppearance(frame)
+function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 	local unit = frame.unit
 	local frameName = frame:GetName()
 
@@ -173,21 +169,21 @@ function RaidFrameIndicators:SetIndicatorAppearance(frame)
 	if not unit then return end
 	if not f[frameName] then return end
 
-	local font = media and media:Fetch('font', RaidFrameIndicators.db.profile.indicatorFont) or STANDARD_TEXT_FONT
+	local font = media and media:Fetch('font', EnhancedRaidFrames.db.profile.indicatorFont) or STANDARD_TEXT_FONT
 
 	for i = 1, 9 do
-		f[frameName][i]:SetWidth(RaidFrameIndicators.db.profile["iconSize"..i])
-		f[frameName][i]:SetHeight(RaidFrameIndicators.db.profile["iconSize"..i])
-		f[frameName][i].icon:SetWidth(RaidFrameIndicators.db.profile["iconSize"..i])
-		f[frameName][i].icon:SetHeight(RaidFrameIndicators.db.profile["iconSize"..i])
+		f[frameName][i]:SetWidth(EnhancedRaidFrames.db.profile["iconSize"..i])
+		f[frameName][i]:SetHeight(EnhancedRaidFrames.db.profile["iconSize"..i])
+		f[frameName][i].icon:SetWidth(EnhancedRaidFrames.db.profile["iconSize"..i])
+		f[frameName][i].icon:SetHeight(EnhancedRaidFrames.db.profile["iconSize"..i])
 
-		f[frameName][i].text:SetFont(font, RaidFrameIndicators.db.profile["size"..i], "OUTLINE")
-		f[frameName][i].text:SetTextColor(RaidFrameIndicators.db.profile["color"..i].r, RaidFrameIndicators.db.profile["color"..i].g, RaidFrameIndicators.db.profile["color"..i].b, RaidFrameIndicators.db.profile["color"..i].a)
+		f[frameName][i].text:SetFont(font, EnhancedRaidFrames.db.profile["size"..i], "OUTLINE")
+		f[frameName][i].text:SetTextColor(EnhancedRaidFrames.db.profile["color"..i].r, EnhancedRaidFrames.db.profile["color"..i].g, EnhancedRaidFrames.db.profile["color"..i].b, EnhancedRaidFrames.db.profile["color"..i].a)
 
 		--decrease the darkness of the cooldown animation layer
 		f[frameName][i].cooldown:SetAlpha(.8)
 
-		if RaidFrameIndicators.db.profile["showIcon"..i] then
+		if EnhancedRaidFrames.db.profile["showIcon"..i] then
 			f[frameName][i].icon:Show()
 		else
 			f[frameName][i].icon:Hide()
@@ -196,12 +192,12 @@ function RaidFrameIndicators:SetIndicatorAppearance(frame)
 end
 
 -- Update all indicators
-function RaidFrameIndicators:UpdateAllIndicators()
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame) RaidFrameIndicators:UpdateIndicatorFrame(frame)  end)
+function EnhancedRaidFrames:UpdateAllIndicators()
+	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame) EnhancedRaidFrames:UpdateIndicatorFrame(frame)  end)
 end
 
 -- Check the indicators on a frame and update the times on them
-function RaidFrameIndicators:UpdateIndicatorFrame(frame)
+function EnhancedRaidFrames:UpdateIndicatorFrame(frame)
 
 	local unit = frame.unit
 
@@ -214,14 +210,14 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 		return
 	end
 
-	RaidFrameIndicators:UpdateStockAuraVisibility(frame)
+	EnhancedRaidFrames:UpdateStockAuraVisibility(frame)
 
 	local currentTime = GetTime()
 	local frameName = frame:GetName()
 
 	-- Check if the indicator frame exists, else create it
 	if not f[frameName] then
-		RaidFrameIndicators:CreateIndicator(frame)
+		EnhancedRaidFrames:CreateIndicator(frame)
 	end
 
 	-- Check if unit is alive/connected
@@ -235,7 +231,7 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 	end
 
 	-- Update unit auras
-	RaidFrameIndicators:UpdateUnitAuras(unit)
+	EnhancedRaidFrames:UpdateUnitAuras(unit)
 
 	-- Loop over the indicators and see if we get a hit
 	for i = 1, 9 do
@@ -250,7 +246,7 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 		castBy = ""
 
 		-- If we only are to show the indicator on me, then don't bother if I'm not the unit
-		if RaidFrameIndicators.db.profile["me"..i] then
+		if EnhancedRaidFrames.db.profile["me"..i] then
 			local uName, uRealm
 			uName, uRealm = UnitName(unit)
 			if uName ~= playerName or uRealm ~= nil then
@@ -324,17 +320,17 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 
 			if n then -- We found a matching spell
 				-- If we only are to show spells cast by me, make sure the spell is
-				if (RaidFrameIndicators.db.profile["mine"..i] and castBy ~= "player") then
+				if (EnhancedRaidFrames.db.profile["mine"..i] and castBy ~= "player") then
 					n = nil
 					icon = ""
 				else
-					if not RaidFrameIndicators.db.profile["showIcon"..i] then icon = "" end -- Hide icon
+					if not EnhancedRaidFrames.db.profile["showIcon"..i] then icon = "" end -- Hide icon
 					if expirationTime == 0 then -- No expiration time = permanent
-						if not RaidFrameIndicators.db.profile["showIcon"..i] then
+						if not EnhancedRaidFrames.db.profile["showIcon"..i] then
 							remainingTimeAsText = "■" -- Only show the blob if we don't show the icon
 						end
 					else
-						if RaidFrameIndicators.db.profile["showText"..i] then
+						if EnhancedRaidFrames.db.profile["showText"..i] then
 							-- Pretty formating of the remaining time text
 							remainingTime = expirationTime - currentTime
 							if remainingTime > 60 then
@@ -349,8 +345,8 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 					end
 
 					-- Add stack count
-					if RaidFrameIndicators.db.profile["stack"..i] and count > 0 then
-						if RaidFrameIndicators.db.profile["showText"..i] and expirationTime > 0 then
+					if EnhancedRaidFrames.db.profile["stack"..i] and count > 0 then
+						if EnhancedRaidFrames.db.profile["showText"..i] and expirationTime > 0 then
 							remainingTimeAsText = count.."-"..remainingTimeAsText
 						else
 							remainingTimeAsText = count
@@ -358,7 +354,7 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 					end
 
 					-- Set color
-					if RaidFrameIndicators.db.profile["stackColor"..i] then -- Color by stack
+					if EnhancedRaidFrames.db.profile["stackColor"..i] then -- Color by stack
 						if count == 1 then
 							f[frameName][i].text:SetTextColor(1,0,0,1)
 						elseif count == 2 then
@@ -366,7 +362,7 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 						else
 							f[frameName][i].text:SetTextColor(0,1,0,1)
 						end
-					elseif RaidFrameIndicators.db.profile["debuffColor"..i] then -- Color by debuff type
+					elseif EnhancedRaidFrames.db.profile["debuffColor"..i] then -- Color by debuff type
 						if debuffType then
 							if debuffType == "Curse" then
 								f[frameName][i].text:SetTextColor(0.6,0,1,1)
@@ -378,13 +374,13 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 								f[frameName][i].text:SetTextColor(0,0.6,0,1)
 							end
 						end
-					elseif RaidFrameIndicators.db.profile["colorByTime"..i] then -- Color by remaining time
+					elseif EnhancedRaidFrames.db.profile["colorByTime"..i] then -- Color by remaining time
 						if remainingTime and remainingTime < 3 then
 							f[frameName][i].text:SetTextColor(1,0,0,1)
 						elseif remainingTime and remainingTime < 5 then
 							f[frameName][i].text:SetTextColor(1,1,0,1)
 						else
-							f[frameName][i].text:SetTextColor(RaidFrameIndicators.db.profile["color"..i].r, RaidFrameIndicators.db.profile["color"..i].g, RaidFrameIndicators.db.profile["color"..i].b, RaidFrameIndicators.db.profile["color"..i].a)
+							f[frameName][i].text:SetTextColor(EnhancedRaidFrames.db.profile["color"..i].r, EnhancedRaidFrames.db.profile["color"..i].g, EnhancedRaidFrames.db.profile["color"..i].b, EnhancedRaidFrames.db.profile["color"..i].a)
 						end
 					end
 
@@ -394,7 +390,7 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 		end
 
 		-- Only show when it's missing?
-		if RaidFrameIndicators.db.profile["missing"..i] then
+		if EnhancedRaidFrames.db.profile["missing"..i] then
 			icon = ""
 			remainingTimeAsText = ""
 			if not n then -- No n means we didn't find the spell
@@ -411,7 +407,7 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 		f[frameName][i].icon:SetTexture(icon)
 
 		--set cooldown animation
-		if RaidFrameIndicators.db.profile["showCooldownAnimation"..i] and expirationTime and expirationTime ~= 0 then
+		if EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] and expirationTime and expirationTime ~= 0 then
 			CooldownFrame_Set(f[frameName][i].cooldown, expirationTime - duration, duration, true)
 		else
 			CooldownFrame_Clear(f[frameName][i].cooldown);
@@ -425,7 +421,7 @@ end
 
 
 -- Get all unit auras
-function RaidFrameIndicators:UpdateUnitAuras(unit)
+function EnhancedRaidFrames:UpdateUnitAuras(unit)
 
 	-- Create tables for the unit
 	if not unitBuffs[unit] then unitBuffs[unit] = {} end
@@ -492,7 +488,7 @@ end
 -------------------------------
 ---Tooltip Code
 -------------------------------
-function RaidFrameIndicators:Tooltip_OnEnter(buffFrame)
+function EnhancedRaidFrames:Tooltip_OnEnter(buffFrame)
 	local frame = buffFrame:GetParent() --this is the parent raid frame that holds all the buffFrames
 	local index = buffFrame.index
 	local buff = buffFrame.buff
@@ -518,7 +514,7 @@ function RaidFrameIndicators:Tooltip_OnEnter(buffFrame)
 	GameTooltip:Show()
 end
 
-function RaidFrameIndicators:Tooltip_OnLeave(buffFrame)
+function EnhancedRaidFrames:Tooltip_OnLeave(buffFrame)
 	GameTooltip:Hide()
 end
 
@@ -527,17 +523,17 @@ end
 
 
 -- Used to update everything that is affected by the configuration
-function RaidFrameIndicators:RefreshConfig()
+function EnhancedRaidFrames:RefreshConfig()
 
 	-- Set the appearance of the indicators
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame) RaidFrameIndicators:SetIndicatorAppearance(frame) end)
+	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame) EnhancedRaidFrames:SetIndicatorAppearance(frame) end)
 
 	-- Format aura strings
 	allAuras = " "
 
 	for i = 1, 9 do
 		local j = 1
-		for auraName in string.gmatch(RaidFrameIndicators.db.profile["auras"..i], "[^\n]+") do -- Grab each line
+		for auraName in string.gmatch(EnhancedRaidFrames.db.profile["auras"..i], "[^\n]+") do -- Grab each line
 			auraName = string.gsub(auraName, "^%s*(.-)%s*$", "%1") -- Strip any whitespaces
 			allAuras = allAuras.."+"..auraName.."+" -- Add each watched aura to a string so we later can quickly determine if we need to look for one
 			auraStrings[i][j] = auraName
