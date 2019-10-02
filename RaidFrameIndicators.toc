@@ -1,7 +1,7 @@
 ﻿## Interface: 80205
-## Title: Raid Frame Indicators
-## Notes: Adds indicators to the standard raid frames
-## Author: Szandos
+## Title: Enhanced Raid Frame: Indicators
+## Notes: Enhances the Blizzard raid frames with configurable Buff/Debuff indicators
+## Author: Soyier and Szandos
 ## X-Credits-Maintainer: Soyier
 ## Version: @project-version@
 ## DefaultState: enabled
