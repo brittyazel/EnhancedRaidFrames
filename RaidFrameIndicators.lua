@@ -291,7 +291,7 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 				end
 				if n then
 					count = unitDebuffs[unit][n].count
-					duration = unitBuffs[unit][n].duration
+					duration = unitDebuffs[unit][n].duration
 					expirationTime = unitDebuffs[unit][n].expirationTime
 					castBy = unitDebuffs[unit][n].castBy
 					icon = unitDebuffs[unit][n].icon
@@ -303,6 +303,7 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 				if UnitIsPVP(unit) then
 					count = 0
 					expirationTime = 0
+					duration = 0
 					castBy = "player"
 					n = -1
 					local factionGroup = UnitFactionGroup(unit)
@@ -313,6 +314,7 @@ function RaidFrameIndicators:UpdateIndicatorFrame(frame)
 				if UnitIsUnit (unit, "targettarget") then
 					count = 0
 					expirationTime = 0
+					duration = 0
 					castBy = "player"
 					n = -1
 					icon = "Interface\\Icons\\Ability_Hunter_SniperShot"
@@ -461,7 +463,7 @@ function RaidFrameIndicators:UpdateUnitAuras(unit)
 	i = 1
 	j = 1
 	while true do
-		auraName, icon, count, debuffType, _, expirationTime, castBy, _, _, spellId  = UnitDebuff(unit, i)
+		auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellId  = UnitDebuff(unit, i)
 
 		if not spellId then
 			break
@@ -472,6 +474,7 @@ function RaidFrameIndicators:UpdateUnitAuras(unit)
 			unitDebuffs[unit][j].auraName = auraName
 			unitDebuffs[unit][j].spellId = spellId
 			unitDebuffs[unit][j].count = count
+			unitDebuffs[unit][j].duration = duration
 			unitDebuffs[unit][j].expirationTime = expirationTime
 			unitDebuffs[unit][j].castBy = castBy
 			unitDebuffs[unit][j].icon = icon
