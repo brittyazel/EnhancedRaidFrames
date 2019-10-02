@@ -36,18 +36,17 @@ function RaidFrameIndicators:CreateDefaults ()
 		Defaults.profile["size"..i] = 10
 		Defaults.profile["color"..i] = {r = 1, g = 1, b = 1, a = 1,}
 		Defaults.profile["mine"..i] = false
-		Defaults.profile["stack"..i] = true
+		Defaults.profile["stack"..i] = false
 		Defaults.profile["stackColor"..i] = false
 		Defaults.profile["debuffColor"..i] = false
 		Defaults.profile["colorByTime"..i] = false
 		Defaults.profile["missing"..i] = false
 		Defaults.profile["me"..i] = false
-		Defaults.profile["showText"..i] = true
+		Defaults.profile["showText"..i] = false
 		Defaults.profile["showCooldownAnimation"..i] = true
-		Defaults.profile["showDecimals"..i] = true
 		Defaults.profile["showIcon"..i] = true
 		Defaults.profile["showTooltip"..i] = true
-		Defaults.profile["iconSize"..i] = 10
+		Defaults.profile["iconSize"..i] = 16
 	end
 end
 
