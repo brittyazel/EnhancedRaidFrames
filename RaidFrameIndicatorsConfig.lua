@@ -13,7 +13,7 @@
 --GNU General Public License for more details.
 --
 --You should have received a copy of the GNU General Public License
---along with this program.  If not, see <https://www.gnu.org/licenses/>.
+--along with this add-on.  If not, see <https://www.gnu.org/licenses/>.
 --
 --Copyright for portions of Neuron are held in the public domain,
 --as determined by Szandos. All other copyrights for
