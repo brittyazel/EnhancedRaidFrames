@@ -63,7 +63,12 @@ end
 --- Register Events, Hook functions, Create Frames, Get information from
 --- the game that wasn't available in OnInitialize
 function EnhancedRaidFrames:OnEnable()
-	EnhancedRaidFrames:RegisterEvent("PLAYER_ENTERING_WORLD")
+	--start a repeating timer to updated every frame every 0.8sec to make sure the the countdown timer stays accurate
+	EnhancedRaidFrames.updateTimer = EnhancedRaidFrames:ScheduleRepeatingTimer("UpdateAllIndicators", 0.8) --this is so countdown text is smooth
+	--hook our UpdateIndicatorFrame function onto the default CompactUnitFrame_UpdateAuras function. The payload of the original function carries the identity of the frame needing updating
+	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) EnhancedRaidFrames:UpdateIndicatorFrame(frame) end)
+	
+	EnhancedRaidFrames:RefreshConfig()
 end
 
 --- **OnDisable**, which is only called when your addon is manually being disabled.
@@ -71,34 +76,10 @@ end
 --- You would probably only use an OnDisable if you want to
 --- build a "standby" mode, or be able to toggle modules on/off.
 function EnhancedRaidFrames:OnDisable()
-	-- Stop update
-	EnhancedRaidFrames:CancelAllTimers()
-
-	-- Hide all indicators
-	for frameName, _ in pairs(f) do
-		for i = 1, 9 do
-			f[frameName][i].text:SetText("")
-			f[frameName][i].icon:SetTexture("")
-		end
-	end
 
 end
 
 -------------------------------------------------
-
-function EnhancedRaidFrames:PLAYER_ENTERING_WORLD()
-
-	-- Start update
-	EnhancedRaidFrames:CancelAllTimers()
-	EnhancedRaidFrames.updateTimer = EnhancedRaidFrames:ScheduleRepeatingTimer("UpdateAllIndicators", 0.8) --this is so countdown text is smooth
-
-	if not EnhancedRaidFrames:IsHooked("CompactUnitFrame_UpdateAuras") then
-		EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) EnhancedRaidFrames:UpdateIndicatorFrame(frame) end) --this hooks our frame update function onto the game equivalent function
-	end
-
-	EnhancedRaidFrames:RefreshConfig()
-
-end
 
 function EnhancedRaidFrames:UpdateStockAuraVisibility(frame)
 
