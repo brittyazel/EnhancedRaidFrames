@@ -393,7 +393,7 @@ function EnhancedRaidFrames:UpdateIndicatorFrame(frame)
 
 		--set cooldown animation
 		if EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] and icon and expirationTime and expirationTime ~= 0 then
-			CooldownFrame_Set(f[frameName][i].cooldown, expirationTime - duration, duration, true)
+			CooldownFrame_Set(f[frameName][i].cooldown, expirationTime - duration, duration, true, true)
 		else
 			CooldownFrame_Clear(f[frameName][i].cooldown);
 		end
