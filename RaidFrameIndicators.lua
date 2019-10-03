@@ -67,7 +67,7 @@ function EnhancedRaidFrames:OnEnable()
 	EnhancedRaidFrames.updateTimer = EnhancedRaidFrames:ScheduleRepeatingTimer("UpdateAllIndicators", 0.8) --this is so countdown text is smooth
 	--hook our UpdateIndicatorFrame function onto the default CompactUnitFrame_UpdateAuras function. The payload of the original function carries the identity of the frame needing updating
 	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) EnhancedRaidFrames:UpdateIndicatorFrame(frame) end)
-	
+
 	EnhancedRaidFrames:RefreshConfig()
 end
 
@@ -89,6 +89,10 @@ function EnhancedRaidFrames:UpdateStockAuraVisibility(frame)
 
 	if not EnhancedRaidFrames.db.profile.showDebuffs then
 		CompactUnitFrame_HideAllDebuffs(frame)
+	end
+
+	if not EnhancedRaidFrames.db.profile.showDispelDebuffs then
+		CompactUnitFrame_HideAllDispelDebuffs(frame)
 	end
 
 end
@@ -388,7 +392,7 @@ function EnhancedRaidFrames:UpdateIndicatorFrame(frame)
 		f[frameName][i].icon:SetTexture(icon)
 
 		--set cooldown animation
-		if EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] and expirationTime and expirationTime ~= 0 then
+		if EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] and icon and expirationTime and expirationTime ~= 0 then
 			CooldownFrame_Set(f[frameName][i].cooldown, expirationTime - duration, duration, true)
 		else
 			CooldownFrame_Clear(f[frameName][i].cooldown);
