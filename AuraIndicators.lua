@@ -19,69 +19,20 @@
 --as determined by Szandos. All other copyrights for
 --Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
 
-EnhancedRaidFrames_Global = LibStub( "AceAddon-3.0" ):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0")
-local EnhancedRaidFrames = EnhancedRaidFrames_Global
 
+local EnhancedRaidFrames = EnhancedRaidFrames_Global
 
 local media = LibStub:GetLibrary("LibSharedMedia-3.0")
 local f = {} -- Indicators for the frames
-local playerName
 local PAD = 2
 local unitBuffs = {} -- Matrix to keep a list of all buffs on all units
 local unitDebuffs = {} -- Matrix to keep a list of all debuffs on all units
-local auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}} -- Matrix to keep all aura strings to watch for
-local _
-local allAuras = " "
 
-
-local tooltipTimer
 
 -------------------------------------------------------------------------
---------------------Start of Functions-----------------------------------
 -------------------------------------------------------------------------
 
---- **OnInitialize**, which is called directly after the addon is fully loaded.
---- do init tasks here, like loading the Saved Variables
---- or setting up slash commands.
-function EnhancedRaidFrames:OnInitialize()
-
-	-- Set up config pane
-	EnhancedRaidFrames:SetupOptions()
-
-	-- Get the player name
-	playerName = UnitName("player")
-
-	-- Register callbacks for profile switching
-	EnhancedRaidFrames.db.RegisterCallback(EnhancedRaidFrames, "OnProfileChanged", "RefreshConfig")
-	EnhancedRaidFrames.db.RegisterCallback(EnhancedRaidFrames, "OnProfileCopied", "RefreshConfig")
-	EnhancedRaidFrames.db.RegisterCallback(EnhancedRaidFrames, "OnProfileReset", "RefreshConfig")
-
-end
-
---- **OnEnable** which gets called during the PLAYER_LOGIN event, when most of the data provided by the game is already present.
---- Do more initialization here, that really enables the use of your addon.
---- Register Events, Hook functions, Create Frames, Get information from
---- the game that wasn't available in OnInitialize
-function EnhancedRaidFrames:OnEnable()
-	--start a repeating timer to updated every frame every 0.8sec to make sure the the countdown timer stays accurate
-	EnhancedRaidFrames.updateTimer = EnhancedRaidFrames:ScheduleRepeatingTimer("UpdateAllIndicators", 0.8) --this is so countdown text is smooth
-	--hook our UpdateIndicatorFrame function onto the default CompactUnitFrame_UpdateAuras function. The payload of the original function carries the identity of the frame needing updating
-	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) EnhancedRaidFrames:UpdateIndicatorFrame(frame) end)
-
-	EnhancedRaidFrames:RefreshConfig()
-end
-
---- **OnDisable**, which is only called when your addon is manually being disabled.
---- Unhook, Unregister Events, Hide frames that you created.
---- You would probably only use an OnDisable if you want to
---- build a "standby" mode, or be able to toggle modules on/off.
-function EnhancedRaidFrames:OnDisable()
-
-end
-
--------------------------------------------------
-
-function EnhancedRaidFrames:UpdateStockAuraVisibility(frame)
+function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
 
 	if not EnhancedRaidFrames.db.profile.showBuffs then
 		CompactUnitFrame_HideAllBuffs(frame)
@@ -97,8 +48,9 @@ function EnhancedRaidFrames:UpdateStockAuraVisibility(frame)
 
 end
 
+
 -- Create the FontStrings used for indicators
-function EnhancedRaidFrames:CreateIndicator(frame)
+function EnhancedRaidFrames:CreateIndicators(frame)
 	local frameName = frame:GetName()
 
 	f[frameName] = {}
@@ -116,7 +68,7 @@ function EnhancedRaidFrames:CreateIndicator(frame)
 
 		f[frameName][i]:SetFrameStrata("HIGH")
 		f[frameName][i]:RegisterForClicks("LeftButtonDown", "RightButtonUp");
-		f[frameName][i]:Hide()
+		--f[frameName][i]:Hide()
 
 		if i == 1 then
 			f[frameName][i]:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, -PAD)
@@ -147,6 +99,7 @@ function EnhancedRaidFrames:CreateIndicator(frame)
 	EnhancedRaidFrames:SetIndicatorAppearance(frame)
 end
 
+
 -- Set the appearance of the FontStrings
 function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 	local unit = frame.unit
@@ -175,14 +128,9 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 	end
 end
 
--- Update all indicators
-function EnhancedRaidFrames:UpdateAllIndicators()
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame) EnhancedRaidFrames:UpdateIndicatorFrame(frame)  end)
-end
 
 -- Check the indicators on a frame and update the times on them
-function EnhancedRaidFrames:UpdateIndicatorFrame(frame)
-
+function EnhancedRaidFrames:UpdateIndicators(frame)
 	local unit = frame.unit
 
 	--check to see if the bar is even targeting a unit, bail if it isn't
@@ -194,14 +142,14 @@ function EnhancedRaidFrames:UpdateIndicatorFrame(frame)
 		return
 	end
 
-	EnhancedRaidFrames:UpdateStockAuraVisibility(frame)
+	EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
 
 	local currentTime = GetTime()
 	local frameName = frame:GetName()
 
 	-- Check if the indicator frame exists, else create it
 	if not f[frameName] then
-		EnhancedRaidFrames:CreateIndicator(frame)
+		EnhancedRaidFrames:CreateIndicators(frame)
 	end
 
 	-- Update unit auras
@@ -227,14 +175,13 @@ function EnhancedRaidFrames:UpdateIndicatorFrame(frame)
 		-- If we only are to show the indicator on me, then don't bother if I'm not the unit
 		if EnhancedRaidFrames.db.profile["me"..i] then
 			local uName, uRealm = UnitName(unit)
-			if uName ~= playerName or uRealm ~= nil then
+			if uName ~= UnitName("player") or uRealm ~= nil then
 				break
 			end
 		end
 
-
 		-- Go through the aura strings
-		for _, auraName in ipairs(auraStrings[i]) do -- Grab each line
+		for _, auraName in ipairs(EnhancedRaidFrames.auraStrings[i]) do -- Grab each line
 
 			if not auraName then --if there's no auraName (i.e. the user never specified anything to go in this spot), stop here there's no need to keep going
 				break
@@ -412,7 +359,6 @@ function EnhancedRaidFrames:UpdateIndicatorFrame(frame)
 end
 
 
-
 -- Get all unit auras
 function EnhancedRaidFrames:UpdateUnitAuras(unit)
 
@@ -432,7 +378,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			break
 		end
 
-		if string.find(allAuras, "+"..auraName.."+") or string.find(allAuras, "+"..spellId.."+") then -- Only add the spell if we're watching for it
+		if string.find(EnhancedRaidFrames.allAuras, "+"..auraName.."+") or string.find(EnhancedRaidFrames.allAuras, "+"..spellId.."+") then -- Only add the spell if we're watching for it
 			if not unitBuffs[unit][j] then unitBuffs[unit][j] = {} end
 			unitBuffs[unit][j].auraName = auraName
 			unitBuffs[unit][j].spellId = spellId
@@ -458,7 +404,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			break
 		end
 
-		if string.find(allAuras, "+"..auraName.."+") or string.find(allAuras, "+"..spellId.."+") or string.find(allAuras, "+"..tostring(debuffType).."+") then -- Only add the spell if we're watching for it
+		if string.find(EnhancedRaidFrames.allAuras, "+"..auraName.."+") or string.find(EnhancedRaidFrames.allAuras, "+"..spellId.."+") or string.find(EnhancedRaidFrames.allAuras, "+"..tostring(debuffType).."+") then -- Only add the spell if we're watching for it
 			if not unitDebuffs[unit][j] then unitDebuffs[unit][j] = {} end
 			unitDebuffs[unit][j].auraName = auraName
 			unitDebuffs[unit][j].spellId = spellId
@@ -507,31 +453,7 @@ function EnhancedRaidFrames:Tooltip_OnEnter(buffFrame)
 	GameTooltip:Show()
 end
 
+
 function EnhancedRaidFrames:Tooltip_OnLeave(buffFrame)
 	GameTooltip:Hide()
-end
-
-----------------------------------
-----------------------------------
-
-
--- Used to update everything that is affected by the configuration
-function EnhancedRaidFrames:RefreshConfig()
-
-	-- Set the appearance of the indicators
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame) EnhancedRaidFrames:SetIndicatorAppearance(frame) end)
-
-	-- Format aura strings
-	allAuras = " "
-
-	for i = 1, 9 do
-		local j = 1
-		for auraName in string.gmatch(EnhancedRaidFrames.db.profile["auras"..i], "[^\n]+") do -- Grab each line
-			auraName = string.gsub(auraName, "^%s*(.-)%s*$", "%1") -- Strip any whitespaces
-			allAuras = allAuras.."+"..auraName.."+" -- Add each watched aura to a string so we later can quickly determine if we need to look for one
-			auraStrings[i][j] = auraName
-			j = j + 1
-		end
-	end
-
 end

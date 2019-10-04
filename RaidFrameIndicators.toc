@@ -11,5 +11,7 @@
 
 Libs\embeds.xml
 
-RaidFrameIndicators.lua
-RaidFrameIndicatorsConfig.lua
+EnhancedRaidFrames.lua
+AuraIndicators.lua
+RaidIcons.lua
+ConfigurationPanel.lua
