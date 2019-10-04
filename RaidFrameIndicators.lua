@@ -115,6 +115,8 @@ function EnhancedRaidFrames:CreateIndicator(frame)
 		f[frameName][i].icon:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
 
 		f[frameName][i]:SetFrameStrata("HIGH")
+		f[frameName][i]:RegisterForClicks("LeftButtonDown", "RightButtonUp");
+		f[frameName][i]:Hide()
 
 		if i == 1 then
 			f[frameName][i]:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, -PAD)
@@ -165,9 +167,6 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		f[frameName][i].text:SetFont(font, EnhancedRaidFrames.db.profile["size"..i], "OUTLINE")
 		f[frameName][i].text:SetTextColor(EnhancedRaidFrames.db.profile["color"..i].r, EnhancedRaidFrames.db.profile["color"..i].g, EnhancedRaidFrames.db.profile["color"..i].b, EnhancedRaidFrames.db.profile["color"..i].a)
 
-		--decrease the darkness of the cooldown animation layer
-		f[frameName][i].cooldown:SetAlpha(.8)
-
 		if EnhancedRaidFrames.db.profile["showIcon"..i] then
 			f[frameName][i].icon:Show()
 		else
@@ -205,23 +204,12 @@ function EnhancedRaidFrames:UpdateIndicatorFrame(frame)
 		EnhancedRaidFrames:CreateIndicator(frame)
 	end
 
-	-- Check if unit is alive/connected
-	if (not UnitIsConnected(unit)) or UnitIsDeadOrGhost(frame.displayedUnit) then
-		for i = 1, 9 do
-			-- Hide indicators
-			f[frameName][i].text:SetText("")
-			f[frameName][i].icon:SetTexture("")
-		end
-		return
-	end
-
 	-- Update unit auras
 	EnhancedRaidFrames:UpdateUnitAuras(unit)
 
 	-- Loop over the indicators and see if we get a hit
 	for i = 1, 9 do
-
-		local remainingTime, remainingTimeAsText, showIndicator, count, duration, expirationTime, castBy, icon, debuffType, n
+		local remainingTime, remainingTimeAsText, count, duration, expirationTime, castBy, icon, debuffType, n
 
 		remainingTimeAsText = ""
 		icon = ""
@@ -230,18 +218,28 @@ function EnhancedRaidFrames:UpdateIndicatorFrame(frame)
 		expirationTime = 0
 		castBy = ""
 
+		-- Check if unit is alive/connected
+		if (not UnitIsConnected(unit)) or UnitIsDeadOrGhost(frame.displayedUnit) then
+			f[frameName][i]:Hide() --if the unit isn't connected or is dead, hide the indicators and break out of the loop
+			break
+		end
+
 		-- If we only are to show the indicator on me, then don't bother if I'm not the unit
 		if EnhancedRaidFrames.db.profile["me"..i] then
-			local uName, uRealm
-			uName, uRealm = UnitName(unit)
+			local uName, uRealm = UnitName(unit)
 			if uName ~= playerName or uRealm ~= nil then
-				showIndicator = false
+				break
 			end
 		end
 
 
 		-- Go through the aura strings
 		for _, auraName in ipairs(auraStrings[i]) do -- Grab each line
+
+			if not auraName then --if there's no auraName (i.e. the user never specified anything to go in this spot), stop here there's no need to keep going
+				break
+			end
+
 			-- Check if the aura exist on the unit
 			for j = 1, unitBuffs[unit].len do -- Check buffs
 				if tonumber(auraName) then  -- Use spell id
@@ -249,7 +247,9 @@ function EnhancedRaidFrames:UpdateIndicatorFrame(frame)
 				elseif unitBuffs[unit][j].auraName == auraName then -- Hit on auraName
 					n = j
 				end
-				if n and unitBuffs[unit][j].castBy == "player" then break end -- Keep looking if it's not cast by the player
+				if n and unitBuffs[unit][j].castBy == "player" then
+					break
+				end -- Keep looking if it's not cast by the player
 			end
 			if n then
 				count = unitBuffs[unit][n].count
@@ -268,7 +268,9 @@ function EnhancedRaidFrames:UpdateIndicatorFrame(frame)
 					elseif unitDebuffs[unit][j].debuffType == auraName then -- Hit on debufftype
 						n = j
 					end
-					if n and unitDebuffs[unit][j].castBy == "player" then break end -- Keep looking if it's not cast by the player
+					if n and unitDebuffs[unit][j].castBy == "player" then
+						break
+					end -- Keep looking if it's not cast by the player
 				end
 				if n then
 					count = unitDebuffs[unit][n].count
@@ -385,11 +387,17 @@ function EnhancedRaidFrames:UpdateIndicatorFrame(frame)
 
 
 
-		-- Show the text
-		f[frameName][i].text:SetText(remainingTimeAsText)
-
-		-- Show the icon
-		f[frameName][i].icon:SetTexture(icon)
+		if icon ~= "" or remainingTimeAsText ~="" then
+			-- show the frame
+			f[frameName][i]:Show()
+			-- Show the text
+			f[frameName][i].text:SetText(remainingTimeAsText)
+			-- Show the icon
+			f[frameName][i].icon:SetTexture(icon)
+		else
+			-- hide the frame
+			f[frameName][i]:Hide()
+		end
 
 		--set cooldown animation
 		if EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] and icon~="" and expirationTime and expirationTime ~= 0 then
