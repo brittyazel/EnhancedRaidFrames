@@ -59,6 +59,7 @@ function EnhancedRaidFrames:CreateDefaults ()
 
 	defaults.profile = {
 		indicatorFont = "Arial Narrow",
+		showTooltips=true,
 
 		showBuffs = true,
 		showDebuffs = true,
@@ -99,18 +100,24 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				name = "Global Options",
 				order = 1,
 			},
+			showTooltips = {
+				type = "toggle",
+				name = "Show Tooltips",
+				desc = "Show tooltips when mousing over indicator frames",
+				order = 2,
+			},
 			indicatorFont = {
 				type = 'select',
 				dialogControl = "LSM30_Font",
 				name = "Indicator Font",
 				desc = "Adjust the font used for the indicators",
 				values = AceGUIWidgetLSMlists.font,
-				order = 2,
+				order = 3,
 			},
 			textHeader = {
 				type = "header",
 				name = "Default Buff/Debuff Icons",
-				order = 3,
+				order = 7,
 			},
 			showBuffs = {
 				type = "toggle",

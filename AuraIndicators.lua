@@ -428,6 +428,11 @@ end
 ---Tooltip Code
 -------------------------------
 function EnhancedRaidFrames:Tooltip_OnEnter(buffFrame)
+
+	if not EnhancedRaidFrames.db.profile.showTooltips then --don't show tooltips unless we have the option set
+		return
+	end
+
 	local frame = buffFrame:GetParent() --this is the parent raid frame that holds all the buffFrames
 	local index = buffFrame.index
 	local buff = buffFrame.buff
@@ -455,5 +460,10 @@ end
 
 
 function EnhancedRaidFrames:Tooltip_OnLeave(buffFrame)
+
+	if not EnhancedRaidFrames.db.profile.showTooltips then --don't show tooltips unless we have the option set
+		return
+	end
+
 	GameTooltip:Hide()
 end
