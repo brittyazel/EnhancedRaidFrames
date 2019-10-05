@@ -20,7 +20,8 @@
 --Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
 
 
-local EnhancedRaidFrames = EnhancedRaidFrames_Global
+local _, AddonTable = ...
+local EnhancedRaidFrames = AddonTable.EnhancedRaidFrames
 
 local media = LibStub:GetLibrary("LibSharedMedia-3.0")
 local f = {} -- Indicators for the frames

@@ -19,7 +19,8 @@
 --as determined by Szandos. All other copyrights for
 --Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
 
-local EnhancedRaidFrames = EnhancedRaidFrames_Global
+local _, AddonTable = ...
+local EnhancedRaidFrames = AddonTable.EnhancedRaidFrames
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------

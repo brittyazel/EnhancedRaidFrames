@@ -19,8 +19,9 @@
 --as determined by Szandos. All other copyrights for
 --Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
 
-EnhancedRaidFrames_Global = LibStub( "AceAddon-3.0" ):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
-local EnhancedRaidFrames = EnhancedRaidFrames_Global
+local _, AddonTable = ... --make use of the default addon namespace
+AddonTable.EnhancedRaidFrames = LibStub( "AceAddon-3.0" ):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
+local EnhancedRaidFrames = AddonTable.EnhancedRaidFrames
 
 EnhancedRaidFrames.allAuras = " "
 EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
