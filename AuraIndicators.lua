@@ -157,9 +157,9 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 
 	-- Loop over the indicators and see if we get a hit
 	for i = 1, 9 do
-		local remainingTime, remainingTimeAsText, count, duration, expirationTime, castBy, icon, debuffType, n
+		local remainingTime, displayText, count, duration, expirationTime, castBy, icon, debuffType, locatedAuraIndex
 
-		remainingTimeAsText = ""
+		displayText = ""
 		icon = ""
 		count = 0
 		duration = 0
@@ -190,43 +190,47 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 			-- Check if the aura exist on the unit
 			for j = 1, unitBuffs[unit].len do -- Check buffs
 				if tonumber(auraName) then  -- Use spell id
-					if unitBuffs[unit][j].spellId == tonumber(auraName) then n = j end
+					if unitBuffs[unit][j].spellId == tonumber(auraName) then
+						locatedAuraIndex = j
+					end
 				elseif unitBuffs[unit][j].auraName == auraName then -- Hit on auraName
-					n = j
+					locatedAuraIndex = j
 				end
-				if n and unitBuffs[unit][j].castBy == "player" then
+				if locatedAuraIndex and unitBuffs[unit][j].castBy == "player" then
 					break
 				end -- Keep looking if it's not cast by the player
 			end
-			if n then
-				count = unitBuffs[unit][n].count
-				duration = unitBuffs[unit][n].duration
-				expirationTime = unitBuffs[unit][n].expirationTime
-				castBy = unitBuffs[unit][n].castBy
-				icon = unitBuffs[unit][n].icon
-				f[frameName][i].index = unitBuffs[unit][n].index
+			if locatedAuraIndex then
+				count = unitBuffs[unit][locatedAuraIndex].count
+				duration = unitBuffs[unit][locatedAuraIndex].duration
+				expirationTime = unitBuffs[unit][locatedAuraIndex].expirationTime
+				castBy = unitBuffs[unit][locatedAuraIndex].castBy
+				icon = unitBuffs[unit][locatedAuraIndex].icon
+				f[frameName][i].index = unitBuffs[unit][locatedAuraIndex].index
 				f[frameName][i].buff = true
 			else
 				for j = 1, unitDebuffs[unit].len do -- Check debuffs
 					if tonumber(auraName) then  -- Use spell id
-						if unitDebuffs[unit][j].spellId == tonumber(auraName) then n = j end
+						if unitDebuffs[unit][j].spellId == tonumber(auraName) then
+							locatedAuraIndex = j
+						end
 					elseif unitDebuffs[unit][j].auraName == auraName then -- Hit on auraName
-						n = j
+						locatedAuraIndex = j
 					elseif unitDebuffs[unit][j].debuffType == auraName then -- Hit on debufftype
-						n = j
+						locatedAuraIndex = j
 					end
-					if n and unitDebuffs[unit][j].castBy == "player" then
+					if locatedAuraIndex and unitDebuffs[unit][j].castBy == "player" then
 						break
 					end -- Keep looking if it's not cast by the player
 				end
-				if n then
-					count = unitDebuffs[unit][n].count
-					duration = unitDebuffs[unit][n].duration
-					expirationTime = unitDebuffs[unit][n].expirationTime
-					castBy = unitDebuffs[unit][n].castBy
-					icon = unitDebuffs[unit][n].icon
-					debuffType = unitDebuffs[unit][n].debuffType
-					f[frameName][i].index = unitDebuffs[unit][n].index
+				if locatedAuraIndex then
+					count = unitDebuffs[unit][locatedAuraIndex].count
+					duration = unitDebuffs[unit][locatedAuraIndex].duration
+					expirationTime = unitDebuffs[unit][locatedAuraIndex].expirationTime
+					castBy = unitDebuffs[unit][locatedAuraIndex].castBy
+					icon = unitDebuffs[unit][locatedAuraIndex].icon
+					debuffType = unitDebuffs[unit][locatedAuraIndex].debuffType
+					f[frameName][i].index = unitDebuffs[unit][locatedAuraIndex].index
 				end
 			end
 			if auraName:upper() == "PVP" then -- Check if we want to show pvp flag
@@ -235,7 +239,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 					expirationTime = 0
 					duration = 0
 					castBy = "player"
-					n = -1
+					locatedAuraIndex = -1
 					local factionGroup = UnitFactionGroup(unit)
 					if factionGroup then icon = "Interface\\GroupFrame\\UI-Group-PVP-"..factionGroup end
 					f[frameName][i].index = -1
@@ -246,34 +250,34 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 					expirationTime = 0
 					duration = 0
 					castBy = "player"
-					n = -1
+					locatedAuraIndex = -1
 					icon = "Interface\\Icons\\Ability_Hunter_SniperShot"
 					f[frameName][i].index = -1
 				end
 			end
 
-			if n then -- We found a matching spell
+			if locatedAuraIndex then -- We found a matching spell
 				-- If we only are to show spells cast by me, make sure the spell is
 				if (EnhancedRaidFrames.db.profile["mine"..i] and castBy ~= "player") then
-					n = nil
+					locatedAuraIndex = nil
 					icon = ""
 				else
 					if not EnhancedRaidFrames.db.profile["showIcon"..i] then icon = "" end -- Hide icon
 					if expirationTime == 0 then -- No expiration time = permanent
 						if not EnhancedRaidFrames.db.profile["showIcon"..i] then
-							remainingTimeAsText = "■" -- Only show the blob if we don't show the icon
+							displayText = "■" -- Only show the blob if we don't show the icon
 						end
 					else
 						if EnhancedRaidFrames.db.profile["showText"..i] then
-							-- Pretty formating of the remaining time text
+							-- Pretty formatting of the remaining time text
 							remainingTime = expirationTime - currentTime
 							if remainingTime > 60 then
-								remainingTimeAsText = string.format("%.0f", (remainingTime / 60)).."m" -- Show minutes without seconds
+								displayText = string.format("%.0f", (remainingTime / 60)).."m" -- Show minutes without seconds
 							elseif remainingTime >= 1 then
-								remainingTimeAsText = string.format("%.0f",remainingTime) -- Show seconds without decimals
+								displayText = string.format("%.0f",remainingTime) -- Show seconds without decimals
 							end
 						else
-							remainingTimeAsText = ""
+							displayText = ""
 						end
 
 					end
@@ -281,9 +285,9 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 					-- Add stack count
 					if EnhancedRaidFrames.db.profile["stack"..i] and count > 0 then
 						if EnhancedRaidFrames.db.profile["showText"..i] and expirationTime > 0 then
-							remainingTimeAsText = count.."-"..remainingTimeAsText
+							displayText = count .."-".. displayText
 						else
-							remainingTimeAsText = count
+							displayText = count
 						end
 					end
 
@@ -326,19 +330,19 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 		-- Only show when it's missing?
 		if EnhancedRaidFrames.db.profile["missing"..i] then
 			icon = ""
-			remainingTimeAsText = ""
-			if not n then -- No n means we didn't find the spell
-				remainingTimeAsText = "■"
+			displayText = ""
+			if not locatedAuraIndex then -- No n means we didn't find the spell
+				displayText = "■"
 			end
 		end
 
 
 
-		if icon ~= "" or remainingTimeAsText ~="" then
+		if icon ~= "" or displayText ~="" then
 			-- show the frame
 			f[frameName][i]:Show()
 			-- Show the text
-			f[frameName][i].text:SetText(remainingTimeAsText)
+			f[frameName][i].text:SetText(displayText)
 			-- Show the icon
 			f[frameName][i].icon:SetTexture(icon)
 		else
