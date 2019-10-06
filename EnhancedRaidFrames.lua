@@ -36,7 +36,7 @@ EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix
 function EnhancedRaidFrames:OnInitialize()
 
 	-- Set up config pane
-	EnhancedRaidFrames:SetupOptions()
+	EnhancedRaidFrames:Setup()
 
 	-- Register callbacks for profile switching
 	EnhancedRaidFrames.db.RegisterCallback(EnhancedRaidFrames, "OnProfileChanged", "RefreshConfig")
@@ -53,9 +53,9 @@ function EnhancedRaidFrames:OnEnable()
 
 	--start a repeating timer to updated every frame every 0.8sec to make sure the the countdown timer stays accurate
 	EnhancedRaidFrames.updateTimer = EnhancedRaidFrames:ScheduleRepeatingTimer("UpdateAllFrames", 0.8) --this is so countdown text is smooth
+
 	--hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. The payload of the original function carries the identity of the frame needing updating
 	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) EnhancedRaidFrames:UpdateIndicators(frame) end)
-
 
 	-- Hook raid icon updates
 	EnhancedRaidFrames:RegisterEvent("RAID_TARGET_UPDATE", "UpdateAllFrames")
@@ -77,20 +77,92 @@ end
 -----------------------------------------------------------
 -----------------------------------------------------------
 
--- Update all indicators
-function EnhancedRaidFrames:UpdateAllFrames()
+-- Create our database, import saved variables, and set up our configuration panels
+function EnhancedRaidFrames:Setup()
+	-- Set up database defaults
+	local defaults = EnhancedRaidFrames:CreateDefaults()
+
+	-- Create database object
+	EnhancedRaidFrames.db = LibStub("AceDB-3.0"):New("IndicatorsDB", defaults) --IndicatorsDB is our saved variable table
+
+	-- Profile handling
+	local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(EnhancedRaidFrames.db) --create the config panel for profiles
+
+	-- Per spec profiles
+	local LibDualSpec = LibStub('LibDualSpec-1.0')
+	LibDualSpec:EnhanceDatabase(EnhancedRaidFrames.db, "EnhancedRaidFrames") --enhance the database object with per spec profile features
+	LibDualSpec:EnhanceOptions(profiles, EnhancedRaidFrames.db) -- enhance the profiles config panel with per spec profile features
+
+	-- Build our config panels
+	local generalOptions = EnhancedRaidFrames:CreateGeneralOptions()
+	local indicatorOptions = EnhancedRaidFrames:CreateIndicatorOptions()
+	local iconOptions = EnhancedRaidFrames:CreateIconOptions()
+
+	local config = LibStub("AceConfig-3.0")
+	config:RegisterOptionsTable("Enhanced Raid Frames", generalOptions)
+	config:RegisterOptionsTable("Indicator Options", indicatorOptions)
+	config:RegisterOptionsTable("Icon Options", iconOptions)
+	config:RegisterOptionsTable("Profiles", profiles)
+
+	-- Add to config panels to in-game interface options
+	local dialog = LibStub("AceConfigDialog-3.0")
+	dialog:AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
+	dialog:AddToBlizOptions("Indicator Options", "Indicator Options", "Enhanced Raid Frames")
+	dialog:AddToBlizOptions("Icon Options", "Icon Options", "Enhanced Raid Frames")
+	dialog:AddToBlizOptions("Profiles", "Profiles", "Enhanced Raid Frames")
+end
+
+-- Create up or database defaults table
+function EnhancedRaidFrames:CreateDefaults ()
+	local defaults = {}
+
+	defaults.profile = {
+		indicatorFont = "Arial Narrow",
+
+		showBuffs = true,
+		showDebuffs = true,
+		showDispelDebuffs=true,
+
+		showRaidIcons = true,
+		iconSize = 20,
+		iconPosition = "CENTER",
+	}
+	for i = 1, 9 do
+		defaults.profile["auras"..i] = ""
+		defaults.profile["size"..i] = 10
+		defaults.profile["color"..i] = {r = 1, g = 1, b = 1, a = 1,}
+		defaults.profile["mine"..i] = false
+		defaults.profile["stack"..i] = false
+		defaults.profile["stackColor"..i] = false
+		defaults.profile["debuffColor"..i] = false
+		defaults.profile["colorByTime"..i] = false
+		defaults.profile["missing"..i] = false
+		defaults.profile["me"..i] = false
+		defaults.profile["showText"..i] = false
+		defaults.profile["showCooldownAnimation"..i] = true
+		defaults.profile["showIcon"..i] = true
+		defaults.profile["iconSize"..i] = 16
+		defaults.profile["showTooltip"..i] = true
+	end
+
+	return defaults
+end
+
+
+-- Update all raid frames
+function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal",
 			function(frame)
-				EnhancedRaidFrames:UpdateIndicators(frame);
-				EnhancedRaidFrames:UpdateIcons(frame);
+				EnhancedRaidFrames:UpdateIndicators(frame, setAppearance);
+				EnhancedRaidFrames:UpdateIcons(frame, setAppearance);
 			end)
 end
 
 
--- Used to update everything that is affected by the configuration
+-- Refresh everything that is affected by changes to the configuration
 function EnhancedRaidFrames:RefreshConfig()
 
-	EnhancedRaidFrames:UpdateAllFrames()
+	EnhancedRaidFrames:UpdateAllFrames(true)
 
 	-- Format aura strings
 	EnhancedRaidFrames.allAuras = " "

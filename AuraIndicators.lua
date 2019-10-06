@@ -60,15 +60,12 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 	for i = 1, 9 do
 		--We have to use this template to allow for our clicks to be passed through, otherwise our frames won't allow selecting the raidframe behind it
 		f[frameName][i] = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
-
-		f[frameName][i].text = f[frameName][i]:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-		f[frameName][i].icon = f[frameName][i]:CreateTexture(nil, "OVERLAY")
-
-		f[frameName][i].text:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
-		f[frameName][i].icon:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
-
-		f[frameName][i]:SetFrameStrata("HIGH")
 		f[frameName][i]:RegisterForClicks("LeftButtonDown", "RightButtonUp");
+		f[frameName][i]:SetFrameStrata("HIGH")
+
+		--we further define this frame element in SetIndicatorAppearance. This is just a starting state
+		f[frameName][i].text = f[frameName][i]:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the animation, text should be on the parent frame
+		f[frameName][i].text:SetPoint("CENTER", f[frameName][i].cooldown, "CENTER", 0, 0)
 
 		if i == 1 then
 			f[frameName][i]:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, -PAD)
@@ -90,6 +87,9 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 			f[frameName][i]:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD, PAD)
 		end
 
+		--mark the position of this particular frame for use later (i.e. 1->9)
+		f[frameName][i].position = i
+
 		-- hook enter and leave for showing ability tooltips
 		EnhancedRaidFrames:SecureHookScript(f[frameName][i], "OnEnter", function() EnhancedRaidFrames:Tooltip_OnEnter(f[frameName][i]) end)
 		EnhancedRaidFrames:SecureHookScript(f[frameName][i], "OnLeave", function() EnhancedRaidFrames:Tooltip_OnLeave(f[frameName][i]) end)
@@ -97,7 +97,7 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 end
 
 
--- Set the appearance of the FontStrings
+-- Set the appearance of the Indicator
 function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 	local unit = frame.unit
 	local frameName = frame:GetName()
@@ -112,8 +112,17 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 	for i = 1, 9 do
 		f[frameName][i]:SetWidth(EnhancedRaidFrames.db.profile["iconSize"..i])
 		f[frameName][i]:SetHeight(EnhancedRaidFrames.db.profile["iconSize"..i])
-		f[frameName][i].icon:SetWidth(EnhancedRaidFrames.db.profile["iconSize"..i])
-		f[frameName][i].icon:SetHeight(EnhancedRaidFrames.db.profile["iconSize"..i])
+
+		--create a text overlay frame that will show our countdown text.
+		if EnhancedRaidFrames.db.profile["showCooldownAnimation"..i]  then
+			f[frameName][i].text:SetText("")
+			f[frameName][i].text = f[frameName][i].cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we show the cooldown animation, text should be on the child cooldown frame
+			f[frameName][i].text:SetPoint("CENTER", f[frameName][i].cooldown, "CENTER", 0, 0)
+		else
+			f[frameName][i].text:SetText("")
+			f[frameName][i].text = f[frameName][i]:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the animation, text should be on the parent frame
+			f[frameName][i].text:SetPoint("CENTER", f[frameName][i].cooldown, "CENTER", 0, 0)
+		end
 
 		f[frameName][i].text:SetFont(font, EnhancedRaidFrames.db.profile["size"..i], "OUTLINE")
 		f[frameName][i].text:SetTextColor(EnhancedRaidFrames.db.profile["color"..i].r, EnhancedRaidFrames.db.profile["color"..i].g, EnhancedRaidFrames.db.profile["color"..i].b, EnhancedRaidFrames.db.profile["color"..i].a)
@@ -122,7 +131,7 @@ end
 
 
 -- Check the indicators on a frame and update the times on them
-function EnhancedRaidFrames:UpdateIndicators(frame)
+function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 	local unit = frame.unit
 
 	--check to see if the bar is even targeting a unit, bail if it isn't
@@ -144,7 +153,9 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 		EnhancedRaidFrames:CreateIndicators(frame)
 	end
 
-	EnhancedRaidFrames:SetIndicatorAppearance(frame)
+	if setAppearance then
+		EnhancedRaidFrames:SetIndicatorAppearance(frame)
+	end
 
 	-- Update unit auras
 	EnhancedRaidFrames:UpdateUnitAuras(unit)
@@ -201,7 +212,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 				expirationTime = unitBuffs[unit][locatedAuraIndex].expirationTime
 				castBy = unitBuffs[unit][locatedAuraIndex].castBy
 				icon = unitBuffs[unit][locatedAuraIndex].icon
-				f[frameName][i].index = unitBuffs[unit][locatedAuraIndex].index
+				f[frameName][i].auraIndex = unitBuffs[unit][locatedAuraIndex].auraIndex
 				f[frameName][i].buff = true
 			else
 				for j = 1, #unitDebuffs[unit] do -- Check debuffs
@@ -226,7 +237,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 					castBy = unitDebuffs[unit][locatedAuraIndex].castBy
 					icon = unitDebuffs[unit][locatedAuraIndex].icon
 					debuffType = unitDebuffs[unit][locatedAuraIndex].debuffType
-					f[frameName][i].index = unitDebuffs[unit][locatedAuraIndex].index
+					f[frameName][i].auraIndex = unitDebuffs[unit][locatedAuraIndex].auraIndex
 				end
 			end
 
@@ -243,7 +254,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 						icon = "Interface\\GroupFrame\\UI-Group-PVP-"..factionGroup
 					end
 
-					f[frameName][i].index = -1
+					f[frameName][i].auraIndex = -1
 				end
 			elseif auraName:upper() == "TOT" then -- Check if we want to show ToT flag
 				if UnitIsUnit (unit, "targettarget") then
@@ -253,7 +264,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 					castBy = "player"
 					locatedAuraIndex = -1
 					icon = "Interface\\Icons\\Ability_Hunter_SniperShot"
-					f[frameName][i].index = -1
+					f[frameName][i].auraIndex = -1
 				end
 			end
 
@@ -393,7 +404,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			unitBuffs[unit][len+1].expirationTime = expirationTime
 			unitBuffs[unit][len+1].castBy = castBy
 			unitBuffs[unit][len+1].icon = icon
-			unitBuffs[unit][len+1].index = i
+			unitBuffs[unit][len+1].auraIndex = i
 		end
 		i = i + 1
 	end
@@ -418,7 +429,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			unitDebuffs[unit][len+1].expirationTime = expirationTime
 			unitDebuffs[unit][len+1].castBy = castBy
 			unitDebuffs[unit][len+1].icon = icon
-			unitDebuffs[unit][len+1].index = i
+			unitDebuffs[unit][len+1].auraIndex = i
 			unitDebuffs[unit][len+1].debuffType= debuffType
 		end
 		i = i + 1
@@ -433,24 +444,24 @@ end
 -------------------------------
 function EnhancedRaidFrames:Tooltip_OnEnter(buffFrame)
 
-	if not EnhancedRaidFrames.db.profile.showTooltips then --don't show tooltips unless we have the option set
+	if not EnhancedRaidFrames.db.profile["showTooltip"..buffFrame.position] then --don't show tooltips unless we have the option set for this position
 		return
 	end
 
 	local frame = buffFrame:GetParent() --this is the parent raid frame that holds all the buffFrames
-	local index = buffFrame.index
+	local auraIndex = buffFrame.auraIndex
 	local buff = buffFrame.buff
 
 	local displayedUnit = frame.displayedUnit
 
 	-- Set the tooltip
-	if index and index ~= -1 and buffFrame.icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
+	if auraIndex and auraIndex ~= -1 and buffFrame.icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
 		-- Set the buff/debuff as tooltip and anchor to the cursor
 		GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
 		if buff then
-			GameTooltip:SetUnitBuff(displayedUnit, index)
+			GameTooltip:SetUnitBuff(displayedUnit, auraIndex)
 		else
-			GameTooltip:SetUnitDebuff(displayedUnit, index)
+			GameTooltip:SetUnitDebuff(displayedUnit, auraIndex)
 		end
 	else
 		--causes the tooltip to reset to the "default" tooltip which is usually information about the character

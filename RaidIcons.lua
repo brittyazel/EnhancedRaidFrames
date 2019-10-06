@@ -63,7 +63,7 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 end
 
 
-function EnhancedRaidFrames:UpdateIcons(frame)
+function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
 	local unit = frame.unit
 	local frameName = frame:GetName()
 
@@ -77,7 +77,9 @@ function EnhancedRaidFrames:UpdateIcons(frame)
 		EnhancedRaidFrames:CreateIcon(frame)
 	end
 
-	EnhancedRaidFrames:SetIconAppearance(frame)
+	if setAppearance then
+		EnhancedRaidFrames:SetIconAppearance(frame)
+	end
 
 	--if they don't have raid icons set to show, don't show anything
 	if not EnhancedRaidFrames.db.profile.showRaidIcons then

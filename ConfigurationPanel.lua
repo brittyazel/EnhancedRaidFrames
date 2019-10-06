@@ -25,76 +25,6 @@ local EnhancedRaidFrames = AddonTable.EnhancedRaidFrames
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
-
-function EnhancedRaidFrames:SetupOptions()
-	-- Set up defaults
-	local defaults = EnhancedRaidFrames:CreateDefaults()
-	EnhancedRaidFrames.db = LibStub("AceDB-3.0"):New("IndicatorsDB", defaults)
-
-	-- Profile handling
-	local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(EnhancedRaidFrames.db)
-
-	-- Per spec profiles
-	local LibDualSpec = LibStub('LibDualSpec-1.0')
-	LibDualSpec:EnhanceDatabase(EnhancedRaidFrames.db, "EnhancedRaidFrames")
-	LibDualSpec:EnhanceOptions(profiles, EnhancedRaidFrames.db)
-
-	-- Get the config up
-	local generalOptions = EnhancedRaidFrames:CreateGeneralOptions()
-	local indicatorOptions = EnhancedRaidFrames:CreateIndicatorOptions()
-	local iconOptions = EnhancedRaidFrames:CreateIconOptions()
-	local config = LibStub("AceConfig-3.0")
-
-	config:RegisterOptionsTable("Enhanced Raid Frames", generalOptions)
-	config:RegisterOptionsTable("Indicator Options", indicatorOptions)
-	config:RegisterOptionsTable("Icon Options", iconOptions)
-	config:RegisterOptionsTable("Profiles", profiles)
-
-	-- Add to Blizz option pane
-	local dialog = LibStub("AceConfigDialog-3.0")
-	EnhancedRaidFrames.optionsFrames = {}
-	EnhancedRaidFrames.optionsFrames.Indicators = dialog:AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
-	EnhancedRaidFrames.optionsFrames.Indicators = dialog:AddToBlizOptions("Indicator Options", "Indicator Options", "Enhanced Raid Frames")
-	EnhancedRaidFrames.optionsFrames.Profile = dialog:AddToBlizOptions("Icon Options", "Icon Options", "Enhanced Raid Frames")
-	EnhancedRaidFrames.optionsFrames.Profile = dialog:AddToBlizOptions("Profiles", "Profiles", "Enhanced Raid Frames")
-end
-
-
-function EnhancedRaidFrames:CreateDefaults ()
-	local defaults = {}
-
-	defaults.profile = {
-		indicatorFont = "Arial Narrow",
-		showTooltips=true,
-
-		showBuffs = true,
-		showDebuffs = true,
-		showDispelDebuffs=true,
-
-		showRaidIcons = true,
-		iconSize = 20,
-		iconPosition = "CENTER",
-	}
-	for i = 1, 9 do
-		defaults.profile["auras"..i] = ""
-		defaults.profile["size"..i] = 10
-		defaults.profile["color"..i] = {r = 1, g = 1, b = 1, a = 1,}
-		defaults.profile["mine"..i] = false
-		defaults.profile["stack"..i] = false
-		defaults.profile["stackColor"..i] = false
-		defaults.profile["debuffColor"..i] = false
-		defaults.profile["colorByTime"..i] = false
-		defaults.profile["missing"..i] = false
-		defaults.profile["me"..i] = false
-		defaults.profile["showText"..i] = false
-		defaults.profile["showCooldownAnimation"..i] = true
-		defaults.profile["showIcon"..i] = true
-		defaults.profile["iconSize"..i] = 16
-	end
-
-	return defaults
-end
-
 function EnhancedRaidFrames:CreateGeneralOptions()
 	local generalOptions = {
 		type = 'group',
@@ -111,12 +41,6 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "header",
 				name = "Global Options",
 				order = 3,
-			},
-			showTooltips = {
-				type = "toggle",
-				name = "Show Tooltips",
-				desc = "Show tooltips when mousing over indicator frames",
-				order = 4,
 			},
 			indicatorFont = {
 				type = 'select',
@@ -181,15 +105,20 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args["i"..i] = {}
 		indicatorOptions.args["i"..i].type = 'group'
 		indicatorOptions.args["i"..i].name = indicatorNames[i]
-		indicatorOptions.args["i"..i].order = i*10+10
+		indicatorOptions.args["i"..i].order = i
 		indicatorOptions.args["i"..i].args = {}
 		indicatorOptions.args["i"..i].args["auras"..i] = {
 			type = "input",
-			name = "Buffs/Debuffs",
+			name = "Buffs/Debuff watch list",
 			desc = "The buffs/debuffs to show in this indicator. Put each buff/debuff on a separate line. You can use 'Magic/Poison/Curse/Disease' to show any debuff of that type.",
 			multiline = true,
 			order = 1,
 			width = "full",
+		}
+		indicatorOptions.args["i"..i].args.visibilityHeader = {
+			type = "header",
+			name = "Visibility",
+			order = 5,
 		}
 		indicatorOptions.args["i"..i].args["mine"..i] = {
 			type = "toggle",
@@ -225,21 +154,6 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			name = "Show stack size",
 			desc = "Show stack size for buffs/debuffs that stack",
 			order = 111,
-		}
-		indicatorOptions.args["i"..i].args["size"..i] = {
-			type = "range",
-			name = "Text Size",
-			desc = "Text size",
-			min = 1,
-			max = 30,
-			step = 1,
-			order = 120,
-			width = "full",
-		}
-		indicatorOptions.args["i"..i].args.coloringHeader = {
-			type = "header",
-			name = "Color",
-			order = 150,
 		}
 		indicatorOptions.args["i"..i].args["stackColor"..i] = {
 			type = "toggle",
@@ -277,6 +191,16 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			disabled = function () return (EnhancedRaidFrames.db.profile["stackColor"..i] or EnhancedRaidFrames.db.profile["debuffColor"..i]) end,
 			order = 180,
 		}
+		indicatorOptions.args["i"..i].args["size"..i] = {
+			type = "range",
+			name = "Text Size",
+			desc = "The size to make the indicator text",
+			min = 1,
+			max = 30,
+			step = 1,
+			order = 190,
+			width = "full",
+		}
 		indicatorOptions.args["i"..i].args.iconHeader = {
 			type = "header",
 			name = "Icon",
@@ -294,10 +218,16 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			desc = "Show the cooldown animation specifying the time left of the buff/debuff",
 			order = 311,
 		}
+		indicatorOptions.args["i"..i].args["showTooltip"..i] = {
+			type = "toggle",
+			name = "Show Tooltip",
+			desc = "Show tooltip on mouseover",
+			order = 315,
+		}
 		indicatorOptions.args["i"..i].args["iconSize"..i] = {
 			type = "range",
 			name = "Icon size",
-			desc = "Icon size",
+			desc = "The size to make the indicator icon",
 			min = 1,
 			max = 30,
 			step = 1,
