@@ -77,22 +77,22 @@ function EnhancedRaidFrames:UpdateIcons(frame)
 		EnhancedRaidFrames:CreateIcon(frame)
 	end
 
+	EnhancedRaidFrames:SetIconAppearance(frame)
+
 	--if they don't have raid icons set to show, don't show anything
 	if not EnhancedRaidFrames.db.profile.showRaidIcons then
 		icons[frameName].texture:Hide() -- hide the frame
 		return
 	end
+
 	-- Get icon on unit
 	local icon = GetRaidTargetIndex(unit)
 
-	-- Only change icon texture if the icon on the frame actually changed
-	if icon ~= icons[frameName].icon then
-		icons[frameName].icon = icon
-		if icon then
-			icons[frameName].texture:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcon_"..icon)
-			icons[frameName].texture:Show()
-		else
-			icons[frameName].texture:Hide()
-		end
+	if icon then
+		icons[frameName].texture:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcon_"..icon)
+		icons[frameName].texture:Show()
+	else
+		icons[frameName].texture:Hide()
 	end
+
 end

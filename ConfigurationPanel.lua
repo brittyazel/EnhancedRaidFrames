@@ -34,6 +34,11 @@ function EnhancedRaidFrames:SetupOptions()
 	-- Profile handling
 	local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(EnhancedRaidFrames.db)
 
+	-- Per spec profiles
+	local LibDualSpec = LibStub('LibDualSpec-1.0')
+	LibDualSpec:EnhanceDatabase(EnhancedRaidFrames.db, "EnhancedRaidFrames")
+	LibDualSpec:EnhanceOptions(profiles, EnhancedRaidFrames.db)
+
 	-- Get the config up
 	local generalOptions = EnhancedRaidFrames:CreateGeneralOptions()
 	local indicatorOptions = EnhancedRaidFrames:CreateIndicatorOptions()
@@ -99,7 +104,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 		args  = {
 			instructions = {
 				type = "description",
-				name = "Please expand the 'Enhanced Raid Frames' menu item in the left-hand column to configure aura indicators, raid icons, and more.",
+				name = "Below you will find general configuration options. Please expand the 'Enhanced Raid Frames' menu item in the left-hand column to configure aura indicators, raid icons, and more.",
 				order = 2,
 			},
 			generalHeader = {

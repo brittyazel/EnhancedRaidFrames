@@ -62,8 +62,6 @@ function EnhancedRaidFrames:OnEnable()
 	EnhancedRaidFrames:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateAllFrames")
 
 	-- Make sure any icons already existing are shown
-	EnhancedRaidFrames:UpdateAllFrames()
-
 	EnhancedRaidFrames:RefreshConfig()
 end
 
@@ -91,13 +89,6 @@ end
 
 -- Used to update everything that is affected by the configuration
 function EnhancedRaidFrames:RefreshConfig()
-
-	-- Set the appearance of the indicators
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal",
-			function(frame)
-				EnhancedRaidFrames:SetIndicatorAppearance(frame);
-				EnhancedRaidFrames:SetIconAppearance(frame)
-			end)
 
 	EnhancedRaidFrames:UpdateAllFrames()
 

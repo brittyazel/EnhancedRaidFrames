@@ -69,7 +69,6 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 
 		f[frameName][i]:SetFrameStrata("HIGH")
 		f[frameName][i]:RegisterForClicks("LeftButtonDown", "RightButtonUp");
-		--f[frameName][i]:Hide()
 
 		if i == 1 then
 			f[frameName][i]:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, -PAD)
@@ -95,9 +94,6 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		EnhancedRaidFrames:SecureHookScript(f[frameName][i], "OnEnter", function() EnhancedRaidFrames:Tooltip_OnEnter(f[frameName][i]) end)
 		EnhancedRaidFrames:SecureHookScript(f[frameName][i], "OnLeave", function() EnhancedRaidFrames:Tooltip_OnLeave(f[frameName][i]) end)
 	end
-
-	-- Set appearance
-	EnhancedRaidFrames:SetIndicatorAppearance(frame)
 end
 
 
@@ -107,10 +103,11 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 	local frameName = frame:GetName()
 
 	-- Check if the frame is pointing at anything
-	if not unit then return end
-	if not f[frameName] then return end
+	if not f[frameName] or not unit then
+		return
+	end
 
-	local font = media and media:Fetch('font', EnhancedRaidFrames.db.profile.indicatorFont) or STANDARD_TEXT_FONT
+	local font = (media and media:Fetch('font', EnhancedRaidFrames.db.profile.indicatorFont)) or STANDARD_TEXT_FONT
 
 	for i = 1, 9 do
 		f[frameName][i]:SetWidth(EnhancedRaidFrames.db.profile["iconSize"..i])
@@ -120,12 +117,6 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 
 		f[frameName][i].text:SetFont(font, EnhancedRaidFrames.db.profile["size"..i], "OUTLINE")
 		f[frameName][i].text:SetTextColor(EnhancedRaidFrames.db.profile["color"..i].r, EnhancedRaidFrames.db.profile["color"..i].g, EnhancedRaidFrames.db.profile["color"..i].b, EnhancedRaidFrames.db.profile["color"..i].a)
-
-		if EnhancedRaidFrames.db.profile["showIcon"..i] then
-			f[frameName][i].icon:Show()
-		else
-			f[frameName][i].icon:Hide()
-		end
 	end
 end
 
@@ -152,6 +143,8 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 	if not f[frameName] then
 		EnhancedRaidFrames:CreateIndicators(frame)
 	end
+
+	EnhancedRaidFrames:SetIndicatorAppearance(frame)
 
 	-- Update unit auras
 	EnhancedRaidFrames:UpdateUnitAuras(unit)
@@ -189,7 +182,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 			end
 
 			-- Check if the aura exist on the unit
-			for j = 1, unitBuffs[unit].len do -- Check buffs
+			for j = 1, #unitBuffs[unit] do -- Check buffs
 				if tonumber(auraName) then  -- Use spell id
 					if unitBuffs[unit][j].spellId == tonumber(auraName) then
 						locatedAuraIndex = j
@@ -197,10 +190,11 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 				elseif unitBuffs[unit][j].auraName == auraName then -- Hit on auraName
 					locatedAuraIndex = j
 				end
-				if locatedAuraIndex and unitBuffs[unit][j].castBy == "player" then
+				if locatedAuraIndex and unitBuffs[unit][j].castBy == "player" then -- Keep looking if it's not cast by the player
 					break
-				end -- Keep looking if it's not cast by the player
+				end
 			end
+
 			if locatedAuraIndex then
 				count = unitBuffs[unit][locatedAuraIndex].count
 				duration = unitBuffs[unit][locatedAuraIndex].duration
@@ -210,7 +204,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 				f[frameName][i].index = unitBuffs[unit][locatedAuraIndex].index
 				f[frameName][i].buff = true
 			else
-				for j = 1, unitDebuffs[unit].len do -- Check debuffs
+				for j = 1, #unitDebuffs[unit] do -- Check debuffs
 					if tonumber(auraName) then  -- Use spell id
 						if unitDebuffs[unit][j].spellId == tonumber(auraName) then
 							locatedAuraIndex = j
@@ -220,10 +214,11 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 					elseif unitDebuffs[unit][j].debuffType == auraName then -- Hit on debufftype
 						locatedAuraIndex = j
 					end
-					if locatedAuraIndex and unitDebuffs[unit][j].castBy == "player" then
+					if locatedAuraIndex and unitDebuffs[unit][j].castBy == "player" then -- Keep looking if it's not cast by the player
 						break
-					end -- Keep looking if it's not cast by the player
+					end
 				end
+
 				if locatedAuraIndex then
 					count = unitDebuffs[unit][locatedAuraIndex].count
 					duration = unitDebuffs[unit][locatedAuraIndex].duration
@@ -234,6 +229,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 					f[frameName][i].index = unitDebuffs[unit][locatedAuraIndex].index
 				end
 			end
+
 			if auraName:upper() == "PVP" then -- Check if we want to show pvp flag
 				if UnitIsPVP(unit) then
 					count = 0
@@ -241,8 +237,12 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 					duration = 0
 					castBy = "player"
 					locatedAuraIndex = -1
+
 					local factionGroup = UnitFactionGroup(unit)
-					if factionGroup then icon = "Interface\\GroupFrame\\UI-Group-PVP-"..factionGroup end
+					if factionGroup then
+						icon = "Interface\\GroupFrame\\UI-Group-PVP-"..factionGroup
+					end
+
 					f[frameName][i].index = -1
 				end
 			elseif auraName:upper() == "TOT" then -- Check if we want to show ToT flag
@@ -263,7 +263,9 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 					locatedAuraIndex = nil
 					icon = ""
 				else
-					if not EnhancedRaidFrames.db.profile["showIcon"..i] then icon = "" end -- Hide icon
+					if not EnhancedRaidFrames.db.profile["showIcon"..i] then -- Hide icon
+						icon = ""
+					end
 					if expirationTime == 0 then -- No expiration time = permanent
 						if not EnhancedRaidFrames.db.profile["showIcon"..i] then
 							displayText = "■" -- Only show the blob if we don't show the icon
@@ -337,8 +339,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 			end
 		end
 
-
-
+		--set the texture or text on a frame, and show or hide the indicator frame
 		if icon ~= "" or displayText ~="" then
 			-- show the frame
 			f[frameName][i]:Show()
@@ -352,7 +353,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame)
 		end
 
 		--set cooldown animation
-		if EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] and icon~="" and expirationTime and expirationTime ~= 0 then
+		if EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] and icon~="" and f[frameName][i]:IsShown() then
 			CooldownFrame_Set(f[frameName][i].cooldown, expirationTime - duration, duration, true, true)
 		else
 			CooldownFrame_Clear(f[frameName][i].cooldown);
@@ -367,64 +368,62 @@ end
 -- Get all unit auras
 function EnhancedRaidFrames:UpdateUnitAuras(unit)
 
-	-- Create tables for the unit
-	if not unitBuffs[unit] then unitBuffs[unit] = {} end
-	if not unitDebuffs[unit] then unitDebuffs[unit] = {} end
+	-- Create or clear out the tables for the unit
+	unitBuffs[unit] = {}
+	unitDebuffs[unit] = {}
 
 	-- Get all unit buffs
-	local auraName, icon, count, duration, expirationTime, castBy, debuffType, spellId
-	local i = 1
-	local j = 1
+	local auraName, icon, count, duration, expirationTime, castBy, debuffType, spellId, i
 
-	while true do
+	i = 1
+	while (true) do
 		auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellId = UnitBuff(unit, i)
 
-		if not spellId then
+		if not spellId then --break the loop once we have no more buffs
 			break
 		end
 
 		if string.find(EnhancedRaidFrames.allAuras, "+"..auraName.."+") or string.find(EnhancedRaidFrames.allAuras, "+"..spellId.."+") then -- Only add the spell if we're watching for it
-			if not unitBuffs[unit][j] then unitBuffs[unit][j] = {} end
-			unitBuffs[unit][j].auraName = auraName
-			unitBuffs[unit][j].spellId = spellId
-			unitBuffs[unit][j].count = count
-			unitBuffs[unit][j].duration = duration
-			unitBuffs[unit][j].expirationTime = expirationTime
-			unitBuffs[unit][j].castBy = castBy
-			unitBuffs[unit][j].icon = icon
-			unitBuffs[unit][j].index = i
-			j = j + 1
+			local len = #unitBuffs[unit]
+			unitBuffs[unit][len+1] = {}
+			unitBuffs[unit][len+1].auraName = auraName
+			unitBuffs[unit][len+1].spellId = spellId
+			unitBuffs[unit][len+1].count = count
+			unitBuffs[unit][len+1].duration = duration
+			unitBuffs[unit][len+1].expirationTime = expirationTime
+			unitBuffs[unit][len+1].castBy = castBy
+			unitBuffs[unit][len+1].icon = icon
+			unitBuffs[unit][len+1].index = i
 		end
 		i = i + 1
 	end
-	unitBuffs[unit].len = j -1
+
 
 	-- Get all unit debuffs
 	i = 1
-	j = 1
-	while true do
+	while (true) do
 		auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellId  = UnitDebuff(unit, i)
 
-		if not spellId then
+		if not spellId then --break the loop once we have no more buffs
 			break
 		end
 
 		if string.find(EnhancedRaidFrames.allAuras, "+"..auraName.."+") or string.find(EnhancedRaidFrames.allAuras, "+"..spellId.."+") or string.find(EnhancedRaidFrames.allAuras, "+"..tostring(debuffType).."+") then -- Only add the spell if we're watching for it
-			if not unitDebuffs[unit][j] then unitDebuffs[unit][j] = {} end
-			unitDebuffs[unit][j].auraName = auraName
-			unitDebuffs[unit][j].spellId = spellId
-			unitDebuffs[unit][j].count = count
-			unitDebuffs[unit][j].duration = duration
-			unitDebuffs[unit][j].expirationTime = expirationTime
-			unitDebuffs[unit][j].castBy = castBy
-			unitDebuffs[unit][j].icon = icon
-			unitDebuffs[unit][j].index = i
-			unitDebuffs[unit][j].debuffType= debuffType
-			j = j + 1
+			local len = #unitDebuffs[unit]
+			unitDebuffs[unit][len+1] = {}
+			unitDebuffs[unit][len+1].auraName = auraName
+			unitDebuffs[unit][len+1].spellId = spellId
+			unitDebuffs[unit][len+1].count = count
+			unitDebuffs[unit][len+1].duration = duration
+			unitDebuffs[unit][len+1].expirationTime = expirationTime
+			unitDebuffs[unit][len+1].castBy = castBy
+			unitDebuffs[unit][len+1].icon = icon
+			unitDebuffs[unit][len+1].index = i
+			unitDebuffs[unit][len+1].debuffType= debuffType
 		end
 		i = i + 1
 	end
-	unitDebuffs[unit].len = j -1
+
 end
 
 
