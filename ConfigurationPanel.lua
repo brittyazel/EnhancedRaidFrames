@@ -66,6 +66,7 @@ function EnhancedRaidFrames:CreateDefaults ()
 		showDebuffs = true,
 		showDispelDebuffs=true,
 
+		showRaidIcons = true,
 		iconSize = 20,
 		iconPosition = "CENTER",
 	}
@@ -96,16 +97,21 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 		get = function(item) return EnhancedRaidFrames.db.profile[item[#item]] end,
 		set = function(item, value) EnhancedRaidFrames.db.profile[item[#item]] = value; EnhancedRaidFrames:RefreshConfig() end,
 		args  = {
+			instructions = {
+				type = "description",
+				name = "Please expand the 'Enhanced Raid Frames' menu item in the left-hand column to configure aura indicators, raid icons, and more.",
+				order = 2,
+			},
 			generalHeader = {
 				type = "header",
 				name = "Global Options",
-				order = 1,
+				order = 3,
 			},
 			showTooltips = {
 				type = "toggle",
 				name = "Show Tooltips",
 				desc = "Show tooltips when mousing over indicator frames",
-				order = 2,
+				order = 4,
 			},
 			indicatorFont = {
 				type = 'select',
@@ -113,7 +119,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				name = "Indicator Font",
 				desc = "Adjust the font used for the indicators",
 				values = AceGUIWidgetLSMlists.font,
-				order = 3,
+				order = 5,
 			},
 			textHeader = {
 				type = "header",
@@ -151,14 +157,21 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 
 	local indicatorOptions = {
 		type = 'group',
-		childGroups = 'tree',
+		childGroups = 'select',
 		get = function(item) return EnhancedRaidFrames.db.profile[item[#item]] end,
 		set = function(item, value) EnhancedRaidFrames.db.profile[item[#item]] = value; EnhancedRaidFrames:RefreshConfig() end,
-		args  = {}
+		args  = {
+			instructions = {
+				type = "description",
+				name = "Please select an indicator position from the dropdown menu below:",
+				order = 1,
+			},
+		}
 	}
 
 	--- Add options for each indicator
 	local indicatorNames = {"Top Left", "Top", "Top Right", "Left", "Center", "Right", "Bottom Left", "Bottom", "Bottom Right"}
+
 	for i = 1, 9 do
 		indicatorOptions.args["i"..i] = {}
 		indicatorOptions.args["i"..i].type = 'group'
@@ -298,6 +311,17 @@ function EnhancedRaidFrames:CreateIconOptions()
 		get = function(item) return EnhancedRaidFrames.db.profile[item[#item]] end,
 		set = function(item, value) EnhancedRaidFrames.db.profile[item[#item]] = value; EnhancedRaidFrames:RefreshConfig() end,
 		args  = {
+			instructions = {
+				type = "description",
+				name = "Configure how raid marker icons should appear on the raid frames:",
+				order = 1,
+			},
+			showRaidIcons = {
+				type = "toggle",
+				name = "Show Raid Icons",
+				desc = "Show raid marker icons on the raid frames",
+				order = 3,
+			},
 			iconSize = {
 				type = 'range',
 				name = "Icon Size",

@@ -77,6 +77,11 @@ function EnhancedRaidFrames:UpdateIcons(frame)
 		EnhancedRaidFrames:CreateIcon(frame)
 	end
 
+	--if they don't have raid icons set to show, don't show anything
+	if not EnhancedRaidFrames.db.profile.showRaidIcons then
+		icons[frameName].texture:Hide() -- hide the frame
+		return
+	end
 	-- Get icon on unit
 	local icon = GetRaidTargetIndex(unit)
 

@@ -99,6 +99,8 @@ function EnhancedRaidFrames:RefreshConfig()
 				EnhancedRaidFrames:SetIconAppearance(frame)
 			end)
 
+	EnhancedRaidFrames:UpdateAllFrames()
+
 	-- Format aura strings
 	EnhancedRaidFrames.allAuras = " "
 
