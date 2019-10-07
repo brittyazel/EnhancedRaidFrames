@@ -1,6 +1,6 @@
 # Enhanced Raid Frames
 
-Enhanced Raid Frames is a raid frame utility addon for WoW 8.0+ that brings configurable indicators for enhancing the built in raid frames, allowing them to function much closer to add-ons such as Grid or Vuhdo.
+Enhanced Raid Frames is a raid frame utility addon for WoW 8.2.5+ that brings configurable indicators for enhancing the built in raid frames, allowing them to function much closer to add-ons such as Grid or Vuhdo.
 
 There are 9 indicators for each raid member, forming a 3x3 grid overlaying each unit frame, that allow for showing the presence of and countdown times of buffs and debuffs in any configuration that suits your needs.
 
@@ -27,24 +27,6 @@ Also show in this picture is: [Enhanced Raid Frame: Raid Icons](https://www.curs
 Another example, using icons as well as stack size coloring of the Earth Shield buff.
 
 ---------------
-
-### Configuration
-The configuration can be reached through the standard addon options (ESC -&gt; Interface -&gt; Addons -&gt; Raid Frame Indicators)
-
-![Example 4](https://media.forgecdn.net/attachments/233/56/4.png "Example 4")
-
-Rejuvenation
-
-![Example 5](https://media.forgecdn.net/attachments/233/57/5.png "Example 5")
-
-Show when Blessing of Kings or Mark of the Wild is missing on the unit
-
-------------
-
-### Options
-* **Indicator Font** - The font used for an indicator
-* **Show Icons** - Show/Hide the standard buff/debuff icons
-* **Enable** - Enable/Disable the addon
 
 ### Indicator options
 * The following can be used as buffs/debuffs:
