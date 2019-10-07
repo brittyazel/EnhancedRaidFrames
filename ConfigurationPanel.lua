@@ -155,6 +155,22 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			desc = "Show stack size for buffs/debuffs that stack",
 			order = 111,
 		}
+		indicatorOptions.args["i"..i].args["color"..i] = {
+			type = "color",
+			name = "Text color",
+			desc = "The text color for an indicator unless augmented by other text color options",
+			get = function(item)
+				local t = EnhancedRaidFrames.db.profile[item[#item]]
+				return t.r, t.g, t.b, t.a
+			end,
+			set = function(item, r, g, b, a)
+				local t = EnhancedRaidFrames.db.profile[item[#item]]
+				t.r, t.g, t.b, t.a = r, g, b, a
+				EnhancedRaidFrames:RefreshConfig()
+			end,
+			disabled = function () return (EnhancedRaidFrames.db.profile["stackColor"..i] or EnhancedRaidFrames.db.profile["debuffColor"..i]) end,
+			order = 120,
+		}
 		indicatorOptions.args["i"..i].args["stackColor"..i] = {
 			type = "toggle",
 			name = "Color by stack size",
@@ -167,22 +183,6 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			desc = "Color the text depending on the debuff type, will override any other coloring (poison = green, magic = blue etc)",
 			disabled = function () return EnhancedRaidFrames.db.profile["stackColor"..i] end,
 			order = 165,
-		}
-		indicatorOptions.args["i"..i].args["color"..i] = {
-			type = "color",
-			name = "Color",
-			desc = "Color of the indicator",
-			get = function(item)
-				local t = EnhancedRaidFrames.db.profile[item[#item]]
-				return t.r, t.g, t.b, t.a
-			end,
-			set = function(item, r, g, b, a)
-				local t = EnhancedRaidFrames.db.profile[item[#item]]
-				t.r, t.g, t.b, t.a = r, g, b, a
-				EnhancedRaidFrames:RefreshConfig()
-			end,
-			disabled = function () return (EnhancedRaidFrames.db.profile["stackColor"..i] or EnhancedRaidFrames.db.profile["debuffColor"..i]) end,
-			order = 170,
 		}
 		indicatorOptions.args["i"..i].args["colorByTime"..i] = {
 			type = "toggle",
@@ -216,12 +216,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			type = "toggle",
 			name = "Show CD animation",
 			desc = "Show the cooldown animation specifying the time left of the buff/debuff",
+			disabled = function () return not EnhancedRaidFrames.db.profile["showIcon"..i] end,
 			order = 311,
 		}
 		indicatorOptions.args["i"..i].args["showTooltip"..i] = {
 			type = "toggle",
-			name = "Show Tooltip",
+			name = "Show tooltip",
 			desc = "Show tooltip on mouseover",
+			disabled = function () return not EnhancedRaidFrames.db.profile["showIcon"..i] end,
 			order = 315,
 		}
 		indicatorOptions.args["i"..i].args["iconSize"..i] = {
@@ -231,8 +233,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			min = 1,
 			max = 30,
 			step = 1,
-			order = 320,
 			width = "full",
+			disabled = function () return not EnhancedRaidFrames.db.profile["showIcon"..i] end,
+			order = 320,
 		}
 	end
 
@@ -264,16 +267,18 @@ function EnhancedRaidFrames:CreateIconOptions()
 				min = 1,
 				max = 40,
 				step = 1,
+				disabled = function () return not EnhancedRaidFrames.db.profile.showRaidIcons end,
 				order = 10,
 			},
 			iconPosition = {
 				type = "select",
 				name = "Icon Position",
 				desc = "Position of the raid icon relative to the frame",
-				order = 20,
 				values = { ["TOPLEFT"] = "Top Left", ["TOP"] = "Top", ["TOPRIGHT"] = "Top Right" ,
 				           ["LEFT"] = "Left", ["CENTER"] = "Center", ["RIGHT"] = "Right",
 				           ["BOTTOMLEFT"] = "Bottom Left", ["BOTTOM"] = "Bottom", ["BOTTOMRIGHT"] = "Bottom Right"},
+				disabled = function () return not EnhancedRaidFrames.db.profile.showRaidIcons end,
+				order = 20,
 			},
 		}
 	}
