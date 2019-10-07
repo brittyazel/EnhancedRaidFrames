@@ -175,6 +175,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			type = "toggle",
 			name = "Color by stack size",
 			desc = "Color the text depending on the stack size, will override any other coloring (3+: Green, 2: Yellow, 1: Red)",
+			disabled = function () return EnhancedRaidFrames.db.profile["debuffColor"..i] end,
 			order = 160,
 		}
 		indicatorOptions.args["i"..i].args["debuffColor"..i] = {

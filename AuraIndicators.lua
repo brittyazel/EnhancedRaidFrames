@@ -94,6 +94,9 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		EnhancedRaidFrames:SecureHookScript(f[frameName][i], "OnEnter", function() EnhancedRaidFrames:Tooltip_OnEnter(f[frameName][i]) end)
 		EnhancedRaidFrames:SecureHookScript(f[frameName][i], "OnLeave", function() EnhancedRaidFrames:Tooltip_OnLeave(f[frameName][i]) end)
 	end
+
+	EnhancedRaidFrames:SetIndicatorAppearance(frame)
+
 end
 
 
@@ -170,12 +173,6 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 		duration = 0
 		expirationTime = 0
 		castBy = ""
-
-		-- Check if unit is alive/connected
-		if (not UnitIsConnected(unit)) or UnitIsDeadOrGhost(frame.displayedUnit) then
-			f[frameName][i]:Hide() --if the unit isn't connected or is dead, hide the indicators and break out of the loop
-			break
-		end
 
 		-- If we only are to show the indicator on me, then don't bother if I'm not the unit
 		if EnhancedRaidFrames.db.profile["me"..i] then
@@ -311,8 +308,10 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 							f[frameName][i].text:SetTextColor(1,0,0,1)
 						elseif count == 2 then
 							f[frameName][i].text:SetTextColor(1,1,0,1)
-						else
+						elseif count >= 3 then
 							f[frameName][i].text:SetTextColor(0,1,0,1)
+						else
+							f[frameName][i].text:SetTextColor(1,1,1,1)
 						end
 					elseif EnhancedRaidFrames.db.profile["debuffColor"..i] then -- Color by debuff type
 						if debuffType then
@@ -351,7 +350,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 		end
 
 		--set the texture or text on a frame, and show or hide the indicator frame
-		if icon ~= "" or displayText ~="" then
+		if (icon ~= "" or displayText ~="") and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) then
 			-- show the frame
 			f[frameName][i]:Show()
 			-- Show the text
@@ -369,7 +368,6 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 		else
 			CooldownFrame_Clear(f[frameName][i].cooldown);
 		end
-
 
 	end
 
