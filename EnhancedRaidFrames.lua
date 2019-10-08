@@ -26,6 +26,10 @@ local EnhancedRaidFrames = AddonTable.EnhancedRaidFrames
 EnhancedRaidFrames.allAuras = " "
 EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
 
+if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then --boolean check to set a flag if the current session is WoW Classic. Retail == 1, Classic == 2
+	EnhancedRaidFrames.isWoWClassic = true
+end
+
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
@@ -89,9 +93,11 @@ function EnhancedRaidFrames:Setup()
 	local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(EnhancedRaidFrames.db) --create the config panel for profiles
 
 	-- Per spec profiles
-	local LibDualSpec = LibStub('LibDualSpec-1.0')
-	LibDualSpec:EnhanceDatabase(EnhancedRaidFrames.db, "EnhancedRaidFrames") --enhance the database object with per spec profile features
-	LibDualSpec:EnhanceOptions(profiles, EnhancedRaidFrames.db) -- enhance the profiles config panel with per spec profile features
+	if not EnhancedRaidFrames.isWoWClassic then
+		local LibDualSpec = LibStub('LibDualSpec-1.0')
+		LibDualSpec:EnhanceDatabase(EnhancedRaidFrames.db, "EnhancedRaidFrames") --enhance the database object with per spec profile features
+		LibDualSpec:EnhanceOptions(profiles, EnhancedRaidFrames.db) -- enhance the profiles config panel with per spec profile features
+	end
 
 	-- Build our config panels
 	local generalOptions = EnhancedRaidFrames:CreateGeneralOptions()
@@ -110,7 +116,7 @@ function EnhancedRaidFrames:Setup()
 	dialog:AddToBlizOptions("Indicator Options", "Indicator Options", "Enhanced Raid Frames")
 	dialog:AddToBlizOptions("Icon Options", "Icon Options", "Enhanced Raid Frames")
 	dialog:AddToBlizOptions("Profiles", "Profiles", "Enhanced Raid Frames")
-end
+	end
 
 -- Create up or database defaults table
 function EnhancedRaidFrames:CreateDefaults ()
