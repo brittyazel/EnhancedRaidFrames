@@ -60,6 +60,11 @@ function EnhancedRaidFrames:OnEnable()
 
 	--hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. The payload of the original function carries the identity of the frame needing updating
 	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) EnhancedRaidFrames:UpdateIndicators(frame) end)
+	
+	-- Updates Range
+	hooksecurefunc("CompactUnitFrame_UpdateInRange", CompactUnitFrame_UpdateInRange)
+
+	EnhancedRaidFrames:SendMessage("RAID_FRAME_SCALED")
 
 	-- Hook raid icon updates
 	EnhancedRaidFrames:RegisterEvent("RAID_TARGET_UPDATE", "UpdateAllFrames")
@@ -103,11 +108,13 @@ function EnhancedRaidFrames:Setup()
 	local generalOptions = EnhancedRaidFrames:CreateGeneralOptions()
 	local indicatorOptions = EnhancedRaidFrames:CreateIndicatorOptions()
 	local iconOptions = EnhancedRaidFrames:CreateIconOptions()
+	local rangeOptions = EnhancedRaidFrames:CreateRangeOptions()
 
 	local config = LibStub("AceConfig-3.0")
 	config:RegisterOptionsTable("Enhanced Raid Frames", generalOptions)
 	config:RegisterOptionsTable("Indicator Options", indicatorOptions)
 	config:RegisterOptionsTable("Icon Options", iconOptions)
+	config:RegisterOptionsTable("Range and Scale Options", rangeOptions)
 	config:RegisterOptionsTable("Profiles", profiles)
 
 	-- Add to config panels to in-game interface options
@@ -115,6 +122,7 @@ function EnhancedRaidFrames:Setup()
 	dialog:AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
 	dialog:AddToBlizOptions("Indicator Options", "Indicator Options", "Enhanced Raid Frames")
 	dialog:AddToBlizOptions("Icon Options", "Icon Options", "Enhanced Raid Frames")
+	dialog:AddToBlizOptions("Range and Scale Options", "Range and Scale Options", "Enhanced Raid Frames")
 	dialog:AddToBlizOptions("Profiles", "Profiles", "Enhanced Raid Frames")
 	end
 
@@ -132,6 +140,12 @@ function EnhancedRaidFrames:CreateDefaults ()
 		showRaidIcons = true,
 		iconSize = 20,
 		iconPosition = "CENTER",
+		frameScale = 1,
+		range = {
+			spell = "Remove Lesser Curse",
+			alpha = {minimum = 0, maximum = 1},
+			background = {minimum = 0, maximum = 1}
+		}
 	}
 	for i = 1, 9 do
 		defaults.profile["auras"..i] = ""
@@ -183,4 +197,20 @@ function EnhancedRaidFrames:RefreshConfig()
 		end
 	end
 
+end
+
+
+EnhancedRaidFrames:RegisterMessage("RAID_FRAME_SCALED", function() CompactRaidFrameContainer:SetScale(EnhancedRaidFrames.db.profile.frameScale) end)
+
+function CompactUnitFrame_UpdateInRange(self)
+    if string.match(self.unit, "party") or string.match(self.unit, "raid") then
+        local inRange = IsSpellInRange(EnhancedRaidFrames.db.profile.range.spell, self.displayedUnit)
+        if inRange == 1 then
+            self:SetAlpha(EnhancedRaidFrames.db.profile.range.alpha.maximum)
+            self.background:SetAlpha(EnhancedRaidFrames.db.profile.range.background.maximum)
+        else
+            self:SetAlpha(EnhancedRaidFrames.db.profile.range.alpha.minimum)
+            self.background:SetAlpha(EnhancedRaidFrames.db.profile.range.background.minimum)
+        end
+    end
 end
