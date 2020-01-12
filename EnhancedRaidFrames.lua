@@ -60,9 +60,6 @@ function EnhancedRaidFrames:OnEnable()
 
 	--hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. The payload of the original function carries the identity of the frame needing updating
 	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) EnhancedRaidFrames:UpdateIndicators(frame) end)
-	
-	-- Updates Range
-	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) EnhancedRaidFrames:UpdateRangeAlpha(frame) end)
 
 	-- SetRaidFrameScale
 	CompactRaidFrameContainer:SetScale(EnhancedRaidFrames.db.profile.frameScale)
@@ -173,7 +170,6 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 			function(frame)
 				EnhancedRaidFrames:UpdateIndicators(frame, setAppearance);
 				EnhancedRaidFrames:UpdateIcons(frame, setAppearance);
-				EnhancedRaidFrames:UpdateRangeAlpha(frame)
 			end)
 end
 

@@ -13,6 +13,5 @@ Libs\embeds.xml
 
 EnhancedRaidFrames.lua
 AuraIndicators.lua
-RangeAndScale.lua
 RaidIcons.lua
 ConfigurationPanel.lua

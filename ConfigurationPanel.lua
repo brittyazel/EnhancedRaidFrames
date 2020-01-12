@@ -57,10 +57,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				name = "Raidframe Scale",
 				type = "range",
 				descStyle = "inline",
-				width = "full",
-				min = 0.25,
+				min = 0.5,
 				max = 2,
-				step = 0.05,
+				step = 0.1,
 				get = function() return EnhancedRaidFrames.db.profile.frameScale end,
 				set = function(info, val)
 					EnhancedRaidFrames.db.profile.frameScale = val
@@ -92,44 +91,6 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				desc = "Show the standard raid frame dispellable debuff icons",
 				order = 23,
 			},
-
-			-------------------------------------------------
-			--[[RangeHeader = {
-				type = "header",
-				name = "Range Indication Options",
-				width = "full",
-				order = 30,
-			},
-			frameMIN = {
-				order = 31,
-				name = "Healthbar alpha",
-				type = "range",
-				descStyle = "inline",
-				width = 1.75,
-				min = 0,
-				max = 1,
-				step = 0.05,
-				get = function() return EnhancedRaidFrames.db.profile.range.alpha.minimum end,
-				set = function(info, val)
-					EnhancedRaidFrames.db.profile.range.alpha.minimum = val
-					EnhancedRaidFrames:UpdateAllFrames()
-				end,
-			},
-			backgroundMIN = {
-				order = 32,
-				name = "Background alpha",
-				type = "range",
-				descStyle = "inline",
-				width = 1.75,
-				min = 0,
-				max = 1,
-				step = 0.05,
-				get = function() return EnhancedRaidFrames.db.profile.range.background.minimum end,
-				set = function(info, val)
-					EnhancedRaidFrames.db.profile.range.background.minimum = val
-					EnhancedRaidFrames:UpdateAllFrames()
-				end,
-			},]]
 		}
 
 	}
