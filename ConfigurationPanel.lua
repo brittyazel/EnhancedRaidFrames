@@ -287,3 +287,90 @@ function EnhancedRaidFrames:CreateIconOptions()
 	return iconOptions
 
 end
+
+function EnhancedRaidFrames:CreateRangeOptions()
+	local rangeOptions = {
+		type = 'group',
+		childGroups = 'tree',
+		get = function(item) return EnhancedRaidFrames.db.profile[item[#item]] end,
+		set = function(item, value) EnhancedRaidFrames.db.profile[item[#item]] = value; EnhancedRaidFrames:RefreshConfig() end,
+		args  = {
+			frameHEAD = {order = 2, name = "Raidframe", type = "header", width = "full"},
+			frameScale = {
+				order = 3,
+				name = "Raidframe scale",
+				type = "range",
+				descStyle = "inline",
+				width = "full",
+				min = 0.25,
+				max = 2,
+				step = 0.05,
+				get = function() return EnhancedRaidFrames.db.profile.frameScale end,
+				set = function(info, val)
+					EnhancedRaidFrames.db.profile.frameScale = val
+					EnhancedRaidFrames:SendMessage("RAID_FRAME_SCALED")
+				end
+			},
+			oorHEAD = {order = 4, name = "Rangecheck", type = "header", width = "full"},
+			frameMIN = {
+				order = 5,
+				name = "Healthbar alpha",
+				type = "range",
+				descStyle = "inline",
+				width = 1.75,
+				min = 0,
+				max = 1,
+				step = 0.05,
+				get = function() return EnhancedRaidFrames.db.profile.range.alpha.minimum end,
+				set = function(info, val) EnhancedRaidFrames.db.profile.range.alpha.minimum = val end
+			},
+			backgroundMIN = {
+				order = 6,
+				name = "Background alpha",
+				type = "range",
+				descStyle = "inline",
+				width = 1.75,
+				min = 0,
+				max = 1,
+				step = 0.05,
+				get = function() return EnhancedRaidFrames.db.profile.range.background.minimum end,
+				set = function(info, val) EnhancedRaidFrames.db.profile.range.background.minimum = val end
+			},
+			spell = {
+				order = 7,
+				name = "Range check reference spell",
+				type = "input",
+				desc = "Spell name or id",
+				width = 1.75,
+				get = function() return EnhancedRaidFrames.db.profile.range.spell end,
+				set = function(info, val) EnhancedRaidFrames.db.profile.range.spell = val end
+			},
+			spellRange = {
+				order = 8,
+				name = function()
+					local name, rank, icon, castTime, minRange, maxRange, spellId = GetSpellInfo(EnhancedRaidFrames.db.profile.range.spell)
+					if maxRange ~= nil then
+						return "Range of '" .. name .. "' is:"
+					else
+						return "error"
+					end
+				end,
+				type = "input",
+				descStyle = "inline",
+				width = 1.75,
+				disabled = true,
+				get = function()
+					local name, rank, icon, castTime, minRange, maxRange, spellId = GetSpellInfo(EnhancedRaidFrames.db.profile.range.spell)
+					if maxRange ~= nil then
+						return tostring(maxRange)
+					else
+						return "error"
+					end
+				end
+			}
+		}
+	}
+
+	return rangeOptions
+
+end
