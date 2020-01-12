@@ -64,6 +64,9 @@ function EnhancedRaidFrames:OnEnable()
 	-- SetRaidFrameScale
 	CompactRaidFrameContainer:SetScale(EnhancedRaidFrames.db.profile.frameScale)
 
+	-- Updates Range Alpha
+	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) EnhancedRaidFrames:UpdateInRange(frame) end)
+
 	-- Hook raid icon updates
 	EnhancedRaidFrames:RegisterEvent("RAID_TARGET_UPDATE", "UpdateAllFrames")
 	EnhancedRaidFrames:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateAllFrames")
@@ -136,12 +139,9 @@ function EnhancedRaidFrames:CreateDefaults ()
 		iconSize = 20,
 		iconPosition = "CENTER",
 		frameScale = 1,
-		range = {
-			spell = "Remove Lesser Curse",
-			alpha = {minimum = 0, maximum = 1},
-			background = {minimum = 0, maximum = 1}
+		rangeAlpha = 0.55,
 		}
-	}
+
 	for i = 1, 9 do
 		defaults.profile["auras"..i] = ""
 		defaults.profile["size"..i] = 10
@@ -170,6 +170,7 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 			function(frame)
 				EnhancedRaidFrames:UpdateIndicators(frame, setAppearance);
 				EnhancedRaidFrames:UpdateIcons(frame, setAppearance);
+				EnhancedRaidFrames:UpdateInRange(frame)
 			end)
 end
 
@@ -192,4 +193,17 @@ function EnhancedRaidFrames:RefreshConfig()
 		end
 	end
 
+end
+
+
+-- Hook for the CompactUnitFrame_UpdateInRange function
+function EnhancedRaidFrames:UpdateInRange(frame)
+	if string.match(frame.unit, "party") or string.match(frame.unit, "raid") then
+		local inRange, checkedRange = UnitInRange(frame.displayedUnit);
+		if ( checkedRange and not inRange ) then	--If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
+			frame:SetAlpha(EnhancedRaidFrames.db.profile.rangeAlpha);
+		else
+			frame:SetAlpha(1);
+		end
+	end
 end

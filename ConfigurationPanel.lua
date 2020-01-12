@@ -56,7 +56,6 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				order = 12,
 				name = "Raidframe Scale",
 				type = "range",
-				descStyle = "inline",
 				min = 0.5,
 				max = 2,
 				step = 0.1,
@@ -65,6 +64,19 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 					EnhancedRaidFrames.db.profile.frameScale = val
 					CompactRaidFrameContainer:SetScale(EnhancedRaidFrames.db.profile.frameScale)
 				end
+			},
+			frameMIN = {
+				order = 13,
+				name = "Out-of-Range Fade",
+				type = "range",
+				min = 0,
+				max = 1,
+				step = 0.05,
+				get = function() return EnhancedRaidFrames.db.profile.rangeAlpha end,
+				set = function(info, val)
+					EnhancedRaidFrames.db.profile.rangeAlpha = val
+					EnhancedRaidFrames:UpdateAllFrames()
+				end,
 			},
 
 			-------------------------------------------------
