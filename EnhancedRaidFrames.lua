@@ -122,7 +122,7 @@ function EnhancedRaidFrames:Setup()
 	dialog:AddToBlizOptions("Indicator Options", "Indicator Options", "Enhanced Raid Frames")
 	dialog:AddToBlizOptions("Icon Options", "Icon Options", "Enhanced Raid Frames")
 	dialog:AddToBlizOptions("Profiles", "Profiles", "Enhanced Raid Frames")
-	end
+end
 
 -- Create up or database defaults table
 function EnhancedRaidFrames:CreateDefaults ()
@@ -140,7 +140,7 @@ function EnhancedRaidFrames:CreateDefaults ()
 		iconPosition = "CENTER",
 		frameScale = 1,
 		rangeAlpha = 0.55,
-		}
+	}
 
 	for i = 1, 9 do
 		defaults.profile["auras"..i] = ""
@@ -198,6 +198,10 @@ end
 
 -- Hook for the CompactUnitFrame_UpdateInRange function
 function EnhancedRaidFrames:UpdateInRange(frame)
+	if not frame.unit then
+		return
+	end
+
 	if string.match(frame.unit, "party") or string.match(frame.unit, "raid") then
 		local inRange, checkedRange = UnitInRange(frame.displayedUnit);
 		if ( checkedRange and not inRange ) then	--If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)

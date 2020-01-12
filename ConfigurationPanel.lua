@@ -65,7 +65,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 					CompactRaidFrameContainer:SetScale(EnhancedRaidFrames.db.profile.frameScale)
 				end
 			},
-			frameMIN = {
+			outOfRangeFade = {
 				order = 13,
 				name = "Out-of-Range Fade",
 				type = "range",
