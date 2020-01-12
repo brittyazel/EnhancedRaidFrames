@@ -62,9 +62,10 @@ function EnhancedRaidFrames:OnEnable()
 	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) EnhancedRaidFrames:UpdateIndicators(frame) end)
 	
 	-- Updates Range
-	hooksecurefunc("CompactUnitFrame_UpdateInRange", CompactUnitFrame_UpdateInRange)
+	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) EnhancedRaidFrames:UpdateRangeAlpha(frame) end)
 
-	EnhancedRaidFrames:SendMessage("RAID_FRAME_SCALED")
+	-- SetRaidFrameScale
+	CompactRaidFrameContainer:SetScale(EnhancedRaidFrames.db.profile.frameScale)
 
 	-- Hook raid icon updates
 	EnhancedRaidFrames:RegisterEvent("RAID_TARGET_UPDATE", "UpdateAllFrames")
@@ -108,13 +109,11 @@ function EnhancedRaidFrames:Setup()
 	local generalOptions = EnhancedRaidFrames:CreateGeneralOptions()
 	local indicatorOptions = EnhancedRaidFrames:CreateIndicatorOptions()
 	local iconOptions = EnhancedRaidFrames:CreateIconOptions()
-	local rangeOptions = EnhancedRaidFrames:CreateRangeOptions()
 
 	local config = LibStub("AceConfig-3.0")
 	config:RegisterOptionsTable("Enhanced Raid Frames", generalOptions)
 	config:RegisterOptionsTable("Indicator Options", indicatorOptions)
 	config:RegisterOptionsTable("Icon Options", iconOptions)
-	config:RegisterOptionsTable("Range and Scale Options", rangeOptions)
 	config:RegisterOptionsTable("Profiles", profiles)
 
 	-- Add to config panels to in-game interface options
@@ -122,7 +121,6 @@ function EnhancedRaidFrames:Setup()
 	dialog:AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
 	dialog:AddToBlizOptions("Indicator Options", "Indicator Options", "Enhanced Raid Frames")
 	dialog:AddToBlizOptions("Icon Options", "Icon Options", "Enhanced Raid Frames")
-	dialog:AddToBlizOptions("Range and Scale Options", "Range and Scale Options", "Enhanced Raid Frames")
 	dialog:AddToBlizOptions("Profiles", "Profiles", "Enhanced Raid Frames")
 	end
 
@@ -175,6 +173,7 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 			function(frame)
 				EnhancedRaidFrames:UpdateIndicators(frame, setAppearance);
 				EnhancedRaidFrames:UpdateIcons(frame, setAppearance);
+				EnhancedRaidFrames:UpdateRangeAlpha(frame)
 			end)
 end
 
@@ -197,20 +196,4 @@ function EnhancedRaidFrames:RefreshConfig()
 		end
 	end
 
-end
-
-
-EnhancedRaidFrames:RegisterMessage("RAID_FRAME_SCALED", function() CompactRaidFrameContainer:SetScale(EnhancedRaidFrames.db.profile.frameScale) end)
-
-function CompactUnitFrame_UpdateInRange(self)
-    if string.match(self.unit, "party") or string.match(self.unit, "raid") then
-        local inRange = IsSpellInRange(EnhancedRaidFrames.db.profile.range.spell, self.displayedUnit)
-        if inRange == 1 then
-            self:SetAlpha(EnhancedRaidFrames.db.profile.range.alpha.maximum)
-            self.background:SetAlpha(EnhancedRaidFrames.db.profile.range.background.maximum)
-        else
-            self:SetAlpha(EnhancedRaidFrames.db.profile.range.alpha.minimum)
-            self.background:SetAlpha(EnhancedRaidFrames.db.profile.range.background.minimum)
-        end
-    end
 end

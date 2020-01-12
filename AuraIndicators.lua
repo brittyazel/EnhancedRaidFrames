@@ -65,7 +65,7 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 
 		--we further define this frame element in SetIndicatorAppearance. This is just a starting state
 		f[frameName][i].text = f[frameName][i]:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the animation, text should be on the parent frame
-		f[frameName][i].text:SetPoint("CENTER", f[frameName][i].cooldown, "CENTER", 0, 0)
+		f[frameName][i].text:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
 
 		if i == 1 then
 			f[frameName][i]:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, -PAD)
@@ -340,12 +340,33 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 			end
 		end
 
-		-- Only show when it's missing?
+		-- Only show when it's missing
 		if EnhancedRaidFrames.db.profile["missing"..i] then
 			icon = ""
 			displayText = ""
-			if not locatedAuraIndex then -- No n means we didn't find the spell
-				displayText = "■"
+			if not locatedAuraIndex then -- No locatedAuraIndex means we didn't find the spell
+				if EnhancedRaidFrames.db.profile["showIcon"..i] then
+					--try to find an icon
+					if EnhancedRaidFrames.auraStrings[i][1] then --if the string is empty do nothing
+						if string.lower(EnhancedRaidFrames.auraStrings[i][1]) == "poison" then
+							icon = 132104
+						elseif string.lower(EnhancedRaidFrames.auraStrings[i][1]) == "disease" then
+							icon = 132099
+						elseif string.lower(EnhancedRaidFrames.auraStrings[i][1]) == "curse" then
+							icon = 132095
+						elseif string.lower(EnhancedRaidFrames.auraStrings[i][1]) == "magic" then
+							icon = 135894
+						else
+							_,_,icon = GetSpellInfo(EnhancedRaidFrames.auraStrings[i][1])
+						end
+
+						if not icon then
+							displayText = "X" --if you can't find an icon, display an X
+						end
+					end
+				else
+					displayText = "X" --if we aren't showing icons, display and X
+				end
 			end
 		end
 
