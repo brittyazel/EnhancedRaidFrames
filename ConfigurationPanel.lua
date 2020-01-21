@@ -51,18 +51,21 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "toggle",
 				name = "Stock Buff Icons",
 				desc = "Show the standard raid frame buff icons",
+				width = 1.15,
 				order = 11,
 			},
 			showDebuffs = {
 				type = "toggle",
 				name = "Stock Debuff Icons",
 				desc = "Show the standard raid frame debuff icons",
+				width = 1.15,
 				order = 12,
 			},
 			showDispelDebuffs = {
 				type = "toggle",
 				name = "Stock Dispellable Icons",
 				desc = "Show the standard raid frame dispellable debuff icons",
+				width = 1.15,
 				order = 13,
 			},
 
@@ -78,6 +81,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				name = "Indicator Font",
 				desc = "Adjust the font used for the indicators",
 				values = AceGUIWidgetLSMlists.font,
+				width = 1.15,
 				order = 21,
 			},
 			-------------------------------------------------
@@ -87,20 +91,22 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				order = 30,
 			},
 			frameScale = {
-				order = 31,
 				name = "Raidframe Scale",
 				type = "range",
 				min = 0.5,
 				max = 2,
 				step = 0.1,
+				width = 1.15,
+				order = 31,
 			},
 			rangeAlpha = {
-				order = 32,
 				name = "Out-of-Range Fade",
 				type = "range",
 				min = 0,
 				max = 1,
 				step = 0.05,
+				width = 1.15,
+				order = 32,
 			},
 			backgroundAlpha = {
 				order = 33,
@@ -108,6 +114,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "range",
 				min = 0,
 				max = 1,
+				width = 1.15,
 				step = 0.05,
 			},
 		}
@@ -123,7 +130,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 
 	local indicatorOptions = {
 		type = 'group',
-		childGroups = 'select',
+		childGroups = 'tree',
 		get = function(item) return EnhancedRaidFrames.db.profile[item[#item]] end,
 		set = function(item, value)
 			EnhancedRaidFrames.db.profile[item[#item]] = value
@@ -132,7 +139,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		args  = {
 			instructions = {
 				type = "description",
-				name = "Please select an indicator position from the dropdown menu below:",
+				name = "Please select an indicator position from the menu below:",
 				order = 1,
 			},
 		}
@@ -149,7 +156,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args["i"..i].args = {}
 		indicatorOptions.args["i"..i].args["auras"..i] = {
 			type = "input",
-			name = "Buffs/Debuff watch list",
+			name = "Buff/Debuff watch list:",
 			desc = "The buffs and/or debuffs to show for the indicator in this position.\n"..
 			"\n"..
 			"Write the name or spell ID of each buff/debuff on a separate line. i.e: 'Rejuvenation', 'Regrowth', 'Wild Growth', etc.\n"..
@@ -165,6 +172,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			order = 1,
 			width = "full",
 		}
+
+		--------------------------------------------
 		indicatorOptions.args["i"..i].args.visibilityHeader = {
 			type = "header",
 			name = "Visibility",
@@ -312,6 +321,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 				type = "toggle",
 				name = "Show Raid Icons",
 				desc = "Show raid marker icons on the raid frames",
+				width = 1.15,
 				order = 3,
 			},
 			iconPosition = {
@@ -322,6 +332,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 				           ["LEFT"] = "Left", ["CENTER"] = "Center", ["RIGHT"] = "Right",
 				           ["BOTTOMLEFT"] = "Bottom Left", ["BOTTOM"] = "Bottom", ["BOTTOMRIGHT"] = "Bottom Right"},
 				disabled = function () return not EnhancedRaidFrames.db.profile.showRaidIcons end,
+				width = 1.15,
 				order = 10,
 			},
 
@@ -339,6 +350,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 				max = 40,
 				step = 1,
 				disabled = function () return not EnhancedRaidFrames.db.profile.showRaidIcons end,
+				width = 1.15,
 				order = 21,
 			},
 			iconVerticalOffset = {
@@ -349,6 +361,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 				max = 20,
 				step = 1,
 				disabled = function () return not EnhancedRaidFrames.db.profile.showRaidIcons end,
+				width = 1.15,
 				order = 22,
 			},
 			iconHorizontalOffset = {
@@ -359,6 +372,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 				max = 20,
 				step = 1,
 				disabled = function () return not EnhancedRaidFrames.db.profile.showRaidIcons end,
+				width = 1.15,
 				order = 23,
 			},
 		}
