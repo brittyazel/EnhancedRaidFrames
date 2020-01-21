@@ -1,6 +1,6 @@
 # Enhanced Raid Frames
 
-Enhanced Raid Frames is a raid frame utility addon for WoW 8.2.5+ that brings configurable indicators for enhancing the built in raid frames, allowing them to function much closer to add-ons such as Grid or Vuhdo.
+Enhanced Raid Frames is a raid frame utility addon for WoW 8.3+ that brings configurable indicators for enhancing the built in raid frames, allowing them to function much closer to add-ons such as Grid or Vuhdo.
 
 There are 9 indicators for each raid member, forming a 3x3 grid overlaying each unit frame, that allow for showing the presence of and countdown times of buffs and debuffs in any configuration that suits your needs.
 
