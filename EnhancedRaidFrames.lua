@@ -135,6 +135,7 @@ function EnhancedRaidFrames:CreateDefaults ()
 		frameScale = 1,
 		rangeAlpha = 0.55,
 		backgroundAlpha = 1;
+		customRange=30,
 
 		showRaidIcons = true,
 		iconSize = 20,
@@ -208,7 +209,7 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 	end
 
 	if string.match(frame.unit, "party") or string.match(frame.unit, "raid") then
-		local inRange, checkedRange = UnitInRange(frame.displayedUnit)
+		local inRange, checkedRange = EnhancedRaidFrames:InRangeCheck(frame.displayedUnit)
 		if ( checkedRange and not inRange ) then	--If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
 			frame:SetAlpha(EnhancedRaidFrames.db.profile.rangeAlpha)
 		else
@@ -216,6 +217,21 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 		end
 	end
 end
+
+local rc = LibStub("LibRangeCheck-2.0")
+-- Custom range check, based on a option
+function EnhancedRaidFrames:InRangeCheck(unit)
+	local inRange, checkedRange = false, false
+	if(EnhancedRaidFrames.db.profile.customRangeCheck) then
+		local rangeCheckker = rc:GetSmartChecker(EnhancedRaidFrames.db.profile.customRange)
+		inRange = rangeCheckker(unit)
+		checkedRange = not UnitIsVisible(unit) or not UnitIsDeadOrGhost(unit)
+	else
+		inRange, checkedRange = UnitInRange(unit)
+	end
+	return inRange, checkedRange
+end
+
 
 -- Set the background alpha amount to allow full transparency if need be
 function EnhancedRaidFrames:SetBackgroundAlpha(frame)

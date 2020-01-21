@@ -117,6 +117,20 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				width = 1.15,
 				step = 0.05,
 			},
+			customRangeCheck = {
+				name = "Custom range check",
+				type = "toggle",
+				desc = "Changes the default 40 yards range.",
+				order = 34,
+			},
+			customRange = {
+				name = "Select a Customrange",
+				type = "select",
+				desc = "Changes the default 40 yards range to 30 yards.",
+				disabled = function() return not EnhancedRaidFrames.db.profile.customRangeCheck end,
+				values = { [5] = "Melee", [10] = "10 yards", [20] = "20 yards", [30] = "30 yards", [35] = "35 yards"},
+				order = 35,
+			},
 		}
 
 	}
