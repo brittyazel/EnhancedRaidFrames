@@ -45,17 +45,20 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 	if not icons[frameName] then return end
 	local tex = icons[frameName].texture
 
+	local iconVerticalOffset = EnhancedRaidFrames.db.profile.iconVerticalOffset
+	local iconHorizontalOffset = EnhancedRaidFrames.db.profile.iconHorizontalOffset
+
 	-- Set position relative to frame
 	tex:ClearAllPoints()
-	if pos == "TOPLEFT" then tex:SetPoint("TOPLEFT", pad, -pad) end
-	if pos == "TOP" then tex:SetPoint("TOP", 0, -pad) end
-	if pos == "TOPRIGHT" then tex:SetPoint("TOPRIGHT", -pad, -pad) end
-	if pos == "LEFT" then tex:SetPoint("LEFT", pad, 0) end
-	if pos == "CENTER" then tex:SetPoint("CENTER", 0, 0) end
-	if pos == "RIGHT" then tex:SetPoint("RIGHT", -pad, 0) end
-	if pos == "BOTTOMLEFT" then tex:SetPoint("BOTTOMLEFT", pad, pad) end
-	if pos == "BOTTOM" then tex:SetPoint("BOTTOM", 0, pad) end
-	if pos == "BOTTOMRIGHT" then tex:SetPoint("BOTTOMRIGHT", -pad, pad) end
+	if pos == "TOPLEFT" then tex:SetPoint("TOPLEFT", pad + iconHorizontalOffset, -pad + iconVerticalOffset) end
+	if pos == "TOP" then tex:SetPoint("TOP", 0 + iconHorizontalOffset, -pad + iconVerticalOffset) end
+	if pos == "TOPRIGHT" then tex:SetPoint("TOPRIGHT", -pad + iconHorizontalOffset, -pad + iconVerticalOffset) end
+	if pos == "LEFT" then tex:SetPoint("LEFT", pad + iconHorizontalOffset, 0 + iconVerticalOffset) end
+	if pos == "CENTER" then tex:SetPoint("CENTER", 0 + iconHorizontalOffset, 0 + iconVerticalOffset) end
+	if pos == "RIGHT" then tex:SetPoint("RIGHT", -pad + iconHorizontalOffset, 0 + iconVerticalOffset) end
+	if pos == "BOTTOMLEFT" then tex:SetPoint("BOTTOMLEFT", pad + iconHorizontalOffset, pad + iconVerticalOffset) end
+	if pos == "BOTTOM" then tex:SetPoint("BOTTOM", 0 + iconHorizontalOffset, pad + iconVerticalOffset) end
+	if pos == "BOTTOMRIGHT" then tex:SetPoint("BOTTOMRIGHT", -pad + iconHorizontalOffset, pad + iconVerticalOffset) end
 
 	-- Set the icon size
 	tex:SetWidth(EnhancedRaidFrames.db.profile.iconSize)

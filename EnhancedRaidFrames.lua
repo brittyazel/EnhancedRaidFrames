@@ -61,9 +61,6 @@ function EnhancedRaidFrames:OnEnable()
 	--hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. The payload of the original function carries the identity of the frame needing updating
 	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) EnhancedRaidFrames:UpdateIndicators(frame) end)
 
-	-- SetRaidFrameScale
-	CompactRaidFrameContainer:SetScale(EnhancedRaidFrames.db.profile.frameScale)
-
 	-- Updates Range Alpha
 	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) EnhancedRaidFrames:UpdateInRange(frame) end)
 
@@ -135,11 +132,16 @@ function EnhancedRaidFrames:CreateDefaults ()
 		showDebuffs = true,
 		showDispelDebuffs=true,
 
+		frameScale = 1,
+		rangeAlpha = 0.55,
+		backgroundAlpha = 1;
+
 		showRaidIcons = true,
 		iconSize = 20,
 		iconPosition = "CENTER",
-		frameScale = 1,
-		rangeAlpha = 0.55,
+		iconVerticalOffset = 0,
+		iconHorizontalOffset=0,
+
 	}
 
 	for i = 1, 9 do
@@ -171,6 +173,7 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 				EnhancedRaidFrames:UpdateIndicators(frame, setAppearance);
 				EnhancedRaidFrames:UpdateIcons(frame, setAppearance);
 				EnhancedRaidFrames:UpdateInRange(frame)
+				EnhancedRaidFrames:SetBackgroundAlpha(frame)
 			end)
 end
 
@@ -179,6 +182,8 @@ end
 function EnhancedRaidFrames:RefreshConfig()
 
 	EnhancedRaidFrames:UpdateAllFrames(true)
+
+	CompactRaidFrameContainer:SetScale(EnhancedRaidFrames.db.profile.frameScale)
 
 	-- Format aura strings
 	EnhancedRaidFrames.allAuras = " "
@@ -203,11 +208,22 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 	end
 
 	if string.match(frame.unit, "party") or string.match(frame.unit, "raid") then
-		local inRange, checkedRange = UnitInRange(frame.displayedUnit);
+		local inRange, checkedRange = UnitInRange(frame.displayedUnit)
 		if ( checkedRange and not inRange ) then	--If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
-			frame:SetAlpha(EnhancedRaidFrames.db.profile.rangeAlpha);
+			frame:SetAlpha(EnhancedRaidFrames.db.profile.rangeAlpha)
 		else
 			frame:SetAlpha(1);
 		end
+	end
+end
+
+-- Set the background alpha amount to allow full transparency if need be
+function EnhancedRaidFrames:SetBackgroundAlpha(frame)
+	if not frame.unit then
+		return
+	end
+
+	if string.match(frame.unit, "party") or string.match(frame.unit, "raid") or string.match(frame.unit, "player") then
+		frame.background:SetAlpha(EnhancedRaidFrames.db.profile.backgroundAlpha)
 	end
 end
