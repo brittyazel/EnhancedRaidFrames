@@ -126,7 +126,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			customRange = {
 				name = "Select a Custom Distance",
 				type = "select",
-				desc = "Changes the default 40 yards out-of-range distance to teh specified distance.",
+				desc = "Changes the default 40 yard out-of-range distance to the specified distance.",
 				disabled = function() return not EnhancedRaidFrames.db.profile.customRangeCheck end,
 				values = { [5] = "Melee", [10] = "10 yards", [20] = "20 yards", [30] = "30 yards", [35] = "35 yards"},
 				width = 1.15,
