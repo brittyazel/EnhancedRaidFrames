@@ -84,6 +84,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				width = 1.15,
 				order = 21,
 			},
+
 			-------------------------------------------------
 			visualOptions = {
 				type = "header",
@@ -99,6 +100,38 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				width = 1.15,
 				order = 31,
 			},
+			backgroundAlpha = {
+				name = "Background Transparency",
+				type = "range",
+				min = 0,
+				max = 1,
+				width = 1.15,
+				step = 0.05,
+				order = 33,
+			},
+
+			-------------------------------------------------
+			visualOptions = {
+				type = "header",
+				name = "Out-of-Range Indicator Options",
+				order = 40,
+			},
+			customRangeCheck = {
+				name = "Override Default Distance",
+				type = "toggle",
+				desc = "Overrides the default out-of-range indicator distance (default 40 yards).",
+				width = 1.15,
+				order = 41,
+			},
+			customRange = {
+				name = "Select a Custom Distance",
+				type = "select",
+				desc = "Changes the default 40 yards out-of-range distance to teh specified distance.",
+				disabled = function() return not EnhancedRaidFrames.db.profile.customRangeCheck end,
+				values = { [5] = "Melee", [10] = "10 yards", [20] = "20 yards", [30] = "30 yards", [35] = "35 yards"},
+				width = 1.15,
+				order = 42,
+			},
 			rangeAlpha = {
 				name = "Out-of-Range Fade",
 				type = "range",
@@ -106,30 +139,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				max = 1,
 				step = 0.05,
 				width = 1.15,
-				order = 32,
-			},
-			backgroundAlpha = {
-				order = 33,
-				name = "Background Transparency",
-				type = "range",
-				min = 0,
-				max = 1,
-				width = 1.15,
-				step = 0.05,
-			},
-			customRangeCheck = {
-				name = "Custom range check",
-				type = "toggle",
-				desc = "Changes the default 40 yards range.",
-				order = 34,
-			},
-			customRange = {
-				name = "Select a Customrange",
-				type = "select",
-				desc = "Changes the default 40 yards range to 30 yards.",
-				disabled = function() return not EnhancedRaidFrames.db.profile.customRangeCheck end,
-				values = { [5] = "Melee", [10] = "10 yards", [20] = "20 yards", [30] = "30 yards", [35] = "35 yards"},
-				order = 35,
+				order = 43,
 			},
 		}
 
