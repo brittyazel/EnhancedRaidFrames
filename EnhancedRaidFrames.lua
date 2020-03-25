@@ -23,7 +23,7 @@ local _, AddonTable = ... --make use of the default addon namespace
 AddonTable.EnhancedRaidFrames = LibStub( "AceAddon-3.0" ):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
 local EnhancedRaidFrames = AddonTable.EnhancedRaidFrames
 
-local rc = LibStub("LibRangeCheck-2.0")
+local LibRangeCheck = LibStub("LibRangeCheck-2.0")
 
 EnhancedRaidFrames.allAuras = " "
 EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
@@ -211,27 +211,23 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 	end
 
 	if string.match(frame.unit, "party") or string.match(frame.unit, "raid") then
-		local inRange, checkedRange = EnhancedRaidFrames:InRangeCheck(frame.displayedUnit)
-		if ( checkedRange and not inRange ) then	--If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
+		local inRange, checkedRange
+
+		--if we have a custom range set use LibRanchCheck, otherwise use default UnitInRange function
+		if(EnhancedRaidFrames.db.profile.customRangeCheck) then
+			local rangeChecker = LibRangeCheck:GetFriendChecker(EnhancedRaidFrames.db.profile.customRange)
+			inRange = rangeChecker(frame.unit)
+			checkedRange = not UnitIsVisible(frame.unit) or not UnitIsDeadOrGhost(frame.unit)
+		else
+			inRange, checkedRange = UnitInRange(frame.unit)
+		end
+
+		if (checkedRange and not inRange) then	--If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
 			frame:SetAlpha(EnhancedRaidFrames.db.profile.rangeAlpha)
 		else
 			frame:SetAlpha(1);
 		end
 	end
-end
-
-
--- Custom range check, based on a option
-function EnhancedRaidFrames:InRangeCheck(unit)
-	local inRange, checkedRange = false, false
-	if(EnhancedRaidFrames.db.profile.customRangeCheck) then
-		local rangeChecker = rc:GetSmartChecker(EnhancedRaidFrames.db.profile.customRange)
-		inRange = rangeChecker(unit)
-		checkedRange = not UnitIsVisible(unit) or not UnitIsDeadOrGhost(unit)
-	else
-		inRange, checkedRange = UnitInRange(unit)
-	end
-	return inRange, checkedRange
 end
 
 

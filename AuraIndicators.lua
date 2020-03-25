@@ -471,16 +471,14 @@ function EnhancedRaidFrames:Tooltip_OnEnter(buffFrame)
 	local auraIndex = buffFrame.auraIndex
 	local buff = buffFrame.buff
 
-	local displayedUnit = frame.displayedUnit
-
 	-- Set the tooltip
 	if auraIndex and auraIndex ~= -1 and buffFrame.icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
 		-- Set the buff/debuff as tooltip and anchor to the cursor
 		GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
 		if buff then
-			GameTooltip:SetUnitBuff(displayedUnit, auraIndex)
+			GameTooltip:SetUnitBuff(frame.unit, auraIndex)
 		else
-			GameTooltip:SetUnitDebuff(displayedUnit, auraIndex)
+			GameTooltip:SetUnitDebuff(frame.unit, auraIndex)
 		end
 	else
 		--causes the tooltip to reset to the "default" tooltip which is usually information about the character
