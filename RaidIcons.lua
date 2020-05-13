@@ -91,10 +91,19 @@ function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
 	end
 
 	-- Get icon on unit
-	local icon = GetRaidTargetIndex(unit)
+	local index = GetRaidTargetIndex(unit)
 
-	if icon then
-		icons[frameName].texture:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcon_"..icon)
+	if index and index >= 1 and index <= 8 then
+		--the icons are stored in a single image, and UnitPopupButtons["RAID_TARGET_#"] is a table that contains the information for the texture and coords for each icon sub-texture
+		local iconTable = UnitPopupButtons["RAID_TARGET_"..index]
+		local texture = iconTable.icon
+		local leftTexCoord = iconTable.tCoordLeft
+		local rightTexCoord = iconTable.tCoordRight
+		local topTexCoord = iconTable.tCoordTop
+		local bottomTexCoord = iconTable.tCoordBottom
+
+		icons[frameName].texture:SetTexture(texture, nil, nil, "TRILINEAR") --use trilinear filtering to reduce jaggies
+		icons[frameName].texture:SetTexCoord(leftTexCoord, rightTexCoord, topTexCoord, bottomTexCoord) --texture contains all the icons in a single texture, and we need to set coords to crop out the other icons
 		icons[frameName].texture:Show()
 	else
 		icons[frameName].texture:Hide()
