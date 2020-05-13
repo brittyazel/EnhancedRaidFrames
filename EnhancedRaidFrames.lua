@@ -19,9 +19,9 @@
 --as determined by Szandos. All other copyrights for
 --Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
 
-local _, AddonTable = ... --make use of the default addon namespace
-AddonTable.EnhancedRaidFrames = LibStub( "AceAddon-3.0" ):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
-local EnhancedRaidFrames = AddonTable.EnhancedRaidFrames
+local addonName, addonTable = ... --make use of the default addon namespace
+addonTable.EnhancedRaidFrames = LibStub( "AceAddon-3.0" ):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
+local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
 local LibRangeCheck = LibStub("LibRangeCheck-2.0")
 
@@ -42,7 +42,7 @@ end
 function EnhancedRaidFrames:OnInitialize()
 	if EnhancedRaidFrames.isWoWClassic then
 		local LibClassicDurations = LibStub("LibClassicDurations")
-		LibClassicDurations:Register("EnhancedRaidFrames") -- tell library it's being used and should start working
+		LibClassicDurations:Register(addonName) -- tell library it's being used and should start working
 		EnhancedRaidFrames.UnitAuraWrapper = LibClassicDurations.UnitAuraWrapper
 	end
 
@@ -53,7 +53,6 @@ function EnhancedRaidFrames:OnInitialize()
 	EnhancedRaidFrames.db.RegisterCallback(EnhancedRaidFrames, "OnProfileChanged", "RefreshConfig")
 	EnhancedRaidFrames.db.RegisterCallback(EnhancedRaidFrames, "OnProfileCopied", "RefreshConfig")
 	EnhancedRaidFrames.db.RegisterCallback(EnhancedRaidFrames, "OnProfileReset", "RefreshConfig")
-
 end
 
 --- **OnEnable** which gets called during the PLAYER_LOGIN event, when most of the data provided by the game is already present.

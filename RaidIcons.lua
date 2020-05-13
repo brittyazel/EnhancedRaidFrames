@@ -20,8 +20,8 @@
 --Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
 
 
-local _, AddonTable = ...
-local EnhancedRaidFrames = AddonTable.EnhancedRaidFrames
+local addonName, addonTable = ...
+local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
 local icons = {}
 
