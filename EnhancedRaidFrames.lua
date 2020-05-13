@@ -40,6 +40,11 @@ end
 --- do init tasks here, like loading the Saved Variables
 --- or setting up slash commands.
 function EnhancedRaidFrames:OnInitialize()
+	if EnhancedRaidFrames.isWoWClassic then
+		local LibClassicDurations = LibStub("LibClassicDurations")
+		LibClassicDurations:Register("EnhancedRaidFrames") -- tell library it's being used and should start working
+		EnhancedRaidFrames.UnitAuraWrapper = LibClassicDurations.UnitAuraWrapper
+	end
 
 	-- Set up config pane
 	EnhancedRaidFrames:Setup()

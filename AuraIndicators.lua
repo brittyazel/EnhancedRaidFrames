@@ -407,7 +407,11 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 
 	i = 1
 	while (true) do
-		auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellId = UnitBuff(unit, i)
+		if not EnhancedRaidFrames.isWoWClassic then
+			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellId = UnitAura(unit, i, "HELPFUL")
+		else
+			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellId = EnhancedRaidFrames.UnitAuraWrapper(unit, i, "HELPFUL") --for wow classic. This is the libclassicdurations wrapper
+		end
 
 		if not spellId then --break the loop once we have no more buffs
 			break
@@ -432,7 +436,11 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 	-- Get all unit debuffs
 	i = 1
 	while (true) do
-		auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellId  = UnitDebuff(unit, i)
+		if not EnhancedRaidFrames.isWoWClassic then
+			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellId  = UnitAura(unit, i, "HARMFUL")
+		else
+			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellId  = EnhancedRaidFrames.UnitAuraWrapper(unit, i, "HARMFUL")
+		end
 
 		if not spellId then --break the loop once we have no more buffs
 			break
