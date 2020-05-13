@@ -19,7 +19,6 @@
 --as determined by Szandos. All other copyrights for
 --Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
 
-
 local addonName, addonTable = ...
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
@@ -108,5 +107,4 @@ function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
 	else
 		icons[frameName].texture:Hide()
 	end
-
 end

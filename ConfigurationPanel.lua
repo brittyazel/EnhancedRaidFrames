@@ -146,12 +146,10 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 	}
 
 	return generalOptions
-
 end
 
 
 function EnhancedRaidFrames:CreateIndicatorOptions()
-
 	local indicatorOptions = {
 		type = 'group',
 		childGroups = 'tree',
@@ -403,5 +401,4 @@ function EnhancedRaidFrames:CreateIconOptions()
 	}
 
 	return iconOptions
-
 end

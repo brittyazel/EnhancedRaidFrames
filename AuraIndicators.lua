@@ -19,7 +19,6 @@
 --as determined by Szandos. All other copyrights for
 --Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
 
-
 local addonName, addonTable = ...
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
@@ -29,12 +28,10 @@ local PAD = 2
 local unitBuffs = {} -- Matrix to keep a list of all buffs on all units
 local unitDebuffs = {} -- Matrix to keep a list of all debuffs on all units
 
-
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
 function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
-
 	if not EnhancedRaidFrames.db.profile.showBuffs then
 		CompactUnitFrame_HideAllBuffs(frame)
 	end
@@ -46,7 +43,6 @@ function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
 	if not EnhancedRaidFrames.db.profile.showDispelDebuffs then
 		CompactUnitFrame_HideAllDispelDebuffs(frame)
 	end
-
 end
 
 
@@ -96,7 +92,6 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 	end
 
 	EnhancedRaidFrames:SetIndicatorAppearance(frame)
-
 end
 
 
@@ -391,13 +386,11 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 		end
 
 	end
-
 end
 
 
 -- Get all unit auras
 function EnhancedRaidFrames:UpdateUnitAuras(unit)
-
 	-- Create or clear out the tables for the unit
 	unitBuffs[unit] = {}
 	unitDebuffs[unit] = {}
@@ -432,7 +425,6 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 		i = i + 1
 	end
 
-
 	-- Get all unit debuffs
 	i = 1
 	while (true) do
@@ -461,7 +453,6 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 		end
 		i = i + 1
 	end
-
 end
 
 
@@ -470,7 +461,6 @@ end
 ---Tooltip Code
 -------------------------------
 function EnhancedRaidFrames:Tooltip_OnEnter(buffFrame)
-
 	if not EnhancedRaidFrames.db.profile["showTooltip"..buffFrame.position] then --don't show tooltips unless we have the option set for this position
 		return
 	end
@@ -500,7 +490,6 @@ end
 
 
 function EnhancedRaidFrames:Tooltip_OnLeave(buffFrame)
-
 	if not EnhancedRaidFrames.db.profile.showTooltips then --don't show tooltips unless we have the option set
 		return
 	end

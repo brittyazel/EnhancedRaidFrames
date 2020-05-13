@@ -20,7 +20,7 @@
 --Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
 
 local addonName, addonTable = ... --make use of the default addon namespace
-addonTable.EnhancedRaidFrames = LibStub( "AceAddon-3.0" ):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
+addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
 local LibRangeCheck = LibStub("LibRangeCheck-2.0")
@@ -31,7 +31,6 @@ EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix
 if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then --boolean check to set a flag if the current session is WoW Classic. Retail == 1, Classic == 2
 	EnhancedRaidFrames.isWoWClassic = true
 end
-
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
@@ -60,7 +59,6 @@ end
 --- Register Events, Hook functions, Create Frames, Get information from
 --- the game that wasn't available in OnInitialize
 function EnhancedRaidFrames:OnEnable()
-
 	--start a repeating timer to updated every frame every 0.8sec to make sure the the countdown timer stays accurate
 	EnhancedRaidFrames.updateTimer = EnhancedRaidFrames:ScheduleRepeatingTimer("UpdateAllFrames", 0.8) --this is so countdown text is smooth
 
@@ -83,7 +81,7 @@ end
 --- You would probably only use an OnDisable if you want to
 --- build a "standby" mode, or be able to toggle modules on/off.
 function EnhancedRaidFrames:OnDisable()
-
+	-- empty --
 end
 
 -----------------------------------------------------------
@@ -148,7 +146,6 @@ function EnhancedRaidFrames:CreateDefaults ()
 		iconPosition = "CENTER",
 		iconVerticalOffset = 0,
 		iconHorizontalOffset=0,
-
 	}
 
 	for i = 1, 9 do
@@ -187,7 +184,6 @@ end
 
 -- Refresh everything that is affected by changes to the configuration
 function EnhancedRaidFrames:RefreshConfig()
-
 	EnhancedRaidFrames:UpdateAllFrames(true)
 
 	CompactRaidFrameContainer:SetScale(EnhancedRaidFrames.db.profile.frameScale)
@@ -204,7 +200,6 @@ function EnhancedRaidFrames:RefreshConfig()
 			j = j + 1
 		end
 	end
-
 end
 
 
