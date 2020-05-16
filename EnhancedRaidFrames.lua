@@ -150,7 +150,7 @@ function EnhancedRaidFrames:CreateDefaults ()
 
 	for i = 1, 9 do
 		defaults.profile["auras"..i] = ""
-		defaults.profile["size"..i] = 10
+		defaults.profile["size"..i] = 14
 		defaults.profile["color"..i] = {r = 1, g = 1, b = 1, a = 1,}
 		defaults.profile["mine"..i] = false
 		defaults.profile["stack"..i] = false
@@ -162,7 +162,7 @@ function EnhancedRaidFrames:CreateDefaults ()
 		defaults.profile["showText"..i] = false
 		defaults.profile["showCooldownAnimation"..i] = true
 		defaults.profile["showIcon"..i] = true
-		defaults.profile["iconSize"..i] = 16
+		defaults.profile["iconSize"..i] = 20
 		defaults.profile["showTooltip"..i] = true
 	end
 
@@ -194,7 +194,7 @@ function EnhancedRaidFrames:RefreshConfig()
 	for i = 1, 9 do
 		local j = 1
 		for auraName in string.gmatch(EnhancedRaidFrames.db.profile["auras"..i], "[^\n]+") do -- Grab each line
-			auraName = string.gsub(auraName, "^%s*(.-)%s*$", "%1") -- Strip any whitespaces
+			auraName = string.gsub(auraName, "^%s*(.-)%s*$", "%1"):lower() -- Strip any whitespaces and force lowercase
 			EnhancedRaidFrames.allAuras = EnhancedRaidFrames.allAuras.."+"..auraName.."+" -- Add each watched aura to a string so we later can quickly determine if we need to look for one
 			EnhancedRaidFrames.auraStrings[i][j] = auraName
 			j = j + 1

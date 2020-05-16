@@ -410,10 +410,10 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			break
 		end
 
-		if string.find(EnhancedRaidFrames.allAuras, "+"..auraName.."+") or string.find(EnhancedRaidFrames.allAuras, "+"..spellId.."+") then -- Only add the spell if we're watching for it
+		if string.find(EnhancedRaidFrames.allAuras, "+"..auraName:lower().."+") or string.find(EnhancedRaidFrames.allAuras, "+"..spellId.."+") then -- Only add the spell if we're watching for it
 			local len = #unitBuffs[unit]
 			unitBuffs[unit][len+1] = {}
-			unitBuffs[unit][len+1].auraName = auraName
+			unitBuffs[unit][len+1].auraName = auraName:lower()
 			unitBuffs[unit][len+1].spellId = spellId
 			unitBuffs[unit][len+1].count = count
 			unitBuffs[unit][len+1].duration = duration
@@ -438,10 +438,10 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			break
 		end
 
-		if string.find(EnhancedRaidFrames.allAuras, "+"..auraName.."+") or string.find(EnhancedRaidFrames.allAuras, "+"..spellId.."+") or string.find(EnhancedRaidFrames.allAuras, "+"..tostring(debuffType).."+") then -- Only add the spell if we're watching for it
+		if string.find(EnhancedRaidFrames.allAuras, "+"..auraName:lower().."+") or string.find(EnhancedRaidFrames.allAuras, "+"..spellId.."+") or string.find(EnhancedRaidFrames.allAuras, "+"..tostring(debuffType).."+") then -- Only add the spell if we're watching for it
 			local len = #unitDebuffs[unit]
 			unitDebuffs[unit][len+1] = {}
-			unitDebuffs[unit][len+1].auraName = auraName
+			unitDebuffs[unit][len+1].auraName = auraName:lower()
 			unitDebuffs[unit][len+1].spellId = spellId
 			unitDebuffs[unit][len+1].count = count
 			unitDebuffs[unit][len+1].duration = duration
