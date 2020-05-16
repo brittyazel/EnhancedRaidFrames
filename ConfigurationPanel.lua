@@ -181,15 +181,15 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			name = "Buff/Debuff watch list:",
 			desc = "The buffs and/or debuffs to show for the indicator in this position.\n"..
 			"\n"..
-			"Write the name or spell ID of each buff/debuff on a separate line. i.e: 'Rejuvenation', 'Regrowth', 'Wild Growth', etc.\n"..
+			"Write the name or spell ID of each buff/debuff on a separate line. i.e: Rejuvenation, Regrowth, Wild Growth, etc.\n"..
 			"\n"..
-			"Keep in mind, certain spells like a Druid's Germination will only work with their spell ID, i.e.: '155777'\n"..
+			"Keep in mind, certain spells like a Druid's Germination will only work with their spell ID, i.e.: 155777.\n"..
 			"\n"..
-			"You can use 'Magic', 'Poison', 'Curse', or 'Disease' to show any debuff of that category.\n"..
+			"You can use Magic, Poison, Curse, or Disease to show any debuff of that category.\n"..
 			"\n"..
-			"You can use 'PvP' to show if a unit is PvP flagged.\n"..
+			"You can use PvP to show if a unit is PvP flagged.\n"..
 			"\n"..
-			"You can use 'ToT' to show if a unit is the target of your target.",
+			"You can use ToT to show if a unit is the target of your target.\n",
 			multiline = true,
 			order = 1,
 			width = "full",

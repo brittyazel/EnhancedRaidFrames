@@ -194,7 +194,10 @@ function EnhancedRaidFrames:RefreshConfig()
 	for i = 1, 9 do
 		local j = 1
 		for auraName in string.gmatch(EnhancedRaidFrames.db.profile["auras"..i], "[^\n]+") do -- Grab each line
-			auraName = string.gsub(auraName, "^%s*(.-)%s*$", "%1"):lower() -- Strip any whitespaces and force lowercase
+			--sanitize strings
+			auraName = auraName:lower() --force lowercase
+			auraName = auraName:gsub("^%s*(.-)%s*$", "%1") --strip any whitespaces
+			auraName = auraName:gsub("\"", "") --strip any quotation marks if there are any
 			EnhancedRaidFrames.allAuras = EnhancedRaidFrames.allAuras.."+"..auraName.."+" -- Add each watched aura to a string so we later can quickly determine if we need to look for one
 			EnhancedRaidFrames.auraStrings[i][j] = auraName
 			j = j + 1
