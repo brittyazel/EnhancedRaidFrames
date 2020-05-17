@@ -310,13 +310,13 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 						end
 					elseif EnhancedRaidFrames.db.profile["debuffColor"..i] then -- Color by debuff type
 						if debuffType then
-							if debuffType == "Curse" then
+							if debuffType == "curse" then
 								f[frameName][i].text:SetTextColor(0.6,0,1,1)
-							elseif debuffType == "Disease" then
+							elseif debuffType == "disease" then
 								f[frameName][i].text:SetTextColor(0.6,0.4,0,1)
-							elseif debuffType == "Magic" then
+							elseif debuffType == "magic" then
 								f[frameName][i].text:SetTextColor(0.2,0.6,1,1)
-							elseif debuffType == "Poison" then
+							elseif debuffType == "poison" then
 								f[frameName][i].text:SetTextColor(0,0.6,0,1)
 							end
 						end
@@ -410,7 +410,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			break
 		end
 
-		if string.find(EnhancedRaidFrames.allAuras, "+"..auraName:lower().."+") or string.find(EnhancedRaidFrames.allAuras, "+"..spellId.."+") then -- Only add the spell if we're watching for it
+		if EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellId.."+") then -- Only add the spell if we're watching for it
 			local len = #unitBuffs[unit]
 			unitBuffs[unit][len+1] = {}
 			unitBuffs[unit][len+1].auraName = auraName:lower()
@@ -438,7 +438,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			break
 		end
 
-		if string.find(EnhancedRaidFrames.allAuras, "+"..auraName:lower().."+") or string.find(EnhancedRaidFrames.allAuras, "+"..spellId.."+") or string.find(EnhancedRaidFrames.allAuras, "+"..tostring(debuffType).."+") then -- Only add the spell if we're watching for it
+		if EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellId.."+") or (debuffType and EnhancedRaidFrames.allAuras:find("+"..debuffType:lower().."+")) then -- Only add the spell if we're watching for it
 			local len = #unitDebuffs[unit]
 			unitDebuffs[unit][len+1] = {}
 			unitDebuffs[unit][len+1].auraName = auraName:lower()
@@ -449,7 +449,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			unitDebuffs[unit][len+1].castBy = castBy
 			unitDebuffs[unit][len+1].icon = icon
 			unitDebuffs[unit][len+1].auraIndex = i
-			unitDebuffs[unit][len+1].debuffType= debuffType
+			unitDebuffs[unit][len+1].debuffType = debuffType:lower()
 		end
 		i = i + 1
 	end
