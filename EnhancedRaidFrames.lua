@@ -188,8 +188,9 @@ function EnhancedRaidFrames:RefreshConfig()
 
 	CompactRaidFrameContainer:SetScale(EnhancedRaidFrames.db.profile.frameScale)
 
-	-- Format aura strings
+	-- reset aura strings
 	EnhancedRaidFrames.allAuras = " "
+	EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
 
 	for i = 1, 9 do
 		local j = 1
