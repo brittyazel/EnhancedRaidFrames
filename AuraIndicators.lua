@@ -413,7 +413,6 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			auraTable.auraType = "debuff"
 			auraTable.auraIndex = i
 			auraTable.auraName = auraName:lower()
-			auraTable.auraName = auraName:lower()
 			auraTable.icon = icon
 			auraTable.count = count
 			if debuffType then
