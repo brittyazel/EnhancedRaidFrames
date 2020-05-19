@@ -410,7 +410,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			break
 		end
 
-		if EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellId.."+") then -- Only add the spell if we're watching for it
+		if auraName and EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellId.."+") then -- Only add the spell if we're watching for it
 			local len = #unitBuffs[unit]
 			unitBuffs[unit][len+1] = {}
 			unitBuffs[unit][len+1].auraName = auraName:lower()
@@ -438,7 +438,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			break
 		end
 
-		if EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellId.."+") or (debuffType and EnhancedRaidFrames.allAuras:find("+"..debuffType:lower().."+")) then -- Only add the spell if we're watching for it
+		if auraName and EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellId.."+") or (debuffType and EnhancedRaidFrames.allAuras:find("+"..debuffType:lower().."+")) then -- Only add the spell if we're watching for it
 			local len = #unitDebuffs[unit]
 			unitDebuffs[unit][len+1] = {}
 			unitDebuffs[unit][len+1].auraName = auraName:lower()
@@ -449,7 +449,9 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			unitDebuffs[unit][len+1].castBy = castBy
 			unitDebuffs[unit][len+1].icon = icon
 			unitDebuffs[unit][len+1].auraIndex = i
-			unitDebuffs[unit][len+1].debuffType = debuffType:lower()
+			if debuffType then
+				unitDebuffs[unit][len+1].debuffType = debuffType:lower()
+			end
 		end
 		i = i + 1
 	end
