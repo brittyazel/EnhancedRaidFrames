@@ -376,7 +376,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			break
 		end
 
-		if EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellID.."+") then -- Only add the spell if we're watching for it
+		if auraName and EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellID.."+") then -- Only add the spell if we're watching for it
 			local auraTable = {}
 			auraTable.auraType = "buff"
 			auraTable.auraIndex = i
@@ -408,14 +408,17 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			break
 		end
 
-		if EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellID.."+") or (debuffType and EnhancedRaidFrames.allAuras:find("+"..debuffType:lower().."+")) then -- Only add the spell if we're watching for it
+		if auraName and EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellID.."+") or (debuffType and EnhancedRaidFrames.allAuras:find("+"..debuffType:lower().."+")) then -- Only add the spell if we're watching for it
 			local auraTable = {}
 			auraTable.auraType = "debuff"
 			auraTable.auraIndex = i
 			auraTable.auraName = auraName:lower()
+			auraTable.auraName = auraName:lower()
 			auraTable.icon = icon
 			auraTable.count = count
-			auraTable.debuffType = debuffType:lower()
+			if debuffType then
+				auraTable.debuffType = debuffType:lower()
+			end
 			auraTable.duration = duration
 			auraTable.expirationTime = expirationTime
 			auraTable.castBy = castBy
