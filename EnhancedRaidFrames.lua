@@ -170,9 +170,13 @@ function EnhancedRaidFrames:CreateDefaults ()
 	return defaults
 end
 
-
 -- Update all raid frames
 function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
+	--don't do any work if the raid frames aren't shown
+	if not CompactRaidFrameContainer:IsShown() then
+		return
+	end
+
 	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal",
 			function(frame)
 				EnhancedRaidFrames:UpdateIndicators(frame, setAppearance);
@@ -181,7 +185,6 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 				EnhancedRaidFrames:SetBackgroundAlpha(frame)
 			end)
 end
-
 
 -- Refresh everything that is affected by changes to the configuration
 function EnhancedRaidFrames:RefreshConfig()
@@ -206,7 +209,6 @@ function EnhancedRaidFrames:RefreshConfig()
 		end
 	end
 end
-
 
 -- Hook for the CompactUnitFrame_UpdateInRange function
 function EnhancedRaidFrames:UpdateInRange(frame)
@@ -233,7 +235,6 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 		end
 	end
 end
-
 
 -- Set the background alpha amount to allow full transparency if need be
 function EnhancedRaidFrames:SetBackgroundAlpha(frame)

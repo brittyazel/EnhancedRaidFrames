@@ -27,7 +27,6 @@ local icons = {}
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
-
 function EnhancedRaidFrames:CreateIcon(frame)
 	local frameName = frame:GetName()
 
@@ -35,7 +34,6 @@ function EnhancedRaidFrames:CreateIcon(frame)
 	icons[frameName].texture = frame:CreateTexture(nil, "OVERLAY")
 	EnhancedRaidFrames:SetIconAppearance(frame)
 end
-
 
 function EnhancedRaidFrames:SetIconAppearance(frame)
 	local pad = 3
@@ -63,7 +61,6 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 	tex:SetWidth(EnhancedRaidFrames.db.profile.iconSize)
 	tex:SetHeight(EnhancedRaidFrames.db.profile.iconSize)
 end
-
 
 function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
 	local unit = frame.unit

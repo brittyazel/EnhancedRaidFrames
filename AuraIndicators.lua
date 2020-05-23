@@ -27,6 +27,12 @@ local f = {} -- Indicators for the frames
 local PAD = 2
 local unitAuras = {} -- Matrix to keep a list of all auras on all units
 
+EnhancedRaidFrames.iconCache = {}
+EnhancedRaidFrames.iconCache["poison"] = 132104
+EnhancedRaidFrames.iconCache["disease"] = 132099
+EnhancedRaidFrames.iconCache["curse"] = 132095
+EnhancedRaidFrames.iconCache["magic"] = 135894
+
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
@@ -43,7 +49,6 @@ function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
 		CompactUnitFrame_HideAllDispelDebuffs(frame)
 	end
 end
-
 
 -- Create the FontStrings used for indicators
 function EnhancedRaidFrames:CreateIndicators(frame)
@@ -87,12 +92,11 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 
 		-- hook enter and leave for showing ability tooltips
 		EnhancedRaidFrames:SecureHookScript(f[frameName][i], "OnEnter", function() EnhancedRaidFrames:Tooltip_OnEnter(f[frameName][i]) end)
-		EnhancedRaidFrames:SecureHookScript(f[frameName][i], "OnLeave", function() EnhancedRaidFrames:Tooltip_OnLeave(f[frameName][i]) end)
+		EnhancedRaidFrames:SecureHookScript(f[frameName][i], "OnLeave", function() GameTooltip:Hide() end)
 	end
 
 	EnhancedRaidFrames:SetIndicatorAppearance(frame)
 end
-
 
 -- Set the appearance of the Indicator
 function EnhancedRaidFrames:SetIndicatorAppearance(frame)
@@ -125,7 +129,6 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		f[frameName][i].text:SetTextColor(EnhancedRaidFrames.db.profile["color"..i].r, EnhancedRaidFrames.db.profile["color"..i].g, EnhancedRaidFrames.db.profile["color"..i].b, EnhancedRaidFrames.db.profile["color"..i].a)
 	end
 end
-
 
 -- Check the indicators on a frame and update the times on them
 function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
@@ -309,17 +312,14 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 				end
 			elseif EnhancedRaidFrames.db.profile["missing"..i] then -- Only show when it's missing
 				if EnhancedRaidFrames.db.profile["showIcon"..i] then
-					--try to find an icon
-					if auraName == "poison" then
-						icon = 132104
-					elseif auraName == "disease" then
-						icon = 132099
-					elseif auraName == "curse" then
-						icon = 132095
-					elseif auraName == "magic" then
-						icon = 135894
+					--check our iconCache for the auraName. Note the icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons
+					if not EnhancedRaidFrames.iconCache[auraName] then
+						_,_,icon = GetSpellInfo(auraName)
+						if icon then
+							EnhancedRaidFrames.iconCache[auraName] = icon
+						end
 					else
-						icon = GetSpellTexture(auraName)
+						icon = EnhancedRaidFrames.iconCache[auraName]
 					end
 
 					if not icon then
@@ -354,7 +354,6 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 		end
 	end
 end
-
 
 -- Get all unit auras
 function EnhancedRaidFrames:UpdateUnitAuras(unit)
@@ -429,8 +428,6 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 	end
 end
 
-
-
 -------------------------------
 ---Tooltip Code
 -------------------------------
@@ -458,13 +455,4 @@ function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame)
 	end
 
 	GameTooltip:Show()
-end
-
-
-function EnhancedRaidFrames:Tooltip_OnLeave(indicatorFrame)
-	if not EnhancedRaidFrames.db.profile.showTooltips then --don't show tooltips unless we have the option set
-		return
-	end
-
-	GameTooltip:Hide()
 end

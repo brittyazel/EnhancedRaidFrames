@@ -148,7 +148,6 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 	return generalOptions
 end
 
-
 function EnhancedRaidFrames:CreateIndicatorOptions()
 	local indicatorOptions = {
 		type = 'group',

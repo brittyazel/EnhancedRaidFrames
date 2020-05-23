@@ -8,7 +8,6 @@
 ## SavedVariables: IndicatorsDB
 ## X-Email: bwyazel@gmail.com
 
-
 Libs\embeds.xml
 
 EnhancedRaidFrames.lua
