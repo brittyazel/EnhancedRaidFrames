@@ -653,7 +653,7 @@ end
 -- ENEMY BUFFS
 ---------------------------
 local makeBuffInfo = function(spellID, applicationTable, dstGUID, srcGUID)
-    local name, rank, icon, castTime, minRange, maxRange, _spellId = GetSpellInfo(spellID)
+    local name, rank, icon, castTime, minRange, maxRange, _spellID = GetSpellInfo(spellID)
     local durationFunc, startTime, auraType, comboPoints = unpack(applicationTable)
     local duration = cleanDuration(durationFunc, spellID, srcGUID, comboPoints) -- srcGUID isn't needed actually
     -- no DRs on buffs
@@ -713,14 +713,14 @@ local function RegenerateBuffList(unit, dstGUID)
     buffCacheValid[dstGUID] = GetTime() + BUFF_CACHE_EXPIRATION_TIME -- Expiration timestamp
 end
 
-local FillInDuration = function(unit, buffName, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, nps, spellId, ...)
+local FillInDuration = function(unit, buffName, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, nps, spellID, ...)
     if buffName then
-        local durationNew, expirationTimeNew = GetAuraDurationByUnitDirect(unit, spellId, caster, buffName)
+        local durationNew, expirationTimeNew = GetAuraDurationByUnitDirect(unit, spellID, caster, buffName)
         if duration == 0 and durationNew then
             duration = durationNew
             expirationTime = expirationTimeNew
         end
-        return buffName, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, nps, spellId, ...
+        return buffName, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, nps, spellID, ...
     end
 end
 

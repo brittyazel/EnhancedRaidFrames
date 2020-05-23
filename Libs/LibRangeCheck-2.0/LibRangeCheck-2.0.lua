@@ -428,26 +428,26 @@ local lastUpdate = 0
 local minRangeCheck = function(unit) return CheckInteractDistance(unit, 2) end
 
 local checkers_Spell = setmetatable({}, {
-    __index = function(t, spellIdx)
+    __index = function(t, spellIDx)
         local func = function(unit)
-            if IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
+            if IsSpellInRange(spellIDx, BOOKTYPE_SPELL, unit) == 1 then
                  return true
             end
         end
-        t[spellIdx] = func
+        t[spellIDx] = func
         return func
     end
 })
 local checkers_SpellWithMin = setmetatable({}, {
-    __index = function(t, spellIdx)
+    __index = function(t, spellIDx)
         local func = function(unit)
-            if IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
+            if IsSpellInRange(spellIDx, BOOKTYPE_SPELL, unit) == 1 then
                 return true
             elseif minRangeCheck(unit) then
                 return true, true
             end
         end
-        t[spellIdx] = func
+        t[spellIDx] = func
         return func
     end
 })
@@ -544,8 +544,8 @@ local function createCheckerList(spellList, itemList, interactList)
         for i = 1, #spellList do
             local sid = spellList[i]
             local name, _, _, _, minRange, range = GetSpellInfo(sid)
-            local spellIdx = findSpellIdx(name)
-            if spellIdx and range then
+            local spellIDx = findSpellIdx(name)
+            if spellIDx and range then
                 minRange = math_floor(minRange + 0.5)
                 range = math_floor(range + 0.5)
                 -- print("### spell: " .. tostring(name) .. ", " .. tostring(minRange) .. " - " ..  tostring(range))
@@ -556,9 +556,9 @@ local function createCheckerList(spellList, itemList, interactList)
                     range = MeleeRange
                 end
                 if minRange then
-                    addChecker(res, range, minRange, checkers_SpellWithMin[spellIdx], "spell:" .. sid .. ":" .. tostring(name))
+                    addChecker(res, range, minRange, checkers_SpellWithMin[spellIDx], "spell:" .. sid .. ":" .. tostring(name))
                 else
-                    addChecker(res, range, minRange, checkers_Spell[spellIdx], "spell:" .. sid .. ":" .. tostring(name))
+                    addChecker(res, range, minRange, checkers_Spell[spellIDx], "spell:" .. sid .. ":" .. tostring(name))
                 end
             end
         end
@@ -747,19 +747,19 @@ function lib:init(forced)
         if playerClass == "WARRIOR" then
             -- for warriors, use Intimidating Shout if available
             local name = GetSpellInfo(5246) -- ["Intimidating Shout"]
-            local spellIdx = findSpellIdx(name)
-            if spellIdx then
+            local spellIDx = findSpellIdx(name)
+            if spellIDx then
                 minRangeCheck = function(unit)
-                    return (IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1)
+                    return (IsSpellInRange(spellIDx, BOOKTYPE_SPELL, unit) == 1)
                 end
             end
         elseif playerClass == "ROGUE" then
             -- for rogues, use Blind if available
             local name = GetSpellInfo(2094) -- ["Blind"]
-            local spellIdx = findSpellIdx(name)
-            if spellIdx then
+            local spellIDx = findSpellIdx(name)
+            if spellIDx then
                 minRangeCheck = function(unit)
-                    return (IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1)
+                    return (IsSpellInRange(spellIDx, BOOKTYPE_SPELL, unit) == 1)
                 end
             end
         end

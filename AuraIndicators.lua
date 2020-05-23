@@ -25,8 +25,7 @@ local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 local media = LibStub:GetLibrary("LibSharedMedia-3.0")
 local f = {} -- Indicators for the frames
 local PAD = 2
-local unitBuffs = {} -- Matrix to keep a list of all buffs on all units
-local unitDebuffs = {} -- Matrix to keep a list of all debuffs on all units
+local unitAuras = {} -- Matrix to keep a list of all auras on all units
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
@@ -160,110 +159,86 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 
 	-- Loop over the indicators and see if we get a hit
 	for i = 1, 9 do
-		local remainingTime, displayText, count, duration, expirationTime, castBy, icon, debuffType, locatedAuraIndex
-
-		displayText = ""
-		icon = ""
-		count = 0
-		duration = 0
-		expirationTime = 0
-		castBy = ""
+		local remainingTime
+		local displayText = ""
+		local icon = ""
+		local count = 0
+		local duration = 0
+		local expirationTime = 0
+		local castBy = ""
+		local debuffType
 
 		-- If we only are to show the indicator on me, then don't bother if I'm not the unit
 		if EnhancedRaidFrames.db.profile["me"..i] then
-			local uName, uRealm = UnitName(unit)
-			if uName ~= UnitName("player") or uRealm ~= nil then
+			local unitName, unitRealm = UnitName(unit)
+			if unitName ~= UnitName("player") or unitRealm ~= nil then
 				break
 			end
 		end
 
 		-- Go through the aura strings
 		for _, auraName in ipairs(EnhancedRaidFrames.auraStrings[i]) do -- Grab each line
-
 			if not auraName then --if there's no auraName (i.e. the user never specified anything to go in this spot), stop here there's no need to keep going
 				break
 			end
 
+			-----------------------------------------------------
+
+			local foundAura
+
 			-- Check if the aura exist on the unit
-			for j = 1, #unitBuffs[unit] do -- Check buffs
-				if tonumber(auraName) then  -- Use spell id
-					if unitBuffs[unit][j].spellId == tonumber(auraName) then
-						locatedAuraIndex = j
-					end
-				elseif unitBuffs[unit][j].auraName == auraName then -- Hit on auraName
-					locatedAuraIndex = j
-				end
-				if locatedAuraIndex and unitBuffs[unit][j].castBy == "player" then -- Keep looking if it's not cast by the player
+			for _,v in ipairs(unitAuras[unit]) do
+				if (tonumber(auraName) and v.spellID == tonumber(auraName)) or v.auraName == auraName or (v.auraType == "debuff" and v.debuffType == auraName) then
+					count = v.count
+					duration = v.duration
+					expirationTime = v.expirationTime
+					castBy = v.castBy
+					icon = v.icon
+					debuffType = v.debuffType
+
+					f[frameName][i].auraIndex = v.auraIndex
+					f[frameName][i].auraType = v.auraType
+
+					foundAura = true
 					break
 				end
 			end
 
-			if locatedAuraIndex then
-				count = unitBuffs[unit][locatedAuraIndex].count
-				duration = unitBuffs[unit][locatedAuraIndex].duration
-				expirationTime = unitBuffs[unit][locatedAuraIndex].expirationTime
-				castBy = unitBuffs[unit][locatedAuraIndex].castBy
-				icon = unitBuffs[unit][locatedAuraIndex].icon
-				f[frameName][i].auraIndex = unitBuffs[unit][locatedAuraIndex].auraIndex
-				f[frameName][i].buff = true
-			else
-				for j = 1, #unitDebuffs[unit] do -- Check debuffs
-					if tonumber(auraName) then  -- Use spell id
-						if unitDebuffs[unit][j].spellId == tonumber(auraName) then
-							locatedAuraIndex = j
+			if not foundAura then
+				if auraName:upper() == "PVP" then -- Check if we want to show pvp flag
+					if UnitIsPVP(unit) then
+						count = 0
+						duration = 0
+						expirationTime = 0
+						castBy = "player"
+
+						local factionGroup = UnitFactionGroup(unit)
+						if factionGroup then
+							icon = "Interface\\GroupFrame\\UI-Group-PVP-"..factionGroup
 						end
-					elseif unitDebuffs[unit][j].auraName == auraName then -- Hit on auraName
-						locatedAuraIndex = j
-					elseif unitDebuffs[unit][j].debuffType == auraName then -- Hit on debufftype
-						locatedAuraIndex = j
-					end
-					if locatedAuraIndex and unitDebuffs[unit][j].castBy == "player" then -- Keep looking if it's not cast by the player
-						break
-					end
-				end
 
-				if locatedAuraIndex then
-					count = unitDebuffs[unit][locatedAuraIndex].count
-					duration = unitDebuffs[unit][locatedAuraIndex].duration
-					expirationTime = unitDebuffs[unit][locatedAuraIndex].expirationTime
-					castBy = unitDebuffs[unit][locatedAuraIndex].castBy
-					icon = unitDebuffs[unit][locatedAuraIndex].icon
-					debuffType = unitDebuffs[unit][locatedAuraIndex].debuffType
-					f[frameName][i].auraIndex = unitDebuffs[unit][locatedAuraIndex].auraIndex
+						f[frameName][i].skipTooltip = true
+						foundAura = true
+					end
+				elseif auraName:upper() == "TOT" then -- Check if we want to show ToT flag
+					if UnitIsUnit(unit, "targettarget") then
+						count = 0
+						duration = 0
+						expirationTime = 0
+						castBy = "player"
+						icon = "Interface\\Icons\\Ability_Hunter_SniperShot"
+
+						f[frameName][i].skipTooltip = true
+						foundAura = true
+					end
 				end
 			end
 
-			if auraName:upper() == "PVP" then -- Check if we want to show pvp flag
-				if UnitIsPVP(unit) then
-					count = 0
-					expirationTime = 0
-					duration = 0
-					castBy = "player"
-					locatedAuraIndex = -1
+			------------------------------------------------------
 
-					local factionGroup = UnitFactionGroup(unit)
-					if factionGroup then
-						icon = "Interface\\GroupFrame\\UI-Group-PVP-"..factionGroup
-					end
-
-					f[frameName][i].auraIndex = -1
-				end
-			elseif auraName:upper() == "TOT" then -- Check if we want to show ToT flag
-				if UnitIsUnit (unit, "targettarget") then
-					count = 0
-					expirationTime = 0
-					duration = 0
-					castBy = "player"
-					locatedAuraIndex = -1
-					icon = "Interface\\Icons\\Ability_Hunter_SniperShot"
-					f[frameName][i].auraIndex = -1
-				end
-			end
-
-			if locatedAuraIndex then -- We found a matching spell
+			if foundAura then -- We found a matching spell
 				-- If we only are to show spells cast by me, make sure the spell is
 				if (EnhancedRaidFrames.db.profile["mine"..i] and castBy ~= "player") then
-					locatedAuraIndex = nil
 					icon = ""
 				else
 					if not EnhancedRaidFrames.db.profile["showIcon"..i] then -- Hide icon
@@ -271,7 +246,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 					end
 					if expirationTime == 0 then -- No expiration time = permanent
 						if not EnhancedRaidFrames.db.profile["showIcon"..i] then
-							displayText = "■" -- Only show the blob if we don't show the icon
+							displayText = "X" -- Only show the X if we don't show the icon
 						end
 					else
 						if EnhancedRaidFrames.db.profile["showText"..i] then
@@ -332,41 +307,34 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 
 					break -- We found a match, so no need to continue the for loop
 				end
-			end
-		end
-
-		-- Only show when it's missing
-		if EnhancedRaidFrames.db.profile["missing"..i] then
-			icon = ""
-			displayText = ""
-			if not locatedAuraIndex then -- No locatedAuraIndex means we didn't find the spell
+			elseif EnhancedRaidFrames.db.profile["missing"..i] then -- Only show when it's missing
 				if EnhancedRaidFrames.db.profile["showIcon"..i] then
 					--try to find an icon
-					if EnhancedRaidFrames.auraStrings[i][1] then --if the string is empty do nothing
-						if string.lower(EnhancedRaidFrames.auraStrings[i][1]) == "poison" then
-							icon = 132104
-						elseif string.lower(EnhancedRaidFrames.auraStrings[i][1]) == "disease" then
-							icon = 132099
-						elseif string.lower(EnhancedRaidFrames.auraStrings[i][1]) == "curse" then
-							icon = 132095
-						elseif string.lower(EnhancedRaidFrames.auraStrings[i][1]) == "magic" then
-							icon = 135894
-						else
-							_,_,icon = GetSpellInfo(EnhancedRaidFrames.auraStrings[i][1])
-						end
+					if auraName == "poison" then
+						icon = 132104
+					elseif auraName == "disease" then
+						icon = 132099
+					elseif auraName == "curse" then
+						icon = 132095
+					elseif auraName == "magic" then
+						icon = 135894
+					else
+						icon = GetSpellTexture(auraName)
+					end
 
-						if not icon then
-							displayText = "X" --if you can't find an icon, display an X
-						end
+					if not icon then
+						displayText = "X" --if you can't find an icon, display an X
 					end
 				else
 					displayText = "X" --if we aren't showing icons, display and X
 				end
+
+				break -- We don't need to continue the loop after the first spell, if the first spell isn't found
 			end
 		end
 
 		--set the texture or text on a frame, and show or hide the indicator frame
-		if (icon ~= "" or displayText ~="") and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) then
+		if (icon ~= "" or displayText ~= "") and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) then
 			-- show the frame
 			f[frameName][i]:Show()
 			-- Show the text
@@ -384,7 +352,6 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 		else
 			CooldownFrame_Clear(f[frameName][i].cooldown);
 		end
-
 	end
 end
 
@@ -392,35 +359,36 @@ end
 -- Get all unit auras
 function EnhancedRaidFrames:UpdateUnitAuras(unit)
 	-- Create or clear out the tables for the unit
-	unitBuffs[unit] = {}
-	unitDebuffs[unit] = {}
+	unitAuras[unit] = {}
 
 	-- Get all unit buffs
-	local auraName, icon, count, duration, expirationTime, castBy, debuffType, spellId, i
-
-	i = 1
+	local i = 1
 	while (true) do
+		local auraName, icon, count, duration, expirationTime, castBy, spellID
+
 		if not EnhancedRaidFrames.isWoWClassic then
-			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellId = UnitAura(unit, i, "HELPFUL")
+			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellID = UnitAura(unit, i, "HELPFUL")
 		else
-			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellId = EnhancedRaidFrames.UnitAuraWrapper(unit, i, "HELPFUL") --for wow classic. This is the libclassicdurations wrapper
+			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellID = EnhancedRaidFrames.UnitAuraWrapper(unit, i, "HELPFUL") --for wow classic. This is the libclassicdurations wrapper
 		end
 
-		if not spellId then --break the loop once we have no more buffs
+		if not spellID then --break the loop once we have no more buffs
 			break
 		end
 
-		if auraName and EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellId.."+") then -- Only add the spell if we're watching for it
-			local len = #unitBuffs[unit]
-			unitBuffs[unit][len+1] = {}
-			unitBuffs[unit][len+1].auraName = auraName:lower()
-			unitBuffs[unit][len+1].spellId = spellId
-			unitBuffs[unit][len+1].count = count
-			unitBuffs[unit][len+1].duration = duration
-			unitBuffs[unit][len+1].expirationTime = expirationTime
-			unitBuffs[unit][len+1].castBy = castBy
-			unitBuffs[unit][len+1].icon = icon
-			unitBuffs[unit][len+1].auraIndex = i
+		if auraName and EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellID.."+") then -- Only add the spell if we're watching for it
+			local auraTable = {}
+			auraTable.auraType = "buff"
+			auraTable.auraIndex = i
+			auraTable.auraName = auraName:lower()
+			auraTable.icon = icon
+			auraTable.count = count
+			auraTable.duration = duration
+			auraTable.expirationTime = expirationTime
+			auraTable.castBy = castBy
+			auraTable.spellID = spellID
+
+			table.insert(unitAuras[unit], auraTable)
 		end
 		i = i + 1
 	end
@@ -428,30 +396,34 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 	-- Get all unit debuffs
 	i = 1
 	while (true) do
+		local auraName, icon, count, duration, expirationTime, castBy, spellID, debuffType
+
 		if not EnhancedRaidFrames.isWoWClassic then
-			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellId  = UnitAura(unit, i, "HARMFUL")
+			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellID  = UnitAura(unit, i, "HARMFUL")
 		else
-			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellId  = EnhancedRaidFrames.UnitAuraWrapper(unit, i, "HARMFUL")
+			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellID  = EnhancedRaidFrames.UnitAuraWrapper(unit, i, "HARMFUL") --for wow classic. This is the libclassicdurations wrapper
 		end
 
-		if not spellId then --break the loop once we have no more buffs
+		if not spellID then --break the loop once we have no more buffs
 			break
 		end
 
-		if auraName and EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellId.."+") or (debuffType and EnhancedRaidFrames.allAuras:find("+"..debuffType:lower().."+")) then -- Only add the spell if we're watching for it
-			local len = #unitDebuffs[unit]
-			unitDebuffs[unit][len+1] = {}
-			unitDebuffs[unit][len+1].auraName = auraName:lower()
-			unitDebuffs[unit][len+1].spellId = spellId
-			unitDebuffs[unit][len+1].count = count
-			unitDebuffs[unit][len+1].duration = duration
-			unitDebuffs[unit][len+1].expirationTime = expirationTime
-			unitDebuffs[unit][len+1].castBy = castBy
-			unitDebuffs[unit][len+1].icon = icon
-			unitDebuffs[unit][len+1].auraIndex = i
+		if auraName and EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellID.."+") or (debuffType and EnhancedRaidFrames.allAuras:find("+"..debuffType:lower().."+")) then -- Only add the spell if we're watching for it
+			local auraTable = {}
+			auraTable.auraType = "debuff"
+			auraTable.auraIndex = i
+			auraTable.auraName = auraName:lower()
+			auraTable.icon = icon
+			auraTable.count = count
 			if debuffType then
-				unitDebuffs[unit][len+1].debuffType = debuffType:lower()
+				auraTable.debuffType = debuffType:lower()
 			end
+			auraTable.duration = duration
+			auraTable.expirationTime = expirationTime
+			auraTable.castBy = castBy
+			auraTable.spellID = spellID
+
+			table.insert(unitAuras[unit], auraTable)
 		end
 		i = i + 1
 	end
@@ -462,23 +434,21 @@ end
 -------------------------------
 ---Tooltip Code
 -------------------------------
-function EnhancedRaidFrames:Tooltip_OnEnter(buffFrame)
-	if not EnhancedRaidFrames.db.profile["showTooltip"..buffFrame.position] then --don't show tooltips unless we have the option set for this position
+function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame)
+	if not EnhancedRaidFrames.db.profile["showTooltip"..indicatorFrame.position] then --don't show tooltips unless we have the option set for this position
 		return
 	end
 
-	local frame = buffFrame:GetParent() --this is the parent raid frame that holds all the buffFrames
-	local auraIndex = buffFrame.auraIndex
-	local buff = buffFrame.buff
+	local frame = indicatorFrame:GetParent() --this is the parent raid frame that holds all the indicatorFrames
 
 	-- Set the tooltip
-	if auraIndex and auraIndex ~= -1 and buffFrame.icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
+	if indicatorFrame.auraIndex and not indicatorFrame.skipTooltip and indicatorFrame.icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
 		-- Set the buff/debuff as tooltip and anchor to the cursor
 		GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
-		if buff then
-			GameTooltip:SetUnitBuff(frame.unit, auraIndex)
+		if indicatorFrame.auraType == "buff" then
+			GameTooltip:SetUnitAura(frame.unit, indicatorFrame.auraIndex, "HELPFUL")
 		else
-			GameTooltip:SetUnitDebuff(frame.unit, auraIndex)
+			GameTooltip:SetUnitAura(frame.unit, indicatorFrame.auraIndex, "HARMFUL")
 		end
 	else
 		--causes the tooltip to reset to the "default" tooltip which is usually information about the character
@@ -491,7 +461,7 @@ function EnhancedRaidFrames:Tooltip_OnEnter(buffFrame)
 end
 
 
-function EnhancedRaidFrames:Tooltip_OnLeave(buffFrame)
+function EnhancedRaidFrames:Tooltip_OnLeave(indicatorFrame)
 	if not EnhancedRaidFrames.db.profile.showTooltips then --don't show tooltips unless we have the option set
 		return
 	end
