@@ -14,9 +14,9 @@ License: Public Domain
 -- A callback is provided for those interested in checker changes.
 -- @usage
 -- local rc = LibStub("LibRangeCheck-2.0")
---
+-- 
 -- rc.RegisterCallback(self, rc.CHECKERS_CHANGED, function() print("need to refresh my stored checkers") end)
---
+-- 
 -- local minRange, maxRange = rc:GetRange('target')
 -- if not minRange then
 --     print("cannot get range estimate for target")
@@ -25,7 +25,7 @@ License: Public Domain
 -- else
 --     print("target is between " .. minRange .. " and " .. maxRange .. " yards")
 -- end
---
+-- 
 -- local meleeChecker = rc:GetFriendMaxChecker(rc.MeleeRange) or rc:GetFriendMinChecker(rc.MeleeRange) -- use the closest checker (MinChecker) if no valid Melee checker is found
 -- for i = 1, 4 do
 --     -- TODO: check if unit is valid, etc
@@ -80,7 +80,7 @@ local MeleeRange = 2
 
 -- list of friendly spells that have different ranges
 local FriendSpells = {}
--- list of harmful spells that have different ranges
+-- list of harmful spells that have different ranges 
 local HarmSpells = {}
 
 FriendSpells["DEATHKNIGHT"] = {
@@ -137,7 +137,7 @@ HarmSpells["PALADIN"] = {
     20271, -- ["Judgement"], -- 30
     853, -- ["Hammer of Justice"], -- 10
     35395, -- ["Crusader Strike"], -- Melee
-}
+} 
 
 FriendSpells["PRIEST"] = {
     527, -- ["Purify"], -- 40
@@ -428,26 +428,26 @@ local lastUpdate = 0
 local minRangeCheck = function(unit) return CheckInteractDistance(unit, 2) end
 
 local checkers_Spell = setmetatable({}, {
-    __index = function(t, spellIDx)
+    __index = function(t, spellIdx)
         local func = function(unit)
-            if IsSpellInRange(spellIDx, BOOKTYPE_SPELL, unit) == 1 then
+            if IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
                  return true
             end
         end
-        t[spellIDx] = func
+        t[spellIdx] = func
         return func
     end
 })
 local checkers_SpellWithMin = setmetatable({}, {
-    __index = function(t, spellIDx)
+    __index = function(t, spellIdx)
         local func = function(unit)
-            if IsSpellInRange(spellIDx, BOOKTYPE_SPELL, unit) == 1 then
+            if IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
                 return true
             elseif minRangeCheck(unit) then
                 return true, true
             end
         end
-        t[spellIDx] = func
+        t[spellIdx] = func
         return func
     end
 })
@@ -539,13 +539,13 @@ local function createCheckerList(spellList, itemList, interactList)
             end
         end
     end
-
+    
     if spellList then
         for i = 1, #spellList do
             local sid = spellList[i]
             local name, _, _, _, minRange, range = GetSpellInfo(sid)
-            local spellIDx = findSpellIdx(name)
-            if spellIDx and range then
+            local spellIdx = findSpellIdx(name)
+            if spellIdx and range then
                 minRange = math_floor(minRange + 0.5)
                 range = math_floor(range + 0.5)
                 -- print("### spell: " .. tostring(name) .. ", " .. tostring(minRange) .. " - " ..  tostring(range))
@@ -556,14 +556,14 @@ local function createCheckerList(spellList, itemList, interactList)
                     range = MeleeRange
                 end
                 if minRange then
-                    addChecker(res, range, minRange, checkers_SpellWithMin[spellIDx], "spell:" .. sid .. ":" .. tostring(name))
+                    addChecker(res, range, minRange, checkers_SpellWithMin[spellIdx], "spell:" .. sid .. ":" .. tostring(name))
                 else
-                    addChecker(res, range, minRange, checkers_Spell[spellIDx], "spell:" .. sid .. ":" .. tostring(name))
+                    addChecker(res, range, minRange, checkers_Spell[spellIdx], "spell:" .. sid .. ":" .. tostring(name))
                 end
             end
         end
     end
-
+    
     if interactList and not next(res) then
         for index, range in pairs(interactList) do
             addChecker(res, range, nil,  checkers_Interact[index], "interact:" .. index)
@@ -747,19 +747,19 @@ function lib:init(forced)
         if playerClass == "WARRIOR" then
             -- for warriors, use Intimidating Shout if available
             local name = GetSpellInfo(5246) -- ["Intimidating Shout"]
-            local spellIDx = findSpellIdx(name)
-            if spellIDx then
+            local spellIdx = findSpellIdx(name)
+            if spellIdx then
                 minRangeCheck = function(unit)
-                    return (IsSpellInRange(spellIDx, BOOKTYPE_SPELL, unit) == 1)
+                    return (IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1)
                 end
             end
         elseif playerClass == "ROGUE" then
             -- for rogues, use Blind if available
             local name = GetSpellInfo(2094) -- ["Blind"]
-            local spellIDx = findSpellIdx(name)
-            if spellIDx then
+            local spellIdx = findSpellIdx(name)
+            if spellIdx then
                 minRangeCheck = function(unit)
-                    return (IsSpellInRange(spellIDx, BOOKTYPE_SPELL, unit) == 1)
+                    return (IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1)
                 end
             end
         end
@@ -1005,7 +1005,7 @@ function lib:processItemRequests(itemRequests)
                     itemRequests[range] = nil
                     break
                 end
-                tremove(items, i)
+                tremove(items, i)   
             elseif not itemRequestTimeoutAt then
                 -- print("### processItemRequests: waiting: " .. tostring(item))
                 itemRequestTimeoutAt = GetTime() + ItemRequestTimeout
@@ -1064,7 +1064,7 @@ function lib:scheduleAuraCheck()
 end
 
 
--- << load-time initialization
+-- << load-time initialization 
 
 function lib:activate()
     if not self.frame then
