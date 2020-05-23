@@ -296,7 +296,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 							end
 						end
 					elseif EnhancedRaidFrames.db.profile["colorByTime"..i] then -- Color by remaining time
-						if remainingTime and remainingTime < 3 then
+						if remainingTime and remainingTime < 2 then
 							f[frameName][i].text:SetTextColor(1,0,0,1)
 						elseif remainingTime and remainingTime < 5 then
 							f[frameName][i].text:SetTextColor(1,1,0,1)
