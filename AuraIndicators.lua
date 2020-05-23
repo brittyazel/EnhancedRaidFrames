@@ -53,7 +53,6 @@ end
 -- Create the FontStrings used for indicators
 function EnhancedRaidFrames:CreateIndicators(frame)
 	local frameName = frame:GetName()
-
 	f[frameName] = {}
 
 	-- Create indicators
@@ -239,10 +238,19 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 
 			------------------------------------------------------
 
-			if foundAura then -- We found a matching spell
+			-- add spell icon info to cache in case we need it later on
+			if foundAura and icon and not EnhancedRaidFrames.iconCache[auraName] then
+				EnhancedRaidFrames.iconCache[auraName] = icon
+			end
+
+			------------------------------------------------------
+
+			--if we find the spell and we don't only want to show when it is missing
+			if foundAura and not EnhancedRaidFrames.db.profile["missing"..i] then
 				-- If we only are to show spells cast by me, make sure the spell is
 				if (EnhancedRaidFrames.db.profile["mine"..i] and castBy ~= "player") then
 					icon = ""
+					displayText = ""
 				else
 					if not EnhancedRaidFrames.db.profile["showIcon"..i] then -- Hide icon
 						icon = ""
@@ -307,10 +315,16 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 							f[frameName][i].text:SetTextColor(EnhancedRaidFrames.db.profile["color"..i].r, EnhancedRaidFrames.db.profile["color"..i].g, EnhancedRaidFrames.db.profile["color"..i].b, EnhancedRaidFrames.db.profile["color"..i].a)
 						end
 					end
-
-					break -- We found a match, so no need to continue the for loop
 				end
-			elseif EnhancedRaidFrames.db.profile["missing"..i] then -- Only show when it's missing
+
+				break -- We found a match, so no need to continue the for loop
+			else --if we don't find the spell or we only want it to show when it is missing
+				icon = ""
+				displayText = ""
+			end
+
+			--if we don't find the spell and we want it to only show when missing
+			if not foundAura and EnhancedRaidFrames.db.profile["missing"..i] then
 				if EnhancedRaidFrames.db.profile["showIcon"..i] then
 					--check our iconCache for the auraName. Note the icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons
 					if not EnhancedRaidFrames.iconCache[auraName] then
@@ -334,7 +348,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 		end
 
 		--set the texture or text on a frame, and show or hide the indicator frame
-		if (icon ~= "" or displayText ~= "") and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) then
+		if (icon~="" or displayText~="") and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) then
 			-- show the frame
 			f[frameName][i]:Show()
 			-- Show the text
@@ -347,7 +361,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 		end
 
 		--set cooldown animation
-		if EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] and icon~="" and f[frameName][i]:IsShown() then
+		if EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] and f[frameName][i]:IsShown() and icon~="" and expirationTime and duration then
 			CooldownFrame_Set(f[frameName][i].cooldown, expirationTime - duration, duration, true, true)
 		else
 			CooldownFrame_Clear(f[frameName][i].cooldown);
