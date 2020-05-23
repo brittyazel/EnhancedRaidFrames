@@ -39,12 +39,6 @@ end
 --- do init tasks here, like loading the Saved Variables
 --- or setting up slash commands.
 function EnhancedRaidFrames:OnInitialize()
-	if EnhancedRaidFrames.isWoWClassic then
-		local LibClassicDurations = LibStub("LibClassicDurations")
-		LibClassicDurations:Register(addonName) -- tell library it's being used and should start working
-		EnhancedRaidFrames.UnitAuraWrapper = LibClassicDurations.UnitAuraWrapper
-	end
-
 	-- Set up config pane
 	EnhancedRaidFrames:Setup()
 
@@ -104,6 +98,13 @@ function EnhancedRaidFrames:Setup()
 		local LibDualSpec = LibStub('LibDualSpec-1.0')
 		LibDualSpec:EnhanceDatabase(EnhancedRaidFrames.db, "EnhancedRaidFrames") --enhance the database object with per spec profile features
 		LibDualSpec:EnhanceOptions(profiles, EnhancedRaidFrames.db) -- enhance the profiles config panel with per spec profile features
+	end
+
+	-- LibClassicDurations
+	if EnhancedRaidFrames.isWoWClassic then
+		local LibClassicDurations = LibStub("LibClassicDurations")
+		LibClassicDurations:Register(addonName) -- tell library it's being used and should start working
+		EnhancedRaidFrames.UnitAuraWrapper = LibClassicDurations.UnitAuraWrapper
 	end
 
 	-- Build our config panels
