@@ -22,17 +22,17 @@ You can also donate via Paypal!
 ## Examples:
 Example of indicators on a unit. Displayed here are the cooldown frames for Rejuvenation, Germination, Regrowth, Ironbark, Spring Blossoms, Wild Growth, and Lifebloom. Notice how each HoT has a specified location to maximize readability and reflex in combat.
 
-![Example 1](https://media.forgecdn.net/attachments/293/656/singleframe.jpg "Example 1")
+https://media.forgecdn.net/attachments/293/656/singleframe.jpg
 
 This is an example of what you can expect in a raid setting after setting up Enhanced Raid Frames. This example is for a restoration druid, but an experience such as this would be common for all healing (and non-healing) classes.
 
-![Example 2](https://media.forgecdn.net/attachments/250/479/raidframeindicators.jpg "Example 2")
+https://media.forgecdn.net/attachments/250/479/raidframeindicators.jpg
 
 
 ## Configuration
 The configuration can be reached through the standard addon options (ESC -&gt; Interface -&gt; Addons -&gt; Enhanced Raid Frames)
 
-![Example 3](https://media.forgecdn.net/attachments/293/657/mainconfig.jpg "Example 3")
+https://media.forgecdn.net/attachments/293/657/mainconfig.jpg
 
 ### Aura Indicators
 The following can be used as buffs/debuffs:
@@ -45,13 +45,13 @@ The following can be used as buffs/debuffs:
 
 Likewise, there are many other options to configure such as whether to show cooldown text, stack size, tooltips, etc.
 
-![Example 4](https://media.forgecdn.net/attachments/293/658/indicatorconfig.jpg "Example 4")
+https://media.forgecdn.net/attachments/293/658/indicatorconfig.jpg
 
 ### Raid Icons:
 
 Enhanced Raid Frames allows you to configure whether to show raid icons (skull, square, diamond, etc), and allows you to configure the size and position of the icons if shown.
 
-![Example 5](https://media.forgecdn.net/attachments/293/659/iconconfig.jpg "Example 5")
+https://media.forgecdn.net/attachments/293/659/iconconfig.jpg
 
 ## Credits:
 Original Author: Szandos
