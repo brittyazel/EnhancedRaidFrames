@@ -342,6 +342,8 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 				else
 					displayText = "X" --if we aren't showing icons, display and X
 				end
+
+				break -- We don't need to continue the loop after the first spell, if the first spell isn't found
 			end
 		end
 
