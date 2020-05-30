@@ -23,8 +23,6 @@ local addonName, addonTable = ... --make use of the default addon namespace
 addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
-local LibRangeCheck = LibStub("LibRangeCheck-2.0")
-
 EnhancedRaidFrames.allAuras = " "
 EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
 
@@ -221,7 +219,7 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 
 		--if we have a custom range set use LibRanchCheck, otherwise use default UnitInRange function
 		if(EnhancedRaidFrames.db.profile.customRangeCheck) then
-			local rangeChecker = LibRangeCheck:GetFriendChecker(EnhancedRaidFrames.db.profile.customRange)
+			local rangeChecker = LibStub("LibRangeCheck-2.0"):GetFriendChecker(EnhancedRaidFrames.db.profile.customRange)
 			inRange = rangeChecker(frame.unit)
 			checkedRange = not UnitIsVisible(frame.unit) or not UnitIsDeadOrGhost(frame.unit)
 		else
