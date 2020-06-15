@@ -36,26 +36,36 @@ function EnhancedRaidFrames:CreateIcon(frame)
 end
 
 function EnhancedRaidFrames:SetIconAppearance(frame)
-	local pad = 3
+	local PAD = 3
 	local pos = EnhancedRaidFrames.db.profile.iconPosition
 	local frameName = frame:GetName()
 	if not icons[frameName] then return end
 	local tex = icons[frameName].texture
 
-	local iconVerticalOffset = EnhancedRaidFrames.db.profile.iconVerticalOffset
-	local iconHorizontalOffset = EnhancedRaidFrames.db.profile.iconHorizontalOffset
+	--------------------------
+	--TODO: this is just temp becasue we're changing from pixel to percentage relativity, remove this in the future
+	if EnhancedRaidFrames.db.profile.iconVerticalOffset > 1 then
+		EnhancedRaidFrames.db.profile.iconVerticalOffset = 0
+	end
+	if EnhancedRaidFrames.db.profile.iconHorizontalOffset > 1 then
+		EnhancedRaidFrames.db.profile.iconHorizontalOffset = 0
+	end
+	--------------------------
+
+	local iconVerticalOffset = EnhancedRaidFrames.db.profile.iconVerticalOffset * frame:GetHeight()
+	local iconHorizontalOffset = EnhancedRaidFrames.db.profile.iconHorizontalOffset * frame:GetWidth()
 
 	-- Set position relative to frame
 	tex:ClearAllPoints()
-	if pos == "TOPLEFT" then tex:SetPoint("TOPLEFT", pad + iconHorizontalOffset, -pad + iconVerticalOffset) end
-	if pos == "TOP" then tex:SetPoint("TOP", 0 + iconHorizontalOffset, -pad + iconVerticalOffset) end
-	if pos == "TOPRIGHT" then tex:SetPoint("TOPRIGHT", -pad + iconHorizontalOffset, -pad + iconVerticalOffset) end
-	if pos == "LEFT" then tex:SetPoint("LEFT", pad + iconHorizontalOffset, 0 + iconVerticalOffset) end
+	if pos == "TOPLEFT" then tex:SetPoint("TOPLEFT", PAD + iconHorizontalOffset, -PAD + iconVerticalOffset) end
+	if pos == "TOP" then tex:SetPoint("TOP", 0 + iconHorizontalOffset, -PAD + iconVerticalOffset) end
+	if pos == "TOPRIGHT" then tex:SetPoint("TOPRIGHT", -PAD + iconHorizontalOffset, -PAD + iconVerticalOffset) end
+	if pos == "LEFT" then tex:SetPoint("LEFT", PAD + iconHorizontalOffset, 0 + iconVerticalOffset) end
 	if pos == "CENTER" then tex:SetPoint("CENTER", 0 + iconHorizontalOffset, 0 + iconVerticalOffset) end
-	if pos == "RIGHT" then tex:SetPoint("RIGHT", -pad + iconHorizontalOffset, 0 + iconVerticalOffset) end
-	if pos == "BOTTOMLEFT" then tex:SetPoint("BOTTOMLEFT", pad + iconHorizontalOffset, pad + iconVerticalOffset) end
-	if pos == "BOTTOM" then tex:SetPoint("BOTTOM", 0 + iconHorizontalOffset, pad + iconVerticalOffset) end
-	if pos == "BOTTOMRIGHT" then tex:SetPoint("BOTTOMRIGHT", -pad + iconHorizontalOffset, pad + iconVerticalOffset) end
+	if pos == "RIGHT" then tex:SetPoint("RIGHT", -PAD + iconHorizontalOffset, 0 + iconVerticalOffset) end
+	if pos == "BOTTOMLEFT" then tex:SetPoint("BOTTOMLEFT", PAD + iconHorizontalOffset, PAD + iconVerticalOffset) end
+	if pos == "BOTTOM" then tex:SetPoint("BOTTOM", 0 + iconHorizontalOffset, PAD + iconVerticalOffset) end
+	if pos == "BOTTOMRIGHT" then tex:SetPoint("BOTTOMRIGHT", -PAD + iconHorizontalOffset, PAD + iconVerticalOffset) end
 
 	-- Set the icon size
 	tex:SetWidth(EnhancedRaidFrames.db.profile.iconSize)

@@ -163,6 +163,8 @@ function EnhancedRaidFrames:CreateDefaults ()
 		defaults.profile["showCooldownAnimation"..i] = true
 		defaults.profile["showIcon"..i] = true
 		defaults.profile["iconSize"..i] = 20
+		defaults.profile["indicatorHorizontalOffset"..i] = 0
+		defaults.profile["indicatorVerticalOffset"..i] = 0
 		defaults.profile["showTooltip"..i] = true
 	end
 

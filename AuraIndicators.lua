@@ -24,7 +24,6 @@ local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
 local media = LibStub:GetLibrary("LibSharedMedia-3.0")
 local f = {} -- Indicators for the frames
-local PAD = 2
 local unitAuras = {} -- Matrix to keep a list of all auras on all units
 
 EnhancedRaidFrames.iconCache = {}
@@ -57,34 +56,20 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 
 	-- Create indicators
 	for i = 1, 9 do
-		--We have to use this template to allow for our clicks to be passed through, otherwise our frames won't allow selecting the raidframe behind it
-		f[frameName][i] = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
+		if _G[frameName.."_ERF_"..i] then
+			--if the frame already exists, attach to it
+			f[frameName][i] = _G[frameName.."_ERF_"..i]
+		else
+			--We have to use this template to allow for our clicks to be passed through, otherwise our frames won't allow selecting the raidframe behind it
+			f[frameName][i] = CreateFrame("Button", frameName.."_ERF_"..i, frame, "CompactAuraTemplate")
+		end
+
 		f[frameName][i]:RegisterForClicks("LeftButtonDown", "RightButtonUp");
 		f[frameName][i]:SetFrameStrata("HIGH")
 
 		--we further define this frame element in SetIndicatorAppearance. This is just a starting state
 		f[frameName][i].text = f[frameName][i]:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the animation, text should be on the parent frame
 		f[frameName][i].text:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
-
-		if i == 1 then
-			f[frameName][i]:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, -PAD)
-		elseif i == 2 then
-			f[frameName][i]:SetPoint("TOP", frame, "TOP", 0, -PAD)
-		elseif i == 3 then
-			f[frameName][i]:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD, -PAD)
-		elseif i == 4 then
-			f[frameName][i]:SetPoint("LEFT", frame, "LEFT", PAD, 0)
-		elseif i == 5 then
-			f[frameName][i]:SetPoint("CENTER", frame, "CENTER", 0, 0)
-		elseif i == 6 then
-			f[frameName][i]:SetPoint("RIGHT", frame, "RIGHT", -PAD, 0)
-		elseif i == 7 then
-			f[frameName][i]:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD, PAD)
-		elseif i == 8 then
-			f[frameName][i]:SetPoint("BOTTOM", frame, "BOTTOM", 0, PAD)
-		elseif i == 9 then
-			f[frameName][i]:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD, PAD)
-		end
 
 		--mark the position of this particular frame for use later (i.e. 1->9)
 		f[frameName][i].position = i
@@ -112,6 +97,31 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 	for i = 1, 9 do
 		f[frameName][i]:SetWidth(EnhancedRaidFrames.db.profile["iconSize"..i])
 		f[frameName][i]:SetHeight(EnhancedRaidFrames.db.profile["iconSize"..i])
+
+		local PAD = 2
+		local iconVerticalOffset = EnhancedRaidFrames.db.profile["indicatorVerticalOffset"..i] * frame:GetHeight()
+		local iconHorizontalOffset = EnhancedRaidFrames.db.profile["indicatorHorizontalOffset"..i] * frame:GetWidth()
+
+		f[frameName][i]:ClearAllPoints()
+		if i == 1 then
+			f[frameName][i]:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD + iconHorizontalOffset, -PAD + iconVerticalOffset)
+		elseif i == 2 then
+			f[frameName][i]:SetPoint("TOP", frame, "TOP", 0 + iconHorizontalOffset, -PAD + iconVerticalOffset)
+		elseif i == 3 then
+			f[frameName][i]:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD + iconHorizontalOffset, -PAD + iconVerticalOffset)
+		elseif i == 4 then
+			f[frameName][i]:SetPoint("LEFT", frame, "LEFT", PAD + iconHorizontalOffset, 0 + iconVerticalOffset)
+		elseif i == 5 then
+			f[frameName][i]:SetPoint("CENTER", frame, "CENTER", 0 + iconHorizontalOffset, 0 + iconVerticalOffset)
+		elseif i == 6 then
+			f[frameName][i]:SetPoint("RIGHT", frame, "RIGHT", -PAD + iconHorizontalOffset, 0 + iconVerticalOffset)
+		elseif i == 7 then
+			f[frameName][i]:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD + iconHorizontalOffset, PAD + iconVerticalOffset)
+		elseif i == 8 then
+			f[frameName][i]:SetPoint("BOTTOM", frame, "BOTTOM", 0 + iconHorizontalOffset, PAD + iconVerticalOffset)
+		elseif i == 9 then
+			f[frameName][i]:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD + iconHorizontalOffset, PAD + iconVerticalOffset)
+		end
 
 		--create a text overlay frame that will show our countdown text
 		if not EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] or not EnhancedRaidFrames.db.profile["showIcon"..i] then

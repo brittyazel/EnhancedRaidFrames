@@ -205,18 +205,21 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			type = "toggle",
 			name = "Mine only",
 			desc = "Only show buffs/debuffs cast by me",
+			width = 1.14,
 			order = 10,
 		}
 		indicatorOptions.args[v].args["missing"..i] = {
 			type = "toggle",
 			name = "Show only if missing",
 			desc = "Show only if the specified buff/debuff is missing on the target",
+			width = 1.14,
 			order = 30,
 		}
 		indicatorOptions.args[v].args["me"..i] = {
 			type = "toggle",
 			name = "Show on me only",
 			desc = "Only show this indicator on myself",
+			width = 1.14,
 			order = 40,
 		}
 		indicatorOptions.args[v].args.textHeader = {
@@ -228,12 +231,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			type = "toggle",
 			name = "Show cooldown text",
 			desc = "Show cooldown text specifying the time left of the buff/debuff",
+			width = 1.14,
 			order = 110,
 		}
 		indicatorOptions.args[v].args["stack"..i] = {
 			type = "toggle",
 			name = "Show stack size",
 			desc = "Show stack size for buffs/debuffs that stack",
+			width = 1.14,
 			order = 111,
 		}
 		indicatorOptions.args[v].args["color"..i] = {
@@ -250,6 +255,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				EnhancedRaidFrames:RefreshConfig()
 			end,
 			disabled = function () return (EnhancedRaidFrames.db.profile["stackColor"..i] or EnhancedRaidFrames.db.profile["debuffColor"..i]) end,
+			width = 1.14,
 			order = 120,
 		}
 		indicatorOptions.args[v].args["stackColor"..i] = {
@@ -257,6 +263,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			name = "Color by stack size",
 			desc = "Color the text depending on the stack size, will override any other coloring (3+: |cFF00FF00green|r, 2: |cFFFFFF00yellow|r, 1: |cFFFF0000red|r)",
 			disabled = function () return EnhancedRaidFrames.db.profile["debuffColor"..i] end,
+			width = 1.14,
 			order = 160,
 		}
 		indicatorOptions.args[v].args["debuffColor"..i] = {
@@ -264,6 +271,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			name = "Color by debuff type",
 			desc = "Color the text depending on the debuff type, will override any other coloring (poison = |cFF00FF00green|r, magic = |cFF0000FFblue|r, etc)",
 			disabled = function () return EnhancedRaidFrames.db.profile["stackColor"..i] end,
+			width = 1.14,
 			order = 165,
 		}
 		indicatorOptions.args[v].args["colorByTime"..i] = {
@@ -271,6 +279,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			name = "Color by remaining time",
 			desc = "Color the counter based on remaining time (>5 seconds: normal, 2-5 seconds: |cFFFFFF00yellow|r, <2 seconds: |cFFFF0000red|r)",
 			disabled = function () return (EnhancedRaidFrames.db.profile["stackColor"..i] or EnhancedRaidFrames.db.profile["debuffColor"..i]) end,
+			width = 1.14,
 			order = 180,
 		}
 		indicatorOptions.args[v].args["size"..i] = {
@@ -280,8 +289,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			min = 1,
 			max = 30,
 			step = 1,
+			width = 1.14,
 			order = 190,
-			width = "full",
 		}
 		indicatorOptions.args[v].args.iconHeader = {
 			type = "header",
@@ -292,6 +301,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			type = "toggle",
 			name = "Show icon",
 			desc = "Show an icon if the buff/debuff is currently on the unit",
+			width = 1.14,
 			order = 310,
 		}
 		indicatorOptions.args[v].args["showCooldownAnimation"..i] = {
@@ -299,6 +309,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			name = "Show CD animation",
 			desc = "Show the cooldown animation specifying the time left of the buff/debuff",
 			disabled = function () return not EnhancedRaidFrames.db.profile["showIcon"..i] end,
+			width = 1.14,
 			order = 311,
 		}
 		indicatorOptions.args[v].args["showTooltip"..i] = {
@@ -306,6 +317,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			name = "Show tooltip",
 			desc = "Show tooltip on mouseover",
 			disabled = function () return not EnhancedRaidFrames.db.profile["showIcon"..i] end,
+			width = 1.14,
 			order = 315,
 		}
 		indicatorOptions.args[v].args["iconSize"..i] = {
@@ -315,9 +327,31 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			min = 1,
 			max = 30,
 			step = 1,
-			width = "full",
+			width = 1.14,
 			disabled = function () return not EnhancedRaidFrames.db.profile["showIcon"..i] end,
 			order = 320,
+		}
+		indicatorOptions.args[v].args["indicatorVerticalOffset"..i] = {
+			type = "range",
+			name = "Vertical Offset",
+			desc = "Vertical offset of the indicator icon relative to its starting position",
+			min = -1,
+			max = 1,
+			step = .01,
+			width = 1.14,
+			disabled = function () return not EnhancedRaidFrames.db.profile["showIcon"..i] end,
+			order = 325,
+		}
+		indicatorOptions.args[v].args["indicatorHorizontalOffset"..i] = {
+			type = "range",
+			name = "Horizontal Offset",
+			desc = "Horizontal offset of the indicator icon relative to its starting position",
+			min = -1,
+			max = 1,
+			step = .01,
+			width = 1.14,
+			disabled = function () return not EnhancedRaidFrames.db.profile["showIcon"..i] end,
+			order = 326,
 		}
 	end
 
@@ -379,9 +413,9 @@ function EnhancedRaidFrames:CreateIconOptions()
 				type = "range",
 				name = "Icon Vertical Offset",
 				desc = "Vertical offset of the raid icon relative to its starting position",
-				min = -20,
-				max = 20,
-				step = 1,
+				min = -1,
+				max = 1,
+				step = .01,
 				disabled = function () return not EnhancedRaidFrames.db.profile.showRaidIcons end,
 				width = 1.15,
 				order = 22,
@@ -390,9 +424,9 @@ function EnhancedRaidFrames:CreateIconOptions()
 				type = "range",
 				name = "Icon Horizontal Offset",
 				desc = "Horizontal offset of the raid icon relative to its starting position",
-				min = -20,
-				max = 20,
-				step = 1,
+				min = -1,
+				max = 1,
+				step = .01,
 				disabled = function () return not EnhancedRaidFrames.db.profile.showRaidIcons end,
 				width = 1.15,
 				order = 23,
