@@ -60,6 +60,9 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 	-- Set the icon size
 	tex:SetWidth(EnhancedRaidFrames.db.profile.iconSize)
 	tex:SetHeight(EnhancedRaidFrames.db.profile.iconSize)
+
+	-- Set the icon opacity
+	tex:SetAlpha(EnhancedRaidFrames.db.profile.iconAlpha)
 end
 
 function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)

@@ -101,7 +101,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				order = 31,
 			},
 			backgroundAlpha = {
-				name = "Background Transparency",
+				name = "Background Opacity",
 				type = "range",
 				min = 0,
 				max = 1,
@@ -396,6 +396,17 @@ function EnhancedRaidFrames:CreateIconOptions()
 				disabled = function () return not EnhancedRaidFrames.db.profile.showRaidIcons end,
 				width = 1.15,
 				order = 23,
+			},
+			iconAlpha = {
+				type = "range",
+				name = "Icon Opacity",
+				desc = "The opacity of the raid icon",
+				min = 0,
+				max = 1,
+				step = 0.05,
+				disabled = function () return not EnhancedRaidFrames.db.profile.showRaidIcons end,
+				width = 1.15,
+				order = 24,
 			},
 		}
 	}

@@ -144,7 +144,8 @@ function EnhancedRaidFrames:CreateDefaults ()
 		iconSize = 20,
 		iconPosition = "CENTER",
 		iconVerticalOffset = 0,
-		iconHorizontalOffset=0,
+		iconHorizontalOffset = 0,
+		iconAlpha = 1;
 	}
 
 	for i = 1, 9 do
