@@ -42,6 +42,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 
 			-------------------------------------------------
+
 			textHeader = {
 				type = "header",
 				name = "Default Icon Visibility",
@@ -70,6 +71,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 
 			-------------------------------------------------
+
 			generalHeader = {
 				type = "header",
 				name = "General Options",
@@ -86,6 +88,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 
 			-------------------------------------------------
+
 			visualOptions = {
 				type = "header",
 				name = "Visual Options",
@@ -111,6 +114,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 
 			-------------------------------------------------
+
 			visualOptions = {
 				type = "header",
 				name = "Out-of-Range Indicator Options",
@@ -176,6 +180,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args[v].desc = "The indicator positioned at the " .. v:lower() .. " of the raid frame"
 		indicatorOptions.args[v].order = i
 		indicatorOptions.args[v].args = {}
+
+		--------------------------------------------
+
 		indicatorOptions.args[v].args["auras"..i] = {
 			type = "input",
 			name = "Buff/Debuff watch list:",
@@ -196,9 +203,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		}
 
 		--------------------------------------------
+
 		indicatorOptions.args[v].args.visibilityHeader = {
 			type = "header",
-			name = "Visibility",
+			name = "Visibility and Behavior",
 			order = 5,
 		}
 		indicatorOptions.args[v].args["mine"..i] = {
@@ -222,9 +230,12 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			width = 1.14,
 			order = 40,
 		}
+
+		--------------------------------------------
+
 		indicatorOptions.args[v].args.textHeader = {
 			type = "header",
-			name = "Text",
+			name = "Text and Color",
 			order = 100,
 		}
 		indicatorOptions.args[v].args["showText"..i] = {
@@ -285,16 +296,19 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args[v].args["size"..i] = {
 			type = "range",
 			name = "Text Size",
-			desc = "The size of the indicator text",
+			desc = "The size of the indicator text in pixels",
 			min = 1,
 			max = 30,
 			step = 1,
 			width = 1.14,
 			order = 190,
 		}
+
+		--------------------------------------------
+
 		indicatorOptions.args[v].args.iconHeader = {
 			type = "header",
-			name = "Icon",
+			name = "Icon and Position",
 			order = 300,
 		}
 		indicatorOptions.args[v].args["showIcon"..i] = {
@@ -323,7 +337,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args[v].args["iconSize"..i] = {
 			type = "range",
 			name = "Icon size",
-			desc = "The size of the indicator icon",
+			desc = "The size of the indicator icon in pixels",
 			min = 1,
 			max = 30,
 			step = 1,
@@ -334,7 +348,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args[v].args["indicatorVerticalOffset"..i] = {
 			type = "range",
 			name = "Vertical Offset",
-			desc = "Vertical offset of the indicator icon relative to its starting position",
+			desc = "Vertical offset percentage of the indicator icon relative to its starting position",
 			min = -1,
 			max = 1,
 			step = .01,
@@ -345,7 +359,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args[v].args["indicatorHorizontalOffset"..i] = {
 			type = "range",
 			name = "Horizontal Offset",
-			desc = "Horizontal offset of the indicator icon relative to its starting position",
+			desc = "Horizontal offset percentage of the indicator icon relative to its starting position",
 			min = -1,
 			max = 1,
 			step = .01,
@@ -393,6 +407,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 			},
 
 			-------------------------------------------------
+
 			visualOptions = {
 				type = "header",
 				name = "Visual Options",
@@ -401,7 +416,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 			iconSize = {
 				type = 'range',
 				name = "Icon Size",
-				desc = "The size of the raid icon",
+				desc = "The size of the raid icon in pixels",
 				min = 1,
 				max = 40,
 				step = 1,
@@ -412,7 +427,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 			iconVerticalOffset = {
 				type = "range",
 				name = "Icon Vertical Offset",
-				desc = "Vertical offset of the raid icon relative to its starting position",
+				desc = "Vertical offset percentage of the raid icon relative to its starting position",
 				min = -1,
 				max = 1,
 				step = .01,
@@ -423,7 +438,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 			iconHorizontalOffset = {
 				type = "range",
 				name = "Icon Horizontal Offset",
-				desc = "Horizontal offset of the raid icon relative to its starting position",
+				desc = "Horizontal offset percentage of the raid icon relative to its starting position",
 				min = -1,
 				max = 1,
 				step = .01,
@@ -434,7 +449,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 			iconAlpha = {
 				type = "range",
 				name = "Icon Opacity",
-				desc = "The opacity of the raid icon",
+				desc = "The opacity percentage of the raid icon",
 				min = 0,
 				max = 1,
 				step = 0.05,
