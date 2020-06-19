@@ -64,7 +64,7 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 			f[frameName][i] = CreateFrame("Button", frameName.."_ERF_"..i, frame, "CompactAuraTemplate")
 		end
 
-		f[frameName][i]:RegisterForClicks("LeftButtonDown", "RightButtonUp");
+		f[frameName][i]:RegisterForClicks("LeftButtonDown", "RightButtonUp")
 		f[frameName][i]:SetFrameStrata("HIGH")
 
 		--we further define this frame element in SetIndicatorAppearance. This is just a starting state
@@ -374,7 +374,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 		if EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] and f[frameName][i]:IsShown() and icon~="" and expirationTime and duration then
 			CooldownFrame_Set(f[frameName][i].cooldown, expirationTime - duration, duration, true, true)
 		else
-			CooldownFrame_Clear(f[frameName][i].cooldown);
+			CooldownFrame_Clear(f[frameName][i].cooldown)
 		end
 	end
 end

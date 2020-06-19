@@ -125,7 +125,7 @@ function EnhancedRaidFrames:Setup()
 end
 
 -- Create up or database defaults table
-function EnhancedRaidFrames:CreateDefaults ()
+function EnhancedRaidFrames:CreateDefaults()
 	local defaults = {}
 
 	defaults.profile = {
@@ -133,19 +133,19 @@ function EnhancedRaidFrames:CreateDefaults ()
 
 		showBuffs = true,
 		showDebuffs = true,
-		showDispelDebuffs=true,
+		showDispelDebuffs = true,
 
 		frameScale = 1,
 		rangeAlpha = 0.55,
-		backgroundAlpha = 1;
-		customRange=30,
+		backgroundAlpha = 1,
+		customRange = 30,
 
 		showRaidIcons = true,
 		iconSize = 20,
-		iconPosition = "CENTER",
+		iconPlacement = 5,
 		iconVerticalOffset = 0,
 		iconHorizontalOffset = 0,
-		iconAlpha = 1;
+		iconAlpha = 1,
 	}
 
 	for i = 1, 9 do
@@ -180,10 +180,10 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 
 	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal",
 			function(frame)
-				EnhancedRaidFrames:UpdateIndicators(frame, setAppearance);
-				EnhancedRaidFrames:UpdateIcons(frame, setAppearance);
+				EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
+				EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
 				EnhancedRaidFrames:UpdateInRange(frame)
-				EnhancedRaidFrames:SetBackgroundAlpha(frame)
+				EnhancedRaidFrames:UpdateBackgroundAlpha(frame)
 			end)
 end
 
@@ -232,13 +232,13 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 		if (checkedRange and not inRange) then	--If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
 			frame:SetAlpha(EnhancedRaidFrames.db.profile.rangeAlpha)
 		else
-			frame:SetAlpha(1);
+			frame:SetAlpha(1)
 		end
 	end
 end
 
 -- Set the background alpha amount to allow full transparency if need be
-function EnhancedRaidFrames:SetBackgroundAlpha(frame)
+function EnhancedRaidFrames:UpdateBackgroundAlpha(frame)
 	if not frame.unit then
 		return
 	end

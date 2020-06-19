@@ -22,6 +22,10 @@
 local addonName, addonTable = ...
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
+local POSITIONS = { [1] = "Top Left", [2] = "Top Center", [3] = "Top Right" ,
+					[4] = "Middle Left", [5] = "Middle Center", [6] = "Middle Right",
+					[7] = "Bottom Left", [8] = "Bottom Center", [9] = "Bottom Right"}
+
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
@@ -171,9 +175,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 	}
 
 	--- Add options for each indicator
-	local indicatorNames = {"Top-Left", "Top-Center", "Top-Right", "Middle-Left", "Middle-Center", "Middle-Right", "Bottom-Left", "Bottom-Center", "Bottom-Right"}
-
-	for i,v in ipairs(indicatorNames) do
+	for i,v in ipairs(POSITIONS) do
 		indicatorOptions.args[v] = {}
 		indicatorOptions.args[v].type = 'group'
 		indicatorOptions.args[v].name = i..": "..v
@@ -394,13 +396,11 @@ function EnhancedRaidFrames:CreateIconOptions()
 				width = 1.15,
 				order = 3,
 			},
-			iconPosition = {
+			iconPlacement = {
 				type = "select",
 				name = "Icon Position",
 				desc = "Position of the raid icon relative to the frame",
-				values = { ["TOPLEFT"] = "Top Left", ["TOP"] = "Top", ["TOPRIGHT"] = "Top Right" ,
-				           ["LEFT"] = "Left", ["CENTER"] = "Center", ["RIGHT"] = "Right",
-				           ["BOTTOMLEFT"] = "Bottom Left", ["BOTTOM"] = "Bottom", ["BOTTOMRIGHT"] = "Bottom Right"},
+				values = POSITIONS,
 				disabled = function () return not EnhancedRaidFrames.db.profile.showRaidIcons end,
 				width = 1.15,
 				order = 10,
