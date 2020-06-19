@@ -60,6 +60,9 @@ function EnhancedRaidFrames:OnEnable()
 	-- Updates Range Alpha
 	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) EnhancedRaidFrames:UpdateInRange(frame) end)
 
+	-- Refresh layout if the frame widgets change
+	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateWidgetSet", function(frame) EnhancedRaidFrames:SetIndicatorAppearance(frame) end)
+
 	-- Hook raid icon updates
 	EnhancedRaidFrames:RegisterEvent("RAID_TARGET_UPDATE", "UpdateAllFrames")
 	EnhancedRaidFrames:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateAllFrames")
@@ -162,7 +165,7 @@ function EnhancedRaidFrames:CreateDefaults()
 		defaults.profile["showText"..i] = false
 		defaults.profile["showCooldownAnimation"..i] = true
 		defaults.profile["showIcon"..i] = true
-		defaults.profile["iconSize"..i] = 20
+		defaults.profile["iconSize"..i] = 18
 		defaults.profile["indicatorHorizontalOffset"..i] = 0
 		defaults.profile["indicatorVerticalOffset"..i] = 0
 		defaults.profile["showTooltip"..i] = true
