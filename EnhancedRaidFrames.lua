@@ -61,7 +61,7 @@ function EnhancedRaidFrames:OnEnable()
 	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) EnhancedRaidFrames:UpdateInRange(frame) end)
 
 	-- Refresh layout if the frame widgets change
-	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateWidgetSet", function(frame) EnhancedRaidFrames:SetIndicatorAppearance(frame) end)
+	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateWidgetSet", function() EnhancedRaidFrames:UpdateAllFrames(true) end)
 
 	-- Hook raid icon updates
 	EnhancedRaidFrames:RegisterEvent("RAID_TARGET_UPDATE", "UpdateAllFrames")

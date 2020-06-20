@@ -185,7 +185,6 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 	end
 end
 
-
 -- process a single indicator and apply visuals
 function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	local icon
@@ -243,7 +242,6 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		CooldownFrame_Clear(indicatorFrame.cooldown)
 	end
 end
-
 
 --process the text and icon for an indicator and return these values
 function EnhancedRaidFrames:ProcessIconAndText(indicatorFrame, auraName, unit)
@@ -414,6 +412,7 @@ function EnhancedRaidFrames:ProcessIconAndText(indicatorFrame, auraName, unit)
 		return icon, displayText, textColor
 	end
 end
+
 
 ------------------------------------------------
 ---------- Update Auras for all units ----------
