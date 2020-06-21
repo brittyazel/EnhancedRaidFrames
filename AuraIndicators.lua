@@ -84,11 +84,10 @@ end
 
 -- Set the appearance of the Indicator
 function EnhancedRaidFrames:SetIndicatorAppearance(frame)
-	local unit = frame.unit
 	local frameName = frame:GetName()
 
 	-- Check if the frame is pointing at anything
-	if not f[frameName] or not unit then
+	if not f[frameName] or not frame.unit then
 		return
 	end
 
@@ -133,17 +132,15 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 
 		--create a text overlay frame that will show our countdown text
 		if not EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] or not EnhancedRaidFrames.db.profile["showIcon"..i] then
-			f[frameName][i].text:SetText("")
 			f[frameName][i].text = f[frameName][i]:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the cooldown animation or the icon, text should be on the parent frame
 			f[frameName][i].text:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
 		else
-			f[frameName][i].text:SetText("")
 			f[frameName][i].text = f[frameName][i].cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we show the cooldown animation, text should be on the child '.cooldown' frame
 			f[frameName][i].text:SetPoint("CENTER", f[frameName][i].cooldown, "CENTER", 0, 0)
 		end
 
+		f[frameName][i].text:SetText("")
 		f[frameName][i].text:SetFont(font, EnhancedRaidFrames.db.profile["size"..i], "OUTLINE")
-		f[frameName][i].text:SetTextColor(EnhancedRaidFrames.db.profile["color"..i].r, EnhancedRaidFrames.db.profile["color"..i].g, EnhancedRaidFrames.db.profile["color"..i].b, EnhancedRaidFrames.db.profile["color"..i].a)
 	end
 end
 
