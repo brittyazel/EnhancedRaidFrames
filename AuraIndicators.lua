@@ -186,7 +186,7 @@ end
 
 -- process a single indicator and apply visuals
 function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
-	local icon, count, duration, expirationTime, debuffType, castBy, auraIndex, auraType
+	local icon, count, duration, expirationTime, debuffType, castBy, auraIndex, auraType, _
 
 	--reset auraIndex and auraType for tooltip
 	indicatorFrame.auraIndex = nil
@@ -218,22 +218,21 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			break
 		end
 
-		--query the available information for a given indicator and aura
-		icon, count, duration, expirationTime, debuffType, castBy, auraIndex, auraType = EnhancedRaidFrames:QueryAuraInfo(indicatorFrame, auraName, unit)
+		-- query the available information for a given indicator and aura
+		icon, count, duration, expirationTime, debuffType, castBy, auraIndex, auraType = EnhancedRaidFrames:QueryAuraInfo(auraName, unit)
 
 		-- add spell icon info to cache in case we need it later on
-		if icon and not EnhancedRaidFrames.iconCache[auraName] and icon ~= "Interface\\Icons\\INV_Misc_QuestionMark" then
+		if icon and not EnhancedRaidFrames.iconCache[auraName] then
 			EnhancedRaidFrames.iconCache[auraName] = icon
 		end
 
-		--when tracking multiple things, this determines "where" we stop in the list
-		--if we find the aura, we can stop querying down the list
-		if icon and
-				--we want to stop only when castBy == "player" if we are tracking "mine only"
-				((EnhancedRaidFrames.db.profile["mine"..indicatorFrame.position] and castBy == "player") or
-						--we also wan't to stop on the first "missing" flagged aura if we are tracking missing explicitly
-						EnhancedRaidFrames.db.profile["missing"..indicatorFrame.position] and castBy == "missing") then
-			break
+		-- when tracking multiple things, this determines "where" we stop in the list
+		-- if we find the aura, we can stop querying down the list
+		if icon then
+			-- we want to stop only when castBy == "player" if we are tracking "mine only"
+			if not EnhancedRaidFrames.db.profile["mine"..indicatorFrame.position] or (EnhancedRaidFrames.db.profile["mine"..indicatorFrame.position] and castBy == "player") then
+				break
+			end
 		end
 	end
 
@@ -241,31 +240,33 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	------- output visuals to the indicator frame --------
 	------------------------------------------------------
 
-	if icon and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) and
-			--if we find the spell and we don't only want to show when it is missing
-			not (EnhancedRaidFrames.db.profile["missing"..indicatorFrame.position] and castBy ~= "missing") then
+	-- if we find the spell and we don't only want to show when it is missing
+	if icon and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) and not EnhancedRaidFrames.db.profile["missing"..indicatorFrame.position] then
 
-		-- calculate remainingTime and round down
+		-- calculate remainingTime and round down, this is how the game seems to do it
 		local remainingTime = floor(expirationTime - GetTime())
 
-		--set auraIndex and auraType for tooltip
+		---------------------------------
+		-- set auraIndex and auraType for tooltip
 		indicatorFrame.auraIndex = auraIndex
 		indicatorFrame.auraType = auraType
 
-		-- show icon
+		---------------------------------
+		-- process icon to show
 		if EnhancedRaidFrames.db.profile["showIcon"..indicatorFrame.position] then
 			indicatorFrame.icon:SetTexture(icon)
 		else
 			indicatorFrame.icon:SetTexture("")
 		end
 
-		-- show text
+		---------------------------------
+		-- process text to show
 		if EnhancedRaidFrames.db.profile["showText"..indicatorFrame.position] or EnhancedRaidFrames.db.profile["stack"..indicatorFrame.position] then
 			-- Pretty formatting of the remaining time text
 			local formattedTime = ""
 			local formattedCount = ""
 
-			--determine the formatted time string
+			-- determine the formatted time string
 			if EnhancedRaidFrames.db.profile["showText"..indicatorFrame.position] and expirationTime ~= 0 then
 				if remainingTime > 60 then
 					formattedTime = string.format("%.0f", remainingTime/60).."m" -- Show minutes without seconds
@@ -274,12 +275,12 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 				end
 			end
 
-			--determine the formatted count string
+			-- determine the formatted count string
 			if EnhancedRaidFrames.db.profile["stack"..indicatorFrame.position] and count > 0 then
 				formattedCount = count
 			end
 
-			--determine the final output string
+			-- determine the final output string concatenation
 			if formattedCount ~= "" and formattedTime ~= "" then
 				indicatorFrame.text:SetText(formattedCount .. "-" .. formattedTime)
 			elseif formattedCount ~= "" then
@@ -293,13 +294,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			indicatorFrame.text:SetText("")
 		end
 
-		-- if castBy == missing it means this item was not found but we want to show "missing" items anyway
-		if castBy == "missing" and not EnhancedRaidFrames.db.profile["showIcon"..indicatorFrame.position] then
-			indicatorFrame.text:SetText("X")
-		elseif castBy == "missing" and EnhancedRaidFrames.db.profile["showIcon"..indicatorFrame.position] then
-			indicatorFrame.text:SetText("")
-		end
-
+		---------------------------------
 		-- determine if we should change the textColor from the default (player set color)
 		if EnhancedRaidFrames.db.profile["stackColor"..indicatorFrame.position] then -- Color by stack
 			if count == 1 then
@@ -330,26 +325,49 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		-- Set text color
 		indicatorFrame.text:SetTextColor(textColor[1],textColor[2],textColor[3],textColor[4])
 
-		-- show the frame
-		indicatorFrame:Show()
-	else
-		-- hide the frame
-		indicatorFrame:Hide()
-	end
+		---------------------------------
 
-	------------------------------------------------------
-	------------------------------------------------------
+		-- set cooldown animation
+		if EnhancedRaidFrames.db.profile["showCooldownAnimation"..indicatorFrame.position] and EnhancedRaidFrames.db.profile["showIcon"..indicatorFrame.position] and expirationTime and duration then
+			CooldownFrame_Set(indicatorFrame.cooldown, expirationTime - duration, duration, true, true)
+		else
+			CooldownFrame_Clear(indicatorFrame.cooldown)
+		end
 
-	-- set cooldown animation
-	if EnhancedRaidFrames.db.profile["showCooldownAnimation"..indicatorFrame.position] and indicatorFrame:IsShown() and expirationTime and duration then
-		CooldownFrame_Set(indicatorFrame.cooldown, expirationTime - duration, duration, true, true)
+		indicatorFrame:Show() --show the frame
+
+	elseif not icon and EnhancedRaidFrames.db.profile["missing"..indicatorFrame.position] then --deal with "show only if missing"
+		local auraName = EnhancedRaidFrames.auraStrings[indicatorFrame.position][1]
+
+		--check our iconCache for the auraName. Note the icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons
+		if not EnhancedRaidFrames.iconCache[auraName] then
+			_,_,icon = GetSpellInfo(auraName)
+			if not icon then
+				icon = "Interface\\Icons\\INV_Misc_QuestionMark"
+			end
+		else
+			icon = EnhancedRaidFrames.iconCache[auraName]
+		end
+
+		if EnhancedRaidFrames.db.profile["showIcon"..indicatorFrame.position] then
+			indicatorFrame.icon:SetTexture(icon)
+			indicatorFrame.text:SetText("")
+		else
+			indicatorFrame.icon:SetTexture("")
+			indicatorFrame.text:SetText("X")
+		end
+
+		CooldownFrame_Clear(indicatorFrame.cooldown)
+		indicatorFrame:Show() --show the frame
+
 	else
 		CooldownFrame_Clear(indicatorFrame.cooldown)
+		indicatorFrame:Hide() --hide the frame
 	end
 end
 
 --process the text and icon for an indicator and return these values
-function EnhancedRaidFrames:QueryAuraInfo(indicatorFrame, auraName, unit)
+function EnhancedRaidFrames:QueryAuraInfo(auraName, unit)
 	-- Check if the aura exist on the unit
 	for _,v in pairs(unitAuras[unit]) do
 		if (tonumber(auraName) and v.spellID == tonumber(auraName)) or v.auraName == auraName or (v.auraType == "debuff" and v.debuffType == auraName) then
@@ -371,21 +389,6 @@ function EnhancedRaidFrames:QueryAuraInfo(indicatorFrame, auraName, unit)
 	if auraName:upper() == "TOT" then
 		if UnitIsUnit(unit, "targettarget") then
 			return "Interface\\Icons\\Ability_Hunter_SniperShot", 0, 0, 0, "", "player"
-		end
-	end
-
-	--if we don't find the spell and we want it to only show when missing
-	if EnhancedRaidFrames.db.profile["missing"..indicatorFrame.position] then
-		--check our iconCache for the auraName. Note the icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons
-		if not EnhancedRaidFrames.iconCache[auraName] then
-			local _,_,icon = GetSpellInfo(auraName)
-			if icon then
-				return icon, 0, 0, 0, "", "missing"
-			else
-				return "Interface\\Icons\\INV_Misc_QuestionMark", 0, 0, 0, "", "missing"
-			end
-		else
-			return EnhancedRaidFrames.iconCache[auraName], 0, 0, 0, "", "missing"
 		end
 	end
 end
