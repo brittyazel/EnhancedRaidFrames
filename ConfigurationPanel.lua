@@ -19,7 +19,7 @@
 --as determined by Szandos. All other copyrights for
 --Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
 
-local addonName, addonTable = ...
+local _, addonTable = ...
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
 local POSITIONS = { [1] = "Top Left", [2] = "Top Center", [3] = "Top Right" ,

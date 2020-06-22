@@ -19,28 +19,22 @@
 --as determined by Szandos. All other copyrights for
 --Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
 
-local addonName, addonTable = ...
+local _, addonTable = ...
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
-
-local icons = {}
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
 function EnhancedRaidFrames:CreateIcon(frame)
-	local frameName = frame:GetName()
-
-	icons[frameName] = {}
-	icons[frameName].texture = frame:CreateTexture(nil, "OVERLAY")
+	frame.ERFIcons = {}
+	frame.ERFIcons.texture = frame:CreateTexture(nil, "OVERLAY")
 	EnhancedRaidFrames:SetIconAppearance(frame)
 end
 
 function EnhancedRaidFrames:SetIconAppearance(frame)
-	local PAD = 3
-	local pos = EnhancedRaidFrames.db.profile.iconPlacement
-	local frameName = frame:GetName()
-	if not icons[frameName] then return end
-	local tex = icons[frameName].texture
+	if not frame.ERFIcons then
+		return
+	end
 
 	--------------------------
 	--TODO: this is just temp becasue we're changing from pixel to percentage relativity, remove this in the future
@@ -51,6 +45,11 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 		EnhancedRaidFrames.db.profile.iconHorizontalOffset = 0
 	end
 	--------------------------
+
+	local tex = frame.ERFIcons.texture
+
+	local PAD = 3
+	local pos = EnhancedRaidFrames.db.profile.iconPlacement
 
 	local iconVerticalOffset = EnhancedRaidFrames.db.profile.iconVerticalOffset * frame:GetHeight()
 	local iconHorizontalOffset = EnhancedRaidFrames.db.profile.iconHorizontalOffset * frame:GetWidth()
@@ -84,16 +83,13 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 end
 
 function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
-	local unit = frame.unit
-	local frameName = frame:GetName()
-
 	-- If frame doesn't point at anything, no need for an icon
-	if not unit then
+	if not frame.unit then
 		return
 	end
 
 	-- Initialize our storage and create texture
-	if not icons[frameName] then -- No icon on this frame before, need a texture
+	if not frame.ERFIcons then -- No icon on this frame before, need a texture
 		EnhancedRaidFrames:CreateIcon(frame)
 	end
 
@@ -103,12 +99,12 @@ function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
 
 	--if they don't have raid icons set to show, don't show anything
 	if not EnhancedRaidFrames.db.profile.showRaidIcons then
-		icons[frameName].texture:Hide() -- hide the frame
+		frame.ERFIcons.texture:Hide() -- hide the frame
 		return
 	end
 
 	-- Get icon on unit
-	local index = GetRaidTargetIndex(unit)
+	local index = GetRaidTargetIndex(frame.unit)
 
 	if index and index >= 1 and index <= 8 then
 		--the icons are stored in a single image, and UnitPopupButtons["RAID_TARGET_#"] is a table that contains the information for the texture and coords for each icon sub-texture
@@ -119,10 +115,10 @@ function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
 		local topTexCoord = iconTable.tCoordTop
 		local bottomTexCoord = iconTable.tCoordBottom
 
-		icons[frameName].texture:SetTexture(texture, nil, nil, "TRILINEAR") --use trilinear filtering to reduce jaggies
-		icons[frameName].texture:SetTexCoord(leftTexCoord, rightTexCoord, topTexCoord, bottomTexCoord) --texture contains all the icons in a single texture, and we need to set coords to crop out the other icons
-		icons[frameName].texture:Show()
+		frame.ERFIcons.texture:SetTexture(texture, nil, nil, "TRILINEAR") --use trilinear filtering to reduce jaggies
+		frame.ERFIcons.texture:SetTexCoord(leftTexCoord, rightTexCoord, topTexCoord, bottomTexCoord) --texture contains all the icons in a single texture, and we need to set coords to crop out the other icons
+		frame.ERFIcons.texture:Show()
 	else
-		icons[frameName].texture:Hide()
+		frame.ERFIcons.texture:Hide()
 	end
 end

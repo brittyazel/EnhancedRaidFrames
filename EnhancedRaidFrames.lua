@@ -52,7 +52,7 @@ end
 --- the game that wasn't available in OnInitialize
 function EnhancedRaidFrames:OnEnable()
 	--start a repeating timer to updated every frame every 0.8sec to make sure the the countdown timer stays accurate
-	EnhancedRaidFrames.updateTimer = EnhancedRaidFrames:ScheduleRepeatingTimer("UpdateAllFrames", 0.4) --this is so countdown text is smooth
+	EnhancedRaidFrames.updateTimer = EnhancedRaidFrames:ScheduleRepeatingTimer("UpdateAllFrames", 0.25) --this is so countdown text is smooth
 
 	--hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. The payload of the original function carries the identity of the frame needing updating
 	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) EnhancedRaidFrames:UpdateIndicators(frame) end)
