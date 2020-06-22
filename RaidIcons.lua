@@ -55,17 +55,25 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 	local iconVerticalOffset = EnhancedRaidFrames.db.profile.iconVerticalOffset * frame:GetHeight()
 	local iconHorizontalOffset = EnhancedRaidFrames.db.profile.iconHorizontalOffset * frame:GetWidth()
 
+	--we probably don't want to overlap the power bar (rage,mana,energy,etc) so we need a compensation factor
+	local powerBarVertOffset
+	if frame.powerBar:IsShown() then
+		powerBarVertOffset = frame.powerBar:GetHeight() + 2 --add 2 to not overlap the powerBar border
+	else
+		powerBarVertOffset = 0
+	end
+
 	-- Set position relative to frame
 	tex:ClearAllPoints()
 	if pos == 1 then tex:SetPoint("TOPLEFT", PAD + iconHorizontalOffset, -PAD + iconVerticalOffset) end
 	if pos == 2 then tex:SetPoint("TOP", 0 + iconHorizontalOffset, -PAD + iconVerticalOffset) end
 	if pos == 3 then tex:SetPoint("TOPRIGHT", -PAD + iconHorizontalOffset, -PAD + iconVerticalOffset) end
-	if pos == 4 then tex:SetPoint("LEFT", PAD + iconHorizontalOffset, 0 + iconVerticalOffset) end
-	if pos == 5 then tex:SetPoint("CENTER", 0 + iconHorizontalOffset, 0 + iconVerticalOffset) end
-	if pos == 6 then tex:SetPoint("RIGHT", -PAD + iconHorizontalOffset, 0 + iconVerticalOffset) end
-	if pos == 7 then tex:SetPoint("BOTTOMLEFT", PAD + iconHorizontalOffset, PAD + iconVerticalOffset) end
-	if pos == 8 then tex:SetPoint("BOTTOM", 0 + iconHorizontalOffset, PAD + iconVerticalOffset) end
-	if pos == 9 then tex:SetPoint("BOTTOMRIGHT", -PAD + iconHorizontalOffset, PAD + iconVerticalOffset) end
+	if pos == 4 then tex:SetPoint("LEFT", PAD + iconHorizontalOffset, 0 + iconVerticalOffset + powerBarVertOffset/2) end
+	if pos == 5 then tex:SetPoint("CENTER", 0 + iconHorizontalOffset, 0 + iconVerticalOffset + powerBarVertOffset/2) end
+	if pos == 6 then tex:SetPoint("RIGHT", -PAD + iconHorizontalOffset, 0 + iconVerticalOffset + powerBarVertOffset/2) end
+	if pos == 7 then tex:SetPoint("BOTTOMLEFT", PAD + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset) end
+	if pos == 8 then tex:SetPoint("BOTTOM", 0 + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset) end
+	if pos == 9 then tex:SetPoint("BOTTOMRIGHT", -PAD + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset) end
 
 	-- Set the icon size
 	tex:SetWidth(EnhancedRaidFrames.db.profile.iconSize)

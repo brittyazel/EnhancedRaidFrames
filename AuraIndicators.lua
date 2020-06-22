@@ -84,11 +84,10 @@ end
 
 -- Set the appearance of the Indicator
 function EnhancedRaidFrames:SetIndicatorAppearance(frame)
-	local unit = frame.unit
 	local frameName = frame:GetName()
 
 	-- Check if the frame is pointing at anything
-	if not f[frameName] or not unit then
+	if not f[frameName] or not frame.unit then
 		return
 	end
 
@@ -98,9 +97,17 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		f[frameName][i]:SetWidth(EnhancedRaidFrames.db.profile["iconSize"..i])
 		f[frameName][i]:SetHeight(EnhancedRaidFrames.db.profile["iconSize"..i])
 
-		local PAD = 2
+		local PAD = 1
 		local iconVerticalOffset = EnhancedRaidFrames.db.profile["indicatorVerticalOffset"..i] * frame:GetHeight()
 		local iconHorizontalOffset = EnhancedRaidFrames.db.profile["indicatorHorizontalOffset"..i] * frame:GetWidth()
+
+		--we probably don't want to overlap the power bar (rage,mana,energy,etc) so we need a compensation factor
+		local powerBarVertOffset
+		if frame.powerBar:IsShown() then
+			powerBarVertOffset = frame.powerBar:GetHeight() + 2 --add 2 to not overlap the powerBar border
+		else
+			powerBarVertOffset = 0
+		end
 
 		f[frameName][i]:ClearAllPoints()
 		if i == 1 then
@@ -110,17 +117,17 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		elseif i == 3 then
 			f[frameName][i]:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD + iconHorizontalOffset, -PAD + iconVerticalOffset)
 		elseif i == 4 then
-			f[frameName][i]:SetPoint("LEFT", frame, "LEFT", PAD + iconHorizontalOffset, 0 + iconVerticalOffset)
+			f[frameName][i]:SetPoint("LEFT", frame, "LEFT", PAD + iconHorizontalOffset, 0 + iconVerticalOffset + powerBarVertOffset/2)
 		elseif i == 5 then
-			f[frameName][i]:SetPoint("CENTER", frame, "CENTER", 0 + iconHorizontalOffset, 0 + iconVerticalOffset)
+			f[frameName][i]:SetPoint("CENTER", frame, "CENTER", 0 + iconHorizontalOffset, 0 + iconVerticalOffset + powerBarVertOffset/2)
 		elseif i == 6 then
-			f[frameName][i]:SetPoint("RIGHT", frame, "RIGHT", -PAD + iconHorizontalOffset, 0 + iconVerticalOffset)
+			f[frameName][i]:SetPoint("RIGHT", frame, "RIGHT", -PAD + iconHorizontalOffset, 0 + iconVerticalOffset + powerBarVertOffset/2)
 		elseif i == 7 then
-			f[frameName][i]:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD + iconHorizontalOffset, PAD + iconVerticalOffset)
+			f[frameName][i]:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset)
 		elseif i == 8 then
-			f[frameName][i]:SetPoint("BOTTOM", frame, "BOTTOM", 0 + iconHorizontalOffset, PAD + iconVerticalOffset)
+			f[frameName][i]:SetPoint("BOTTOM", frame, "BOTTOM", 0 + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset)
 		elseif i == 9 then
-			f[frameName][i]:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD + iconHorizontalOffset, PAD + iconVerticalOffset)
+			f[frameName][i]:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset)
 		end
 
 		--create a text overlay frame that will show our countdown text
@@ -135,12 +142,16 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		end
 
 		f[frameName][i].text:SetFont(font, EnhancedRaidFrames.db.profile["size"..i], "OUTLINE")
-		f[frameName][i].text:SetTextColor(EnhancedRaidFrames.db.profile["color"..i].r, EnhancedRaidFrames.db.profile["color"..i].g, EnhancedRaidFrames.db.profile["color"..i].b, EnhancedRaidFrames.db.profile["color"..i].a)
 	end
 end
 
--- Check the indicators on a frame and update the times on them
+
+------------------------------------------------
+--------------- Process Indicators -------------
+------------------------------------------------
+
 function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
+	local frameName = frame:GetName()
 	local unit = frame.unit
 
 	--check to see if the bar is even targeting a unit, bail if it isn't
@@ -154,9 +165,6 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 
 	EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
 
-	local currentTime = GetTime()
-	local frameName = frame:GetName()
-
 	-- Check if the indicator frame exists, else create it
 	if not f[frameName] then
 		EnhancedRaidFrames:CreateIndicators(frame)
@@ -169,217 +177,224 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 	-- Update unit auras
 	EnhancedRaidFrames:UpdateUnitAuras(unit)
 
-	-- Loop over the indicators and see if we get a hit
+	-- Loop over all 9 indicators and process them individually
 	for i = 1, 9 do
-		local remainingTime
-		local displayText = ""
-		local icon = ""
-		local count = 0
-		local duration = 0
-		local expirationTime = 0
-		local castBy = ""
-		local debuffType
+		-- this is the meat of our processing loop
+		EnhancedRaidFrames:ProcessIndicator(f[frameName][i], unit)
+	end
+end
 
-		-- If we only are to show the indicator on me, then don't bother if I'm not the unit
-		if EnhancedRaidFrames.db.profile["me"..i] then
-			local unitName, unitRealm = UnitName(unit)
-			if unitName ~= UnitName("player") or unitRealm ~= nil then
-				break
-			end
+-- process a single indicator and apply visuals
+function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
+	local icon, count, duration, expirationTime, debuffType, castBy, auraIndex, auraType
+
+	--reset auraIndex and auraType for tooltip
+	indicatorFrame.auraIndex = nil
+	indicatorFrame.auraType = nil
+
+	--set base textColor to user selected choice
+	local textColor = {
+		EnhancedRaidFrames.db.profile["color"..indicatorFrame.position].r,
+		EnhancedRaidFrames.db.profile["color"..indicatorFrame.position].g,
+		EnhancedRaidFrames.db.profile["color"..indicatorFrame.position].b,
+		EnhancedRaidFrames.db.profile["color"..indicatorFrame.position].a,
+	}
+
+	-- if we only are to show the indicator on me, then don't bother if I'm not the unit
+	if EnhancedRaidFrames.db.profile["me"..indicatorFrame.position] then
+		local unitName, unitRealm = UnitName(unit)
+		if unitName ~= UnitName("player") or unitRealm ~= nil then
+			return
+		end
+	end
+
+	--------------------------------------------------------
+	--- parse each aura and find the information of each ---
+	--------------------------------------------------------
+
+	for _, auraName in pairs(EnhancedRaidFrames.auraStrings[indicatorFrame.position]) do
+		--if there's no auraName (i.e. the user never specified anything to go in this spot), stop here there's no need to keep going
+		if not auraName then
+			break
 		end
 
-		-- Go through the aura strings
-		for _, auraName in ipairs(EnhancedRaidFrames.auraStrings[i]) do -- Grab each line
-			if not auraName then --if there's no auraName (i.e. the user never specified anything to go in this spot), stop here there's no need to keep going
-				break
-			end
+		--query the available information for a given indicator and aura
+		icon, count, duration, expirationTime, debuffType, castBy, auraIndex, auraType = EnhancedRaidFrames:QueryAuraInfo(indicatorFrame, auraName, unit)
 
-			-----------------------------------------------------
+		-- add spell icon info to cache in case we need it later on
+		if icon and not EnhancedRaidFrames.iconCache[auraName] and icon ~= "Interface\\Icons\\INV_Misc_QuestionMark" then
+			EnhancedRaidFrames.iconCache[auraName] = icon
+		end
 
-			local foundAura
+		--when tracking multiple things, this determines "where" we stop in the list
+		--if we find the aura, we can stop querying down the list
+		if icon and
+				--we want to stop only when castBy == "player" if we are tracking "mine only"
+				((EnhancedRaidFrames.db.profile["mine"..indicatorFrame.position] and castBy == "player") or
+						--we also wan't to stop on the first "missing" flagged aura if we are tracking missing explicitly
+						EnhancedRaidFrames.db.profile["missing"..indicatorFrame.position] and castBy == "missing") then
+			break
+		end
+	end
 
-			-- Check if the aura exist on the unit
-			for _,v in ipairs(unitAuras[unit]) do
-				if (tonumber(auraName) and v.spellID == tonumber(auraName)) or v.auraName == auraName or (v.auraType == "debuff" and v.debuffType == auraName) then
-					count = v.count
-					duration = v.duration
-					expirationTime = v.expirationTime
-					castBy = v.castBy
-					icon = v.icon
-					debuffType = v.debuffType
+	------------------------------------------------------
+	------- output visuals to the indicator frame --------
+	------------------------------------------------------
 
-					f[frameName][i].auraIndex = v.auraIndex
-					f[frameName][i].auraType = v.auraType
-
-					foundAura = true
-					break
-				end
-			end
-
-			if not foundAura then
-				if auraName:upper() == "PVP" then -- Check if we want to show pvp flag
-					if UnitIsPVP(unit) then
-						count = 0
-						duration = 0
-						expirationTime = 0
-						castBy = "player"
-
-						local factionGroup = UnitFactionGroup(unit)
-						if factionGroup then
-							icon = "Interface\\GroupFrame\\UI-Group-PVP-"..factionGroup
-						end
-
-						f[frameName][i].skipTooltip = true
-						foundAura = true
-					end
-				elseif auraName:upper() == "TOT" then -- Check if we want to show ToT flag
-					if UnitIsUnit(unit, "targettarget") then
-						count = 0
-						duration = 0
-						expirationTime = 0
-						castBy = "player"
-						icon = "Interface\\Icons\\Ability_Hunter_SniperShot"
-
-						f[frameName][i].skipTooltip = true
-						foundAura = true
-					end
-				end
-			end
-
-			------------------------------------------------------
-
-			-- add spell icon info to cache in case we need it later on
-			if foundAura and icon and not EnhancedRaidFrames.iconCache[auraName] then
-				EnhancedRaidFrames.iconCache[auraName] = icon
-			end
-
-			------------------------------------------------------
-
+	if icon and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) and
 			--if we find the spell and we don't only want to show when it is missing
-			if foundAura and not EnhancedRaidFrames.db.profile["missing"..i] then
-				-- If we only are to show spells cast by me, make sure the spell is
-				if (EnhancedRaidFrames.db.profile["mine"..i] and castBy ~= "player") then
-					icon = ""
-					displayText = ""
-				else
-					if not EnhancedRaidFrames.db.profile["showIcon"..i] then -- Hide icon
-						icon = ""
-					end
-					if expirationTime == 0 then -- No expiration time = permanent
-						if not EnhancedRaidFrames.db.profile["showIcon"..i] then
-							displayText = "X" -- Only show the X if we don't show the icon
-						end
-					else
-						if EnhancedRaidFrames.db.profile["showText"..i] then
-							-- Pretty formatting of the remaining time text
-							remainingTime = expirationTime - currentTime
-							if remainingTime > 60 then
-								displayText = string.format("%.0f", (remainingTime / 60)).."m" -- Show minutes without seconds
-							elseif remainingTime >= 1 then
-								displayText = string.format("%.0f",remainingTime) -- Show seconds without decimals
-							end
-						else
-							displayText = ""
-						end
+			not (EnhancedRaidFrames.db.profile["missing"..indicatorFrame.position] and castBy ~= "missing") then
 
-					end
+		-- calculate remainingTime and round down
+		local remainingTime = floor(expirationTime - GetTime())
 
-					-- Add stack count
-					if EnhancedRaidFrames.db.profile["stack"..i] and count > 0 then
-						if EnhancedRaidFrames.db.profile["showText"..i] and expirationTime > 0 then
-							displayText = count .."-".. displayText
-						else
-							displayText = count
-						end
-					end
+		--set auraIndex and auraType for tooltip
+		indicatorFrame.auraIndex = auraIndex
+		indicatorFrame.auraType = auraType
 
-					-- Set color
-					if EnhancedRaidFrames.db.profile["stackColor"..i] then -- Color by stack
-						if count == 1 then
-							f[frameName][i].text:SetTextColor(1,0,0,1)
-						elseif count == 2 then
-							f[frameName][i].text:SetTextColor(1,1,0,1)
-						elseif count >= 3 then
-							f[frameName][i].text:SetTextColor(0,1,0,1)
-						else
-							f[frameName][i].text:SetTextColor(1,1,1,1)
-						end
-					elseif EnhancedRaidFrames.db.profile["debuffColor"..i] then -- Color by debuff type
-						if debuffType then
-							if debuffType == "curse" then
-								f[frameName][i].text:SetTextColor(0.6,0,1,1)
-							elseif debuffType == "disease" then
-								f[frameName][i].text:SetTextColor(0.6,0.4,0,1)
-							elseif debuffType == "magic" then
-								f[frameName][i].text:SetTextColor(0.2,0.6,1,1)
-							elseif debuffType == "poison" then
-								f[frameName][i].text:SetTextColor(0,0.6,0,1)
-							end
-						end
-					elseif EnhancedRaidFrames.db.profile["colorByTime"..i] then -- Color by remaining time
-						if remainingTime and remainingTime < 2 then
-							f[frameName][i].text:SetTextColor(1,0,0,1)
-						elseif remainingTime and remainingTime < 5 then
-							f[frameName][i].text:SetTextColor(1,1,0,1)
-						else
-							f[frameName][i].text:SetTextColor(EnhancedRaidFrames.db.profile["color"..i].r, EnhancedRaidFrames.db.profile["color"..i].g, EnhancedRaidFrames.db.profile["color"..i].b, EnhancedRaidFrames.db.profile["color"..i].a)
-						end
-					end
+		-- show icon
+		if EnhancedRaidFrames.db.profile["showIcon"..indicatorFrame.position] then
+			indicatorFrame.icon:SetTexture(icon)
+		else
+			indicatorFrame.icon:SetTexture("")
+		end
+
+		-- show text
+		if EnhancedRaidFrames.db.profile["showText"..indicatorFrame.position] or EnhancedRaidFrames.db.profile["stack"..indicatorFrame.position] then
+			-- Pretty formatting of the remaining time text
+			local formattedTime = ""
+			local formattedCount = ""
+
+			--determine the formatted time string
+			if EnhancedRaidFrames.db.profile["showText"..indicatorFrame.position] and expirationTime ~= 0 then
+				if remainingTime > 60 then
+					formattedTime = string.format("%.0f", remainingTime/60).."m" -- Show minutes without seconds
+				elseif remainingTime >= 0 then
+					formattedTime = string.format("%.0f", remainingTime) -- Show seconds without decimals
 				end
-
-				break -- We found a match, so no need to continue the for loop
-			else --if we don't find the spell or we only want it to show when it is missing
-				icon = ""
-				displayText = ""
 			end
 
-			--if we don't find the spell and we want it to only show when missing
-			if not foundAura and EnhancedRaidFrames.db.profile["missing"..i] then
-				if EnhancedRaidFrames.db.profile["showIcon"..i] then
-					--check our iconCache for the auraName. Note the icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons
-					if not EnhancedRaidFrames.iconCache[auraName] then
-						_,_,icon = GetSpellInfo(auraName)
-						if icon then
-							EnhancedRaidFrames.iconCache[auraName] = icon
-						end
-					else
-						icon = EnhancedRaidFrames.iconCache[auraName]
-					end
+			--determine the formatted count string
+			if EnhancedRaidFrames.db.profile["stack"..indicatorFrame.position] and count > 0 then
+				formattedCount = count
+			end
 
-					if not icon then
-						displayText = "X" --if you can't find an icon, display an X
-					end
-				else
-					displayText = "X" --if we aren't showing icons, display and X
-				end
+			--determine the final output string
+			if formattedCount ~= "" and formattedTime ~= "" then
+				indicatorFrame.text:SetText(formattedCount .. "-" .. formattedTime)
+			elseif formattedCount ~= "" then
+				indicatorFrame.text:SetText(formattedCount)
+			elseif formattedTime ~= "" then
+				indicatorFrame.text:SetText(formattedTime)
+			else
+				indicatorFrame.text:SetText("")
+			end
+		else
+			indicatorFrame.text:SetText("")
+		end
 
-				break -- We don't need to continue the loop after the first spell, if the first spell isn't found
+		-- if castBy == missing it means this item was not found but we want to show "missing" items anyway
+		if castBy == "missing" and not EnhancedRaidFrames.db.profile["showIcon"..indicatorFrame.position] then
+			indicatorFrame.text:SetText("X")
+		elseif castBy == "missing" and EnhancedRaidFrames.db.profile["showIcon"..indicatorFrame.position] then
+			indicatorFrame.text:SetText("")
+		end
+
+		-- determine if we should change the textColor from the default (player set color)
+		if EnhancedRaidFrames.db.profile["stackColor"..indicatorFrame.position] then -- Color by stack
+			if count == 1 then
+				textColor = {1,0,0,1}
+			elseif count == 2 then
+				textColor = {1,1,0,1}
+			elseif count >= 3 then
+				textColor = {0,1,0,1}
+			end
+		elseif EnhancedRaidFrames.db.profile["debuffColor"..indicatorFrame.position] and debuffType then -- Color by debuff type
+			if debuffType == "curse" then
+				textColor = {0.6,0,1,1}
+			elseif debuffType == "disease" then
+				textColor = {0.6,0.4,0,1}
+			elseif debuffType == "magic" then
+				textColor = {0.2,0.6,1,1}
+			elseif debuffType == "poison" then
+				textColor = {0,0.6,0,1}
+			end
+		elseif EnhancedRaidFrames.db.profile["colorByTime"..indicatorFrame.position] then -- Color by remaining time
+			if remainingTime and remainingTime < 2 then
+				textColor = {1,0,0,1}
+			elseif remainingTime and remainingTime < 5 then
+				textColor = {1,1,0,1}
 			end
 		end
 
-		--set the texture or text on a frame, and show or hide the indicator frame
-		if (icon~="" or displayText~="") and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) then
-			-- show the frame
-			f[frameName][i]:Show()
-			-- Show the text
-			f[frameName][i].text:SetText(displayText)
-			-- Show the icon
-			f[frameName][i].icon:SetTexture(icon)
-		else
-			-- hide the frame
-			f[frameName][i]:Hide()
-		end
+		-- Set text color
+		indicatorFrame.text:SetTextColor(textColor[1],textColor[2],textColor[3],textColor[4])
 
-		--set cooldown animation
-		if EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] and f[frameName][i]:IsShown() and icon~="" and expirationTime and duration then
-			CooldownFrame_Set(f[frameName][i].cooldown, expirationTime - duration, duration, true, true)
+		-- show the frame
+		indicatorFrame:Show()
+	else
+		-- hide the frame
+		indicatorFrame:Hide()
+	end
+
+	------------------------------------------------------
+	------------------------------------------------------
+
+	-- set cooldown animation
+	if EnhancedRaidFrames.db.profile["showCooldownAnimation"..indicatorFrame.position] and indicatorFrame:IsShown() and expirationTime and duration then
+		CooldownFrame_Set(indicatorFrame.cooldown, expirationTime - duration, duration, true, true)
+	else
+		CooldownFrame_Clear(indicatorFrame.cooldown)
+	end
+end
+
+--process the text and icon for an indicator and return these values
+function EnhancedRaidFrames:QueryAuraInfo(indicatorFrame, auraName, unit)
+	-- Check if the aura exist on the unit
+	for _,v in pairs(unitAuras[unit]) do
+		if (tonumber(auraName) and v.spellID == tonumber(auraName)) or v.auraName == auraName or (v.auraType == "debuff" and v.debuffType == auraName) then
+			return v.icon, v.count, v.duration, v.expirationTime, v.debuffType, v.castBy, v.auraIndex, v.auraType
+		end
+	end
+
+	-- Check if we want to show pvp flag
+	if auraName:upper() == "PVP" then
+		if UnitIsPVP(unit) then
+			local factionGroup = UnitFactionGroup(unit)
+			if factionGroup then
+				return "Interface\\GroupFrame\\UI-Group-PVP-"..factionGroup, 0, 0, 0, "", "player"
+			end
+		end
+	end
+
+	-- Check if we want to show ToT flag
+	if auraName:upper() == "TOT" then
+		if UnitIsUnit(unit, "targettarget") then
+			return "Interface\\Icons\\Ability_Hunter_SniperShot", 0, 0, 0, "", "player"
+		end
+	end
+
+	--if we don't find the spell and we want it to only show when missing
+	if EnhancedRaidFrames.db.profile["missing"..indicatorFrame.position] then
+		--check our iconCache for the auraName. Note the icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons
+		if not EnhancedRaidFrames.iconCache[auraName] then
+			local _,_,icon = GetSpellInfo(auraName)
+			if icon then
+				return icon, 0, 0, 0, "", "missing"
+			else
+				return "Interface\\Icons\\INV_Misc_QuestionMark", 0, 0, 0, "", "missing"
+			end
 		else
-			CooldownFrame_Clear(f[frameName][i].cooldown)
+			return EnhancedRaidFrames.iconCache[auraName], 0, 0, 0, "", "missing"
 		end
 	end
 end
 
--- Get all unit auras
+
+------------------------------------------------
+---------- Update Auras for all units ----------
+------------------------------------------------
+
 function EnhancedRaidFrames:UpdateUnitAuras(unit)
 	-- Create or clear out the tables for the unit
 	unitAuras[unit] = {}
@@ -452,9 +467,9 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 	end
 end
 
--------------------------------
----Tooltip Code
--------------------------------
+------------------------------------------------
+----------------- Tooltip Code -----------------
+------------------------------------------------
 function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame)
 	if not EnhancedRaidFrames.db.profile["showTooltip"..indicatorFrame.position] then --don't show tooltips unless we have the option set for this position
 		return
@@ -463,7 +478,7 @@ function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame)
 	local frame = indicatorFrame:GetParent() --this is the parent raid frame that holds all the indicatorFrames
 
 	-- Set the tooltip
-	if indicatorFrame.auraIndex and not indicatorFrame.skipTooltip and indicatorFrame.icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
+	if indicatorFrame.auraIndex and indicatorFrame.icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
 		-- Set the buff/debuff as tooltip and anchor to the cursor
 		GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
 		if indicatorFrame.auraType == "buff" then

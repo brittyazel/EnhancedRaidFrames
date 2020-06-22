@@ -52,13 +52,16 @@ end
 --- the game that wasn't available in OnInitialize
 function EnhancedRaidFrames:OnEnable()
 	--start a repeating timer to updated every frame every 0.8sec to make sure the the countdown timer stays accurate
-	EnhancedRaidFrames.updateTimer = EnhancedRaidFrames:ScheduleRepeatingTimer("UpdateAllFrames", 0.8) --this is so countdown text is smooth
+	EnhancedRaidFrames.updateTimer = EnhancedRaidFrames:ScheduleRepeatingTimer("UpdateAllFrames", 0.4) --this is so countdown text is smooth
 
 	--hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. The payload of the original function carries the identity of the frame needing updating
 	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) EnhancedRaidFrames:UpdateIndicators(frame) end)
 
 	-- Updates Range Alpha
 	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) EnhancedRaidFrames:UpdateInRange(frame) end)
+
+	-- Refresh layout if the frame widgets change
+	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateWidgetSet", function() EnhancedRaidFrames:UpdateAllFrames(true) end)
 
 	-- Hook raid icon updates
 	EnhancedRaidFrames:RegisterEvent("RAID_TARGET_UPDATE", "UpdateAllFrames")
@@ -162,7 +165,7 @@ function EnhancedRaidFrames:CreateDefaults()
 		defaults.profile["showText"..i] = false
 		defaults.profile["showCooldownAnimation"..i] = true
 		defaults.profile["showIcon"..i] = true
-		defaults.profile["iconSize"..i] = 20
+		defaults.profile["iconSize"..i] = 18
 		defaults.profile["indicatorHorizontalOffset"..i] = 0
 		defaults.profile["indicatorVerticalOffset"..i] = 0
 		defaults.profile["showTooltip"..i] = true
