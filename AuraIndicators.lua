@@ -97,17 +97,19 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		return
 	end
 
-	local font = (media and media:Fetch('font', EnhancedRaidFrames.db.profile.indicatorFont)) or STANDARD_TEXT_FONT
-
 	for i = 1, 9 do
+		--set icon size
 		f[frameName][i]:SetWidth(EnhancedRaidFrames.db.profile["iconSize"..i])
 		f[frameName][i]:SetHeight(EnhancedRaidFrames.db.profile["iconSize"..i])
 
+		--------------------------------------
+
+		--set indicator frame position
 		local PAD = 1
 		local iconVerticalOffset = EnhancedRaidFrames.db.profile["indicatorVerticalOffset"..i] * frame:GetHeight()
 		local iconHorizontalOffset = EnhancedRaidFrames.db.profile["indicatorHorizontalOffset"..i] * frame:GetWidth()
 
-		--we probably don't want to overlap the power bar (rage,mana,energy,etc) so we need a compensation factor
+		--we probably don't want to overlap the power bar (rage, mana, energy, etc) so we need a compensation factor
 		local powerBarVertOffset
 		if frame.powerBar:IsShown() then
 			powerBarVertOffset = frame.powerBar:GetHeight() + 2 --add 2 to not overlap the powerBar border
@@ -136,14 +138,19 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 			f[frameName][i]:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset)
 		end
 
+		--------------------------------------
+
+		--set font size, shape, font, and switch our pointer if necessary
+		local font = (media and media:Fetch('font', EnhancedRaidFrames.db.profile.indicatorFont)) or STANDARD_TEXT_FONT
+
 		--switch the pointer for the text overlay
 		if not EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] or not EnhancedRaidFrames.db.profile["showIcon"..i] then
 			f[frameName][i].text:SetText("") --clear previous text pointer
-			f[frameName][i].text = f[frameName][i].normal_textPtr
+			f[frameName][i].text = f[frameName][i].normal_textPtr --switch f[frameName][i].text to point to the normal_textPtr
 			f[frameName][i].text:SetFont(font, EnhancedRaidFrames.db.profile["size"..i], "OUTLINE")
 		else
 			f[frameName][i].text:SetText("") --clear previous text pointer
-			f[frameName][i].text = f[frameName][i].cd_textPtr
+			f[frameName][i].text = f[frameName][i].cd_textPtr --switch f[frameName][i].text to point to the cd_textPtr
 			f[frameName][i].text:SetFont(font, EnhancedRaidFrames.db.profile["size"..i], "OUTLINE")
 		end
 
@@ -342,7 +349,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		indicatorFrame:Show() --show the frame
 
 	elseif not icon and EnhancedRaidFrames.db.profile["missing"..indicatorFrame.position] then --deal with "show only if missing"
-		local auraName = EnhancedRaidFrames.auraStrings[indicatorFrame.position][1]
+		local auraName = EnhancedRaidFrames.auraStrings[indicatorFrame.position][1] --show the icon for the first auraString position
 
 		--check our iconCache for the auraName. Note the icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons
 		if not EnhancedRaidFrames.iconCache[auraName] then
@@ -359,7 +366,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			indicatorFrame.text:SetText("")
 		else
 			indicatorFrame.icon:SetTexture("")
-			indicatorFrame.text:SetText("X")
+			indicatorFrame.text:SetText("X") --if we aren't showing the icon, show an "X" to show 'something' to indicate the missing aura
 		end
 
 		CooldownFrame_Clear(indicatorFrame.cooldown)
@@ -374,7 +381,7 @@ end
 --process the text and icon for an indicator and return these values
 function EnhancedRaidFrames:QueryAuraInfo(auraName, unit)
 	-- Check if the aura exist on the unit
-	for _,v in pairs(unitAuras[unit]) do
+	for _,v in pairs(unitAuras[unit]) do --loop through list of auras
 		if (tonumber(auraName) and v.spellID == tonumber(auraName)) or v.auraName == auraName or (v.auraType == "debuff" and v.debuffType == auraName) then
 			return v.icon, v.count, v.duration, v.expirationTime, v.debuffType, v.castBy, v.auraIndex, v.auraType
 		end
