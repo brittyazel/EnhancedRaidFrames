@@ -67,9 +67,15 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		f[frameName][i]:RegisterForClicks("LeftButtonDown", "RightButtonUp")
 		f[frameName][i]:SetFrameStrata("HIGH")
 
-		--we further define this frame element in SetIndicatorAppearance. This is just a starting state
-		f[frameName][i].text = f[frameName][i]:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the animation, text should be on the parent frame
-		f[frameName][i].text:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
+		--create font strings for both layers, the normal layer and the cooldown frame layer
+		--the font string is further modified in SetIndicatorAppearance()
+		f[frameName][i].cd_textPtr = f[frameName][i].cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the animation, text should be on the parent frame
+		f[frameName][i].cd_textPtr:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
+		f[frameName][i].normal_textPtr = f[frameName][i]:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the cooldown animation or the icon, text should be on the parent frame
+		f[frameName][i].normal_textPtr:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
+
+		--create a pointer at f[frameName][i].text that will be our handle going forward to our two string pointers
+		f[frameName][i].text = f[frameName][i].normal_textPtr --set initial pointer to f[frameName][i].text
 
 		--mark the position of this particular frame for use later (i.e. 1->9)
 		f[frameName][i].position = i
@@ -130,18 +136,17 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 			f[frameName][i]:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset)
 		end
 
-		--create a text overlay frame that will show our countdown text
+		--switch the pointer for the text overlay
 		if not EnhancedRaidFrames.db.profile["showCooldownAnimation"..i] or not EnhancedRaidFrames.db.profile["showIcon"..i] then
-			f[frameName][i].text:SetText("")
-			f[frameName][i].text = f[frameName][i]:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the cooldown animation or the icon, text should be on the parent frame
-			f[frameName][i].text:SetPoint("CENTER", f[frameName][i], "CENTER", 0, 0)
+			f[frameName][i].text:SetText("") --clear previous text pointer
+			f[frameName][i].text = f[frameName][i].normal_textPtr
+			f[frameName][i].text:SetFont(font, EnhancedRaidFrames.db.profile["size"..i], "OUTLINE")
 		else
-			f[frameName][i].text:SetText("")
-			f[frameName][i].text = f[frameName][i].cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we show the cooldown animation, text should be on the child '.cooldown' frame
-			f[frameName][i].text:SetPoint("CENTER", f[frameName][i].cooldown, "CENTER", 0, 0)
+			f[frameName][i].text:SetText("") --clear previous text pointer
+			f[frameName][i].text = f[frameName][i].cd_textPtr
+			f[frameName][i].text:SetFont(font, EnhancedRaidFrames.db.profile["size"..i], "OUTLINE")
 		end
 
-		f[frameName][i].text:SetFont(font, EnhancedRaidFrames.db.profile["size"..i], "OUTLINE")
 	end
 end
 
