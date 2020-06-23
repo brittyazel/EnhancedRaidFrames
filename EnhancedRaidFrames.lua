@@ -89,7 +89,7 @@ function EnhancedRaidFrames:Setup()
 	local defaults = EnhancedRaidFrames:CreateDefaults()
 
 	-- Create database object
-	EnhancedRaidFrames.db = LibStub("AceDB-3.0"):New("IndicatorsDB", defaults) --IndicatorsDB is our saved variable table
+	EnhancedRaidFrames.db = LibStub("AceDB-3.0"):New("EnhancedRaidFramesDB", defaults) --EnhancedRaidFramesDB is our saved variable table
 
 	-- Profile handling
 	local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(EnhancedRaidFrames.db) --create the config panel for profiles
