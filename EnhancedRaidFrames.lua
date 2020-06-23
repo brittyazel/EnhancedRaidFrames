@@ -144,7 +144,7 @@ function EnhancedRaidFrames:CreateDefaults()
 		customRange = 30,
 
 		showRaidIcons = true,
-		iconSize = 20,
+		indicatorSize = 20,
 		iconPlacement = 5,
 		iconVerticalOffset = 0,
 		iconHorizontalOffset = 0,
@@ -158,23 +158,24 @@ function EnhancedRaidFrames:CreateDefaults()
 		defaults.profile["mine"..i] = false
 		defaults.profile["me"..i] = false
 		defaults.profile["missing"..i] = false
-		defaults.profile["showCooldownAnimation"..i] = true
+		defaults.profile["showCooldownSwipe"..i] = true
 		defaults.profile["showTooltip"..i] = true
 
 		defaults.profile["showIcon"..i] = true
-		defaults.profile["showBackground"..i] = true
 		defaults.profile["backgroundColor"..i] = {r = 1, g = 1, b = 1, a = 1}
-		defaults.profile["iconSize"..i] = 18
+		defaults.profile["colorBackgroundByTime"..i] = false
+		defaults.profile["colorBackgroundByDebuff"..i] = false
+		defaults.profile["indicatorSize"..i] = 18
 		defaults.profile["indicatorHorizontalOffset"..i] = 0
 		defaults.profile["indicatorVerticalOffset"..i] = 0
 
 		defaults.profile["showText"..i] = false
-		defaults.profile["stack"..i] = false
+		defaults.profile["showStack"..i] = false
 		defaults.profile["textColor"..i] = {r = 1, g = 1, b = 1, a = 1}
-		defaults.profile["stackColor"..i] = false
-		defaults.profile["debuffColor"..i] = false
-		defaults.profile["colorByTime"..i] = false
-		defaults.profile["size"..i] = 14
+		defaults.profile["colorTextByStack"..i] = false
+		defaults.profile["colorTextByTime"..i] = false
+		defaults.profile["colorTextByDebuff"..i] = false
+		defaults.profile["textSize"..i] = 14
 	end
 
 	return defaults

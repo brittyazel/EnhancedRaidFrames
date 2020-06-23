@@ -36,16 +36,6 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 		return
 	end
 
-	--------------------------
-	--TODO: this is just temp becasue we're changing from pixel to percentage relativity, remove this in the future
-	if EnhancedRaidFrames.db.profile.iconVerticalOffset > 1 then
-		EnhancedRaidFrames.db.profile.iconVerticalOffset = 0
-	end
-	if EnhancedRaidFrames.db.profile.iconHorizontalOffset > 1 then
-		EnhancedRaidFrames.db.profile.iconHorizontalOffset = 0
-	end
-	--------------------------
-
 	local tex = frame.ERFIcons.texture
 
 	local PAD = 3
@@ -75,8 +65,8 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 	if pos == 9 then tex:SetPoint("BOTTOMRIGHT", -PAD + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset) end
 
 	-- Set the icon size
-	tex:SetWidth(EnhancedRaidFrames.db.profile.iconSize)
-	tex:SetHeight(EnhancedRaidFrames.db.profile.iconSize)
+	tex:SetWidth(EnhancedRaidFrames.db.profile.indicatorSize)
+	tex:SetHeight(EnhancedRaidFrames.db.profile.indicatorSize)
 
 	-- Set the icon opacity
 	tex:SetAlpha(EnhancedRaidFrames.db.profile.iconAlpha)
