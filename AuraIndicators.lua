@@ -302,10 +302,10 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------------------------------
 		--set default textColor to user selected choice
 		indicatorFrame.text:SetTextColor(
-				EnhancedRaidFrames.db.profile["color" .. indicatorFrame.position].r,
-				EnhancedRaidFrames.db.profile["color" .. indicatorFrame.position].g,
-				EnhancedRaidFrames.db.profile["color" .. indicatorFrame.position].b,
-				EnhancedRaidFrames.db.profile["color" .. indicatorFrame.position].a)
+				EnhancedRaidFrames.db.profile["textColor" .. indicatorFrame.position].r,
+				EnhancedRaidFrames.db.profile["textColor" .. indicatorFrame.position].g,
+				EnhancedRaidFrames.db.profile["textColor" .. indicatorFrame.position].b,
+				EnhancedRaidFrames.db.profile["textColor" .. indicatorFrame.position].a)
 
 		-- determine if we should change the textColor from the default (player set color)
 		if EnhancedRaidFrames.db.profile["stackColor"..indicatorFrame.position] then -- Color by stack
