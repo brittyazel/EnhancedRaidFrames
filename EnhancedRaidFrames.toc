@@ -5,7 +5,7 @@
 ## X-Credits-Maintainer: Soyier
 ## Version: @project-version@
 ## DefaultState: enabled
-## SavedVariables: IndicatorsDB
+## SavedVariables: EnhancedRaidFramesDB
 ## X-Email: bwyazel@gmail.com
 
 Libs\embeds.xml
