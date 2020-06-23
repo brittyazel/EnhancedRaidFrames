@@ -20,6 +20,9 @@
 local _, addonTable = ... --make use of the default addon namespace
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+
 -- Create our database defaults table
 function EnhancedRaidFrames:CreateDefaults()
 	local defaults = {}

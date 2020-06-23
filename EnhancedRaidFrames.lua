@@ -77,9 +77,8 @@ function EnhancedRaidFrames:OnDisable()
 	-- empty --
 end
 
------------------------------------------------------------
------------------------------------------------------------
------------------------------------------------------------
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
 
 -- Create our database, import saved variables, and set up our configuration panels
 function EnhancedRaidFrames:Setup()
@@ -162,42 +161,5 @@ function EnhancedRaidFrames:RefreshConfig()
 			EnhancedRaidFrames.auraStrings[i][j] = auraName
 			j = j + 1
 		end
-	end
-end
-
--- Hook for the CompactUnitFrame_UpdateInRange function
-function EnhancedRaidFrames:UpdateInRange(frame)
-	if not frame.unit then
-		return
-	end
-
-	if string.match(frame.unit, "party") or string.match(frame.unit, "raid") then
-		local inRange, checkedRange
-
-		--if we have a custom range set use LibRanchCheck, otherwise use default UnitInRange function
-		if(EnhancedRaidFrames.db.profile.customRangeCheck) then
-			local rangeChecker = LibStub("LibRangeCheck-2.0"):GetFriendChecker(EnhancedRaidFrames.db.profile.customRange)
-			inRange = rangeChecker(frame.unit)
-			checkedRange = not UnitIsVisible(frame.unit) or not UnitIsDeadOrGhost(frame.unit)
-		else
-			inRange, checkedRange = UnitInRange(frame.unit)
-		end
-
-		if (checkedRange and not inRange) then	--If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
-			frame:SetAlpha(EnhancedRaidFrames.db.profile.rangeAlpha)
-		else
-			frame:SetAlpha(1)
-		end
-	end
-end
-
--- Set the background alpha amount to allow full transparency if need be
-function EnhancedRaidFrames:UpdateBackgroundAlpha(frame)
-	if not frame.unit then
-		return
-	end
-
-	if string.match(frame.unit, "party") or string.match(frame.unit, "raid") or string.match(frame.unit, "player") then
-		frame.background:SetAlpha(EnhancedRaidFrames.db.profile.backgroundAlpha)
 	end
 end
