@@ -189,9 +189,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			name = "Buff/Debuff Watch List:",
 			desc = "The buffs and/or debuffs to show for the indicator in this position.\n"..
 			"\n"..
-			"Write the name or spell ID of each buff/debuff on a separate line. i.e: Rejuvenation, Regrowth, Wild Growth, etc.\n"..
-			"\n"..
-			"Keep in mind, certain spells like a Druid's Germination will only work with their spell ID, i.e.: 155777.\n"..
+			"Write the name or spell ID of each buff/debuff on a separate line. i.e: Rejuvenation, Regrowth, Wild Growth, 155777, etc.\n"..
 			"\n"..
 			"You can use Magic, Poison, Curse, or Disease to show any debuff of that category.\n"..
 			"\n"..

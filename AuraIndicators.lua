@@ -454,7 +454,8 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			break
 		end
 
-		if auraName and EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellID.."+") then -- Only add the spell if we're watching for it
+		--it's important to use the 4th argument in string.find to turn of pattern matching, otherwise things with parentheses in them will fail to be found
+		if auraName and EnhancedRaidFrames.allAuras:find(" "..auraName:lower().." ", nil, true) or EnhancedRaidFrames.allAuras:find(" "..spellID.." ", nil, true) then -- Only add the spell if we're watching for it
 			local auraTable = {}
 			auraTable.auraType = "buff"
 			auraTable.auraIndex = i
@@ -486,7 +487,8 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			break
 		end
 
-		if auraName and EnhancedRaidFrames.allAuras:find("+"..auraName:lower().."+") or EnhancedRaidFrames.allAuras:find("+"..spellID.."+") or (debuffType and EnhancedRaidFrames.allAuras:find("+"..debuffType:lower().."+")) then -- Only add the spell if we're watching for it
+		--it's important to use the 4th argument in string.find to turn of pattern matching, otherwise things with parentheses in them will fail to be found
+		if auraName and EnhancedRaidFrames.allAuras:find(" "..auraName:lower().." ", nil, true) or EnhancedRaidFrames.allAuras:find(" "..spellID.." ", nil, true) or (debuffType and EnhancedRaidFrames.allAuras:find(" "..debuffType:lower().." ", nil, true)) then -- Only add the spell if we're watching for it
 			local auraTable = {}
 			auraTable.auraType = "debuff"
 			auraTable.auraIndex = i
