@@ -2,9 +2,9 @@
 
 _"...makes the stock raid frames as good as Grid2 and VuhDo, but without the learning curve!"_ -Tom Hanks, probably
 
-**Enhanced Raid Frames** is a raid frame add-on for **World of Warcraft: Battle for Azeroth** and **World of Warcraft: Classic** that brings configurable indicators for enhancing the built in raid frames, allowing them to function much closer to add-ons such as Grid/Grid2 or VuhDo.
+**Enhanced Raid Frames** is a raid frame add-on for **World of Warcraft: Battle for Azeroth** and **World of Warcraft: Classic** that adds many small but significant features to enhance the (already quite awesome) built-in raid frames, allowing the raid frames to function much closer to add-ons such as Grid/Grid2 or VuhDo — the most notable addition being configurable aura indicators. 
 
-There are 9 indicators for each raid member, forming a 3x3 grid overlaying each unit frame. These indicators allow for showing the presence and countdown times of buffs and debuffs in any configuration that suits your needs.
+Along with options to adjust the out-of-range distance, frame scale, frame opacity, overlay target icons, and numerous other small features, Enhanced Raid Frames adds 9 aura indicators for each raid member, forming a 3x3 grid overlaying each unit frame. These indicators allow for showing the presence, countdown time, and stack size of buffs and debuffs in any configuration that suits your needs, which has become absolutely vital for endgame content. While designed with healing in mind, other common use cases for Enhanced Raid Frames include competitive PvP, endgame tanking, or really any type of gaming that involves quick and easy access to vital information.
 
 ## Want to contribute?
 * [Report Bugs and Request Features](https://github.com/brittyazel/RaidFrameIndicators/issues "Enhanced Raid Frames - Issues")
@@ -54,6 +54,4 @@ Enhanced Raid Frames allows you to configure whether to show raid icons (skull, 
 https://media.forgecdn.net/attachments/293/659/iconconfig.jpg
 
 ## Credits:
-Original Author: Szandos
-
-Enhanced Raid Frames is an extension of the amazing Blizzard Raid Frame: Indicators addon started by Szandos, for World of Warcraft prior to Battle for Azeroth. All credit for the bulk of this addon should go to him accordingly. I, Soyier, take no credit for the idea or implementation of this addon prior to my adoption of the code in the Summer of 2018. 
+Enhanced Raid Frames was inspired by the amazing Blizzard Raid Frame: Indicators addon by Szandos, for World of Warcraft prior to Legion.

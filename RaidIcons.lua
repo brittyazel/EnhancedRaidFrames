@@ -15,9 +15,7 @@
 --You should have received a copy of the GNU General Public License
 --along with this add-on.  If not, see <https://www.gnu.org/licenses/>.
 --
---Copyright for portions of Neuron are held in the public domain,
---as determined by Szandos. All other copyrights for
---Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
+--Copyright for Enhanced Raid Frames is held by Britt Yazel (aka Soyier), 2017-2020.
 
 local _, addonTable = ...
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames

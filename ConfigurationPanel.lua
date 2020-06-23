@@ -15,9 +15,7 @@
 --You should have received a copy of the GNU General Public License
 --along with this add-on.  If not, see <https://www.gnu.org/licenses/>.
 --
---Copyright for portions of Neuron are held in the public domain,
---as determined by Szandos. All other copyrights for
---Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
+--Copyright for Enhanced Raid Frames is held by Britt Yazel (aka Soyier), 2017-2020.
 
 local _, addonTable = ...
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
@@ -204,7 +202,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			order = 1,
 			width = THIRD_WIDTH*2,
 		}
-		indicatorOptions.args[v].args["numIndicators"..i] = {
+		--[[indicatorOptions.args[v].args["numIndicators"..i] = {
 			type = "range",
 			name = "Number of Indicators",
 			desc = "The size of the indicator icon in pixels",
@@ -214,7 +212,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			width = THIRD_WIDTH,
 			disabled = true,
 			order = 2,
-		}
+		}]]
 
 		--------------------------------------------
 
