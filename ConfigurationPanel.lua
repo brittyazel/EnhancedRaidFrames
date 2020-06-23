@@ -302,16 +302,6 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			width = THIRD_WIDTH,
 			order = 25,
 		}
-		indicatorOptions.args[v].args["indicatorSize"..i] = {
-			type = "range",
-			name = "Indicator Size",
-			desc = "The size of the indicator icon in pixels",
-			min = 1,
-			max = 30,
-			step = 1,
-			width = THIRD_WIDTH,
-			order = 26,
-		}
 		indicatorOptions.args[v].args["indicatorVerticalOffset"..i] = {
 			type = "range",
 			name = "Vertical Offset",
@@ -320,7 +310,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			max = 1,
 			step = .01,
 			width = THIRD_WIDTH,
-			order = 27,
+			order = 26,
 		}
 		indicatorOptions.args[v].args["indicatorHorizontalOffset"..i] = {
 			type = "range",
@@ -329,6 +319,16 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			min = -1,
 			max = 1,
 			step = .01,
+			width = THIRD_WIDTH,
+			order = 27,
+		}
+		indicatorOptions.args[v].args["indicatorSize"..i] = {
+			type = "range",
+			name = "Indicator Size",
+			desc = "The size of the indicator icon in pixels",
+			min = 1,
+			max = 30,
+			step = 1,
 			width = THIRD_WIDTH,
 			order = 28,
 		}
