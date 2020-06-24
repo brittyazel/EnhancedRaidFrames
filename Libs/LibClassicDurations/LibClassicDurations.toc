@@ -1,6 +1,6 @@
 ## Interface: 11304
 ## Title: LibClassicDurations
-## Version: 1.58
+## Version: 1.59
 ## Author: d87
 ## SavedVariables: LCD_Data, LCD_GUIDAccess
 
