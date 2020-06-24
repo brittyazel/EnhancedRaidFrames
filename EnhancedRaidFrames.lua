@@ -146,7 +146,9 @@ function EnhancedRaidFrames:RefreshConfig()
 
 	EnhancedRaidFrames:UpdateAllFrames(true)
 
-	CompactRaidFrameContainer:SetScale(profile.frameScale)
+	if not InCombatLockdown() then
+		CompactRaidFrameContainer:SetScale(profile.frameScale)
+	end
 
 	-- reset aura strings
 	EnhancedRaidFrames.allAuras = " "
