@@ -1,4 +1,4 @@
-package-as: RaidFrameIndicators
+package-as: EnhancedRaidFrames
 
 
 #this will eventually be necessary for curse to automagically pull in all the necessary and up-to-date libraries

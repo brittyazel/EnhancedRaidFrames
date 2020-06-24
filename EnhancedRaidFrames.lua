@@ -18,7 +18,7 @@
 --Copyright for Enhanced Raid Frames is held by Britt Yazel (aka Soyier), 2017-2020.
 
 local addonName, addonTable = ... --make use of the default addon namespace
-addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
+addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
 EnhancedRaidFrames.allAuras = " "
@@ -61,8 +61,7 @@ function EnhancedRaidFrames:OnEnable()
 	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) EnhancedRaidFrames:UpdateInRange(frame) end)
 
 	-- Hook raid icon updates
-	EnhancedRaidFrames:RegisterEvent("RAID_TARGET_UPDATE", "UpdateAllFrames")
-	EnhancedRaidFrames:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateAllFrames")
+	EnhancedRaidFrames:RegisterBucketEvent({"RAID_TARGET_UPDATE", "RAID_ROSTER_UPDATE"}, 1, "UpdateAllFrames")
 
 	-- Make sure any icons already existing are shown
 	EnhancedRaidFrames:RefreshConfig()
