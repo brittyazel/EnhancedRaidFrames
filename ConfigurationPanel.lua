@@ -82,13 +82,12 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				name = "General Options",
 				order = 20,
 			},
-			indicatorFont = {
-				type = 'select',
-				dialogControl = "LSM30_Font",
-				name = "Indicator Font",
-				desc = "Adjust the font used for the indicators",
-				values = AceGUIWidgetLSMlists.font,
-				width = THIRD_WIDTH,
+			stockOptionsButton = {
+				type = 'execute',
+				name = "Open the Blizzard Raid Profiles Menu",
+				desc = "Launch the built-in raid profiles interface configuration menu",
+				func = function() InterfaceOptionsFrame_OpenToCategory("Raid Profiles") end,
+				width = THIRD_WIDTH*1.5,
 				order = 21,
 			},
 
@@ -99,6 +98,15 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				name = "Visual Options",
 				order = 30,
 			},
+			indicatorFont = {
+				type = 'select',
+				dialogControl = "LSM30_Font",
+				name = "Indicator Font",
+				desc = "Adjust the font used for the indicators",
+				values = AceGUIWidgetLSMlists.font,
+				width = THIRD_WIDTH,
+				order = 31,
+			},
 			frameScale = {
 				name = "Raidframe Scale",
 				type = "range",
@@ -106,7 +114,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				max = 2,
 				step = 0.1,
 				width = THIRD_WIDTH,
-				order = 31,
+				order = 33,
 			},
 			backgroundAlpha = {
 				name = "Background Opacity",
@@ -115,12 +123,12 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				max = 1,
 				width = THIRD_WIDTH,
 				step = 0.05,
-				order = 33,
+				order = 34,
 			},
 
 			-------------------------------------------------
 
-			visualOptions = {
+			outOfRangeOptions = {
 				type = "header",
 				name = "Out-of-Range Indicator Options",
 				order = 40,
