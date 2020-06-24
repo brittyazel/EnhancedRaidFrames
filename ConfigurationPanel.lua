@@ -430,10 +430,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			width = THIRD_WIDTH,
 			order = 72,
 		}
-		indicatorOptions.args[v].args["glowSecondsLeft"..i] = {
+		indicatorOptions.args[v].args["glowRemainingSecs"..i] = {
 			type = "range",
-			name = "Glow with Seconds Left",
-			desc = "The amount of time left on the aura countdown in which to start glowing (0 means always glow)",
+			name = "Glow By Remaining Time",
+			desc = "The amount of time remaining on the aura countdown before glowing starts (0 means to always glow)",
 			min = 0,
 			max = 10,
 			step = 1,

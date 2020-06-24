@@ -74,7 +74,7 @@ function EnhancedRaidFrames:CreateDefaults()
 
 		defaults.profile["showCountdownSwipe"..i] = true
 		defaults.profile["indicatorGlow"..i] = false
-		defaults.profile["glowSecondsLeft"..i] = 3
+		defaults.profile["glowRemainingSecs"..i] = 3
 	end
 
 	return defaults
