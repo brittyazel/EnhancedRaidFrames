@@ -176,7 +176,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 	--Normal raid members have frame.unit that says "Raid1", "Raid5", etc.
 	--We don't want to put icons over these tiny little target and target of target bars
 	--Also, in 8.2.5 blizzard unified the nameplate code with the raid frame code. Don't display icons on nameplates
-	if not frame.unit or string.find(frame.unit, "target") or string.find(frame.unit, "nameplate") then
+	if not frame.unit or string.find(frame.unit, "target") or string.find(frame.unit, "nameplate") or not CompactRaidFrameContainer:IsShown() then
 		return
 	end
 
