@@ -384,7 +384,6 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			ActionButton_ShowOverlayGlow(indicatorFrame)
 		end
 
-
 		indicatorFrame:Show() --show the frame
 
 	elseif not foundAura and profile["missing"..indicatorFrame.position] then --deal with "show only if missing"
@@ -408,14 +407,10 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			indicatorFrame.text:SetText("X") --if we aren't showing the icon, show an "X" to show 'something' to indicate the missing aura
 		end
 
-		if profile["indicatorGlow"..indicatorFrame.position] and (profile["glowSecondsLeft"..indicatorFrame.position] == 0 or profile["glowSecondsLeft"..indicatorFrame.position] >= remainingTime) then
-			ActionButton_ShowOverlayGlow(indicatorFrame)
-		end
-
 		indicatorFrame:Show() --show the frame
 
 	else
-		--if not aura is found and we're not showing missing, clear the cooldown and hide the frame
+		--if no aura is found and we're not showing missing, clear animations and hide the frame
 		CooldownFrame_Clear(indicatorFrame.cooldown)
 		ActionButton_HideOverlayGlow(indicatorFrame)
 		indicatorFrame:Hide() --hide the frame

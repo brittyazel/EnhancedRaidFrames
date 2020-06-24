@@ -262,14 +262,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args[v].args["showIcon"..i] = {
 			type = "toggle",
 			name = "Show Icon",
-			desc = "Show an icon if the buff or debuff is currently on the unit",
+			desc = "Show an icon if the buff or debuff is currently on the unit (if unchecked, a solid color will be used instead)",
 			width = THIRD_WIDTH,
 			order = 31,
 		}
 		indicatorOptions.args[v].args["indicatorColor"..i] = {
 			type = "color",
 			name = "Indicator Color",
-			desc = "The a solid color for the indicator frame (unless augmented by other indicator color options)",
+			desc = "The a solid color for the indicator frame (disabled if showing icon)",
 			get = function(item)
 				local t = profile[item[#item]]
 				return t.r, t.g, t.b, t.a
