@@ -1,6 +1,6 @@
 # LibClassicDurations
 
-## [1.58](https://github.com/rgd87/LibClassicDurations/tree/1.58) (2020-06-19)
-[Full Changelog](https://github.com/rgd87/LibClassicDurations/compare/1.57...1.58)
+## [1.59](https://github.com/rgd87/LibClassicDurations/tree/1.59) (2020-06-23)
+[Full Changelog](https://github.com/rgd87/LibClassicDurations/compare/1.58...1.59)
 
-- Fire Vulnerability and Ignite hacks no longer conflct  
+- Check for standalone after all addons are loaded  
