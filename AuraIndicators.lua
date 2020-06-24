@@ -254,7 +254,8 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	------------------------------------------------------
 
 	-- if we find the spell and we don't only want to show when it is missing
-	if foundAura and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) and not profile["missing"..indicatorFrame.position] then
+	if foundAura and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) and not profile["missing"..indicatorFrame.position] and
+			(not profile["mine"..indicatorFrame.position] or (profile["mine"..indicatorFrame.position] and castBy == "player")) then
 		-- calculate remainingTime and round down, this is how the game seems to do it
 		local remainingTime = floor(expirationTime - GetTime())
 
