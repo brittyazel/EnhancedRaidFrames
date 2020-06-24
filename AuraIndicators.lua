@@ -278,20 +278,20 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			-- determine if we should change the background color from the default (player set color)
 			if profile["colorIndicatorByDebuff"..indicatorFrame.position] and debuffType then -- Color by debuff type
 				if debuffType == "curse" then
-					indicatorFrame.icon:SetColorTexture(0.6,0,1,1)
+					indicatorFrame.icon:SetColorTexture(0.64, 0.19, 0.79, 1)
 				elseif debuffType == "disease" then
-					indicatorFrame.icon:SetColorTexture(0.6,0.4,0,1)
+					indicatorFrame.icon:SetColorTexture(0.78, 0.61, 0.43, 1)
 				elseif debuffType == "magic" then
-					indicatorFrame.icon:SetColorTexture(0.2,0.6,1,1)
+					indicatorFrame.icon:SetColorTexture(0, 0.44, 0.87, 1)
 				elseif debuffType == "poison" then
-					indicatorFrame.icon:SetColorTexture(0,0.6,0,1)
+					indicatorFrame.icon:SetColorTexture(0.67, 0.83, 0.45, 1)
 				end
 			end
 			if profile["colorIndicatorByTime"..indicatorFrame.position] then -- Color by remaining time
-				if remainingTime and remainingTime < 2 then
-					indicatorFrame.icon:SetColorTexture(1,0,0,1)
-				elseif remainingTime and remainingTime < 5 then
-					indicatorFrame.icon:SetColorTexture(1,1,0,1)
+				if remainingTime and remainingTime <= 2 then
+					indicatorFrame.icon:SetColorTexture(0.77, 0.12, 0.23, 1)
+				elseif remainingTime and remainingTime <= 5 then
+					indicatorFrame.icon:SetColorTexture(1, 0.96, 0.41, 1)
 				end
 			end
 		end
@@ -345,28 +345,28 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		-- determine if we should change the textColor from the default (player set color)
 		if profile["colorTextByStack"..indicatorFrame.position] then -- Color by stack
 			if count == 1 then
-				indicatorFrame.text:SetTextColor(1,0,0,1)
+				indicatorFrame.text:SetTextColor(0.77, 0.12, 0.23, 1)
 			elseif count == 2 then
-				indicatorFrame.text:SetTextColor(1,1,0,1)
+				indicatorFrame.text:SetTextColor(1, 0.96, 0.41, 1)
 			elseif count >= 3 then
-				indicatorFrame.text:SetTextColor(0,1,0,1)
+				indicatorFrame.text:SetTextColor(0.67, 0.83, 0.45, 1)
 			end
 		elseif profile["colorTextByDebuff"..indicatorFrame.position] and debuffType then -- Color by debuff type
 			if debuffType == "curse" then
-				indicatorFrame.text:SetTextColor(0.6,0,1,1)
+				indicatorFrame.text:SetTextColor(0.64, 0.19, 0.79, 1)
 			elseif debuffType == "disease" then
-				indicatorFrame.text:SetTextColor(0.6,0.4,0,1)
+				indicatorFrame.text:SetTextColor(0.78, 0.61, 0.43, 1)
 			elseif debuffType == "magic" then
-				indicatorFrame.text:SetTextColor(0.2,0.6,1,1)
+				indicatorFrame.text:SetTextColor(0, 0.44, 0.87, 1)
 			elseif debuffType == "poison" then
-				indicatorFrame.text:SetTextColor(0,0.6,0,1)
+				indicatorFrame.text:SetTextColor(0.67, 0.83, 0.45, 1)
 			end
 		end
 		if profile["colorTextByTime"..indicatorFrame.position] then -- Color by remaining time
-			if remainingTime and remainingTime < 2 then
-				indicatorFrame.text:SetTextColor(1,0,0,1)
-			elseif remainingTime and remainingTime < 5 then
-				indicatorFrame.text:SetTextColor(1,1,0,1)
+			if remainingTime and remainingTime <= 2 then
+				indicatorFrame.text:SetTextColor(0.77, 0.12, 0.23, 1)
+			elseif remainingTime and remainingTime <= 5 then
+				indicatorFrame.text:SetTextColor(1, 0.96, 0.41, 1)
 			end
 		end
 

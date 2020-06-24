@@ -294,7 +294,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args[v].args["colorIndicatorByTime"..i] = {
 			type = "toggle",
 			name = "Color By Remaining Time",
-			desc = "Color the indicator based on remaining time (>5 seconds: normal, 2-5 seconds: |cFFFFFF00yellow|r, <2 seconds: |cFFFF0000red|r)",
+			desc = "Color the indicator based on remaining time (>5 seconds: normal, 2-5 seconds: |cFFFFF569yellow|r, <2 seconds: |cFFC41F3Bred|r)",
 			disabled = function () return profile["showIcon"..i] end,
 			width = THIRD_WIDTH,
 			order = 33,
@@ -302,7 +302,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args[v].args["colorIndicatorByDebuff"..i] = {
 			type = "toggle",
 			name = "Color By Debuff Type",
-			desc = "Color the indicator depending on the debuff type, will override the normal coloring (poison = |cFF00FF00green|r, magic = |cFF0000FFblue|r, etc)",
+			desc = "Color the indicator depending on the debuff type, will override the normal coloring (poison = |cFFA9D271green|r, magic = |cFF0070DEblue|r, curse = |cFFA330C9purple|r, and disease = |cFFC79C6Ebrown|r)",
 			disabled = function () return profile["showIcon"..i] end,
 			width = THIRD_WIDTH,
 			order = 34,
@@ -378,7 +378,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args[v].args["colorTextByStack"..i] = {
 			type = "toggle",
 			name = "Color By Stack Size",
-			desc = "Color the text depending on the stack size, will override the normal text coloring (3+: |cFF00FF00green|r, 2: |cFFFFFF00yellow|r, 1: |cFFFF0000red|r)",
+			desc = "Color the text depending on the stack size, will override the normal text coloring (3+: |cFFA9D271green|r, 2: |cFFFFF569yellow|r, 1: |cFFC41F3Bred|r)",
 			disabled = function () return profile["colorTextByDebuff"..i] end,
 			width = THIRD_WIDTH,
 			order = 54,
@@ -386,14 +386,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args[v].args["colorTextByTime"..i] = {
 			type = "toggle",
 			name = "Color by Remaining Time",
-			desc = "Color the text based on remaining time (>5 seconds: normal, 2-5 seconds: |cFFFFFF00yellow|r, <2 seconds: |cFFFF0000red|r)",
+			desc = "Color the text based on remaining time (>5 seconds: normal, 2-5 seconds: |cFFFFF569yellow|r, <2 seconds: |cFFC41F3Bred|r)",
 			width = THIRD_WIDTH,
 			order = 55,
 		}
 		indicatorOptions.args[v].args["colorTextByDebuff"..i] = {
 			type = "toggle",
 			name = "Color By Debuff Type",
-			desc = "Color the text depending on the debuff type, will override the normal text coloring (poison = |cFF00FF00green|r, magic = |cFF0000FFblue|r, etc)",
+			desc = "Color the text depending on the debuff type, will override the normal text coloring (poison = |cFFA9D271green|r, magic = |cFF0070DEblue|r, curse = |cFFA330C9purple|r, and disease = |cFFC79C6Ebrown|r)",
 			disabled = function () return profile["colorTextByStack"..i] end,
 			width = THIRD_WIDTH,
 			order = 56,
