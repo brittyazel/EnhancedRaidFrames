@@ -49,6 +49,8 @@ end
 --- Register Events, Hook functions, Create Frames, Get information from
 --- the game that wasn't available in OnInitialize
 function EnhancedRaidFrames:OnEnable()
+	local profile = EnhancedRaidFrames.db.profile
+
 	--start a repeating timer to updated every frame every 0.8sec to make sure the the countdown timer stays accurate
 	EnhancedRaidFrames.updateTimer = EnhancedRaidFrames:ScheduleRepeatingTimer("UpdateAllFrames", 0.25) --this is so countdown text is smooth
 
@@ -126,6 +128,8 @@ end
 
 -- Update all raid frames
 function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
+	local profile = EnhancedRaidFrames.db.profile
+
 	--don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown() then
 		return
@@ -142,9 +146,11 @@ end
 
 -- Refresh everything that is affected by changes to the configuration
 function EnhancedRaidFrames:RefreshConfig()
+	local profile = EnhancedRaidFrames.db.profile
+
 	EnhancedRaidFrames:UpdateAllFrames(true)
 
-	CompactRaidFrameContainer:SetScale(EnhancedRaidFrames.db.profile.frameScale)
+	CompactRaidFrameContainer:SetScale(profile.frameScale)
 
 	-- reset aura strings
 	EnhancedRaidFrames.allAuras = " "
@@ -152,7 +158,7 @@ function EnhancedRaidFrames:RefreshConfig()
 
 	for i = 1, 9 do
 		local j = 1
-		for auraName in string.gmatch(EnhancedRaidFrames.db.profile["auras"..i], "[^\n]+") do -- Grab each line
+		for auraName in string.gmatch(profile["auras"..i], "[^\n]+") do -- Grab each line
 			--sanitize strings
 			auraName = auraName:lower() --force lowercase
 			auraName = auraName:gsub("^%s*(.-)%s*$", "%1") --strip any leading or trailing whitespace

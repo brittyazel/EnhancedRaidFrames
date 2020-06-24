@@ -40,8 +40,8 @@ function EnhancedRaidFrames:CreateDefaults()
 		customRange = 30,
 
 		showRaidIcons = true,
-		indicatorSize = 20,
-		iconPlacement = 5,
+		iconSize = 20,
+		iconPosition = 5,
 		iconVerticalOffset = 0,
 		iconHorizontalOffset = 0,
 		iconAlpha = 1,
@@ -49,18 +49,17 @@ function EnhancedRaidFrames:CreateDefaults()
 
 	for i = 1, 9 do
 		defaults.profile["auras"..i] = ""
-		defaults.profile["numIndicators"..i] = 1
 
 		defaults.profile["mine"..i] = false
 		defaults.profile["me"..i] = false
 		defaults.profile["missing"..i] = false
-		defaults.profile["showCooldownSwipe"..i] = true
 		defaults.profile["showTooltip"..i] = true
+		defaults.profile["tooltipLocation"..i] = "ANCHOR_CURSOR"
 
 		defaults.profile["showIcon"..i] = true
-		defaults.profile["backgroundColor"..i] = {r = 1, g = 1, b = 1, a = 1}
-		defaults.profile["colorBackgroundByTime"..i] = false
-		defaults.profile["colorBackgroundByDebuff"..i] = false
+		defaults.profile["indicatorColor"..i] = {r = 1, g = 1, b = 1, a = 1}
+		defaults.profile["colorIndicatorByTime"..i] = false
+		defaults.profile["colorIndicatorByDebuff"..i] = false
 		defaults.profile["indicatorSize"..i] = 18
 		defaults.profile["indicatorHorizontalOffset"..i] = 0
 		defaults.profile["indicatorVerticalOffset"..i] = 0
@@ -72,6 +71,10 @@ function EnhancedRaidFrames:CreateDefaults()
 		defaults.profile["colorTextByTime"..i] = false
 		defaults.profile["colorTextByDebuff"..i] = false
 		defaults.profile["textSize"..i] = 14
+
+		defaults.profile["showCountdownSwipe"..i] = true
+		defaults.profile["indicatorGlow"..i] = false
+		defaults.profile["glowSecondsLeft"..i] = 3
 	end
 
 	return defaults

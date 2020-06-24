@@ -24,12 +24,16 @@ local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 -------------------------------------------------------------------------
 
 function EnhancedRaidFrames:CreateIcon(frame)
+	local profile = EnhancedRaidFrames.db.profile
+
 	frame.ERFIcons = {}
 	frame.ERFIcons.texture = frame:CreateTexture(nil, "OVERLAY")
 	EnhancedRaidFrames:SetIconAppearance(frame)
 end
 
 function EnhancedRaidFrames:SetIconAppearance(frame)
+	local profile = EnhancedRaidFrames.db.profile
+
 	if not frame.ERFIcons then
 		return
 	end
@@ -37,10 +41,10 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 	local tex = frame.ERFIcons.texture
 
 	local PAD = 3
-	local pos = EnhancedRaidFrames.db.profile.iconPlacement
+	local pos = profile.iconPosition
 
-	local iconVerticalOffset = EnhancedRaidFrames.db.profile.iconVerticalOffset * frame:GetHeight()
-	local iconHorizontalOffset = EnhancedRaidFrames.db.profile.iconHorizontalOffset * frame:GetWidth()
+	local iconVerticalOffset = profile.iconVerticalOffset * frame:GetHeight()
+	local iconHorizontalOffset = profile.iconHorizontalOffset * frame:GetWidth()
 
 	--we probably don't want to overlap the power bar (rage,mana,energy,etc) so we need a compensation factor
 	local powerBarVertOffset
@@ -63,14 +67,16 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 	if pos == 9 then tex:SetPoint("BOTTOMRIGHT", -PAD + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset) end
 
 	-- Set the icon size
-	tex:SetWidth(EnhancedRaidFrames.db.profile.indicatorSize)
-	tex:SetHeight(EnhancedRaidFrames.db.profile.indicatorSize)
+	tex:SetWidth(profile.iconSize)
+	tex:SetHeight(profile.iconSize)
 
 	-- Set the icon opacity
-	tex:SetAlpha(EnhancedRaidFrames.db.profile.iconAlpha)
+	tex:SetAlpha(profile.iconAlpha)
 end
 
 function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
+	local profile = EnhancedRaidFrames.db.profile
+
 	-- If frame doesn't point at anything, no need for an icon
 	if not frame.unit then
 		return
@@ -86,7 +92,7 @@ function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
 	end
 
 	--if they don't have raid icons set to show, don't show anything
-	if not EnhancedRaidFrames.db.profile.showRaidIcons then
+	if not profile.showRaidIcons then
 		frame.ERFIcons.texture:Hide() -- hide the frame
 		return
 	end
