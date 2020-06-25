@@ -79,6 +79,9 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		--mark the position of this particular frame for use later (i.e. 1->9)
 		indicatorFrame.position = i
 
+		--add a local  pointer to the indicator position specific profile
+		indicatorFrame.profile = profile[i]
+
 		--hook enter and leave for showing ability tooltips
 		EnhancedRaidFrames:SecureHookScript(indicatorFrame, "OnEnter", function() EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame) end)
 		EnhancedRaidFrames:SecureHookScript(indicatorFrame, "OnLeave", function() GameTooltip:Hide() end)
@@ -102,15 +105,15 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		local indicatorFrame = frame.ERFIndicators[i]
 
 		--set icon size
-		indicatorFrame:SetWidth(profile["indicatorSize"..i])
-		indicatorFrame:SetHeight(profile["indicatorSize"..i])
+		indicatorFrame:SetWidth(indicatorFrame.profile["indicatorSize"])
+		indicatorFrame:SetHeight(indicatorFrame.profile["indicatorSize"])
 
 		--------------------------------------
 
 		--set indicator frame position
 		local PAD = 1
-		local iconVerticalOffset = profile["indicatorVerticalOffset"..i] * frame:GetHeight()
-		local iconHorizontalOffset = profile["indicatorHorizontalOffset"..i] * frame:GetWidth()
+		local iconVerticalOffset = indicatorFrame.profile["indicatorVerticalOffset"] * frame:GetHeight()
+		local iconHorizontalOffset = indicatorFrame.profile["indicatorHorizontalOffset"] * frame:GetWidth()
 
 		--we probably don't want to overlap the power bar (rage, mana, energy, etc) so we need a compensation factor
 		local powerBarVertOffset
@@ -147,14 +150,14 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		local font = (media and media:Fetch('font', profile.indicatorFont)) or STANDARD_TEXT_FONT
 
 		--switch the pointer for the text overlay
-		if not profile["showCountdownSwipe"..i] then
+		if not indicatorFrame.profile["showCountdownSwipe"] then
 			indicatorFrame.text:SetText("") --clear previous text pointer
 			indicatorFrame.text = indicatorFrame.normal_textPtr --switch indicatorFrame.text to point to normal_textPtr
-			indicatorFrame.text:SetFont(font, profile["textSize"..i], "OUTLINE")
+			indicatorFrame.text:SetFont(font, indicatorFrame.profile["textSize"], "OUTLINE")
 		else
 			indicatorFrame.text:SetText("") --clear previous text pointer
 			indicatorFrame.text = indicatorFrame.cd_textPtr --switch indicatorFrame.text to point to cd_textPtr
-			indicatorFrame.text:SetFont(font, profile["textSize"..i], "OUTLINE")
+			indicatorFrame.text:SetFont(font, indicatorFrame.profile["textSize"], "OUTLINE")
 		end
 
 		--clear any animations
@@ -214,7 +217,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	indicatorFrame.auraType = nil
 
 	-- if we only are to show the indicator on me, then don't bother if I'm not the unit
-	if profile["meOnly"..indicatorFrame.position] then
+	if indicatorFrame.profile["meOnly"] then
 		local unitName, unitRealm = UnitName(unit)
 		if unitName ~= UnitName("player") or unitRealm ~= nil then
 			return
@@ -243,7 +246,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		-- if we find the aura, we can stop querying down the list
 		if foundAura then
 			-- we want to stop only when castBy == "player" if we are tracking "mine only"
-			if not profile["mineOnly"..indicatorFrame.position] or (profile["mineOnly"..indicatorFrame.position] and castBy == "player") then
+			if not indicatorFrame.profile["mineOnly"] or (indicatorFrame.profile["mineOnly"] and castBy == "player") then
 				break
 			end
 		end
@@ -254,8 +257,8 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	------------------------------------------------------
 
 	-- if we find the spell and we don't only want to show when it is missing
-	if foundAura and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) and not profile["missingOnly"..indicatorFrame.position] and
-			(not profile["mineOnly"..indicatorFrame.position] or (profile["mineOnly"..indicatorFrame.position] and castBy == "player")) then
+	if foundAura and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) and not indicatorFrame.profile["missingOnly"] and
+			(not indicatorFrame.profile["mineOnly"] or (indicatorFrame.profile["mineOnly"] and castBy == "player")) then
 		-- calculate remainingTime and round down, this is how the game seems to do it
 		local remainingTime = floor(expirationTime - GetTime())
 
@@ -266,18 +269,18 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------------------------------
 		--- process icon to show
 		---------------------------------
-		if profile["showIcon"..indicatorFrame.position] then
+		if indicatorFrame.profile["showIcon"] then
 			indicatorFrame.icon:SetTexture(icon)
 		else
 			--set color of custom texture
 			indicatorFrame.icon:SetColorTexture(
-					profile["indicatorColor"..indicatorFrame.position].r,
-					profile["indicatorColor"..indicatorFrame.position].g,
-					profile["indicatorColor"..indicatorFrame.position].b,
-					profile["indicatorColor"..indicatorFrame.position].a)
+					indicatorFrame.profile["indicatorColor"].r,
+					indicatorFrame.profile["indicatorColor"].g,
+					indicatorFrame.profile["indicatorColor"].b,
+					indicatorFrame.profile["indicatorColor"].a)
 
 			-- determine if we should change the background color from the default (player set color)
-			if profile["colorIndicatorByDebuff"..indicatorFrame.position] and debuffType then -- Color by debuff type
+			if indicatorFrame.profile["colorIndicatorByDebuff"] and debuffType then -- Color by debuff type
 				if debuffType == "curse" then
 					indicatorFrame.icon:SetColorTexture(0.64, 0.19, 0.79, 1)
 				elseif debuffType == "disease" then
@@ -288,7 +291,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 					indicatorFrame.icon:SetColorTexture(0.67, 0.83, 0.45, 1)
 				end
 			end
-			if profile["colorIndicatorByTime"..indicatorFrame.position] then -- Color by remaining time
+			if indicatorFrame.profile["colorIndicatorByTime"] then -- Color by remaining time
 				if remainingTime and remainingTime <= 2 then
 					indicatorFrame.icon:SetColorTexture(0.77, 0.12, 0.23, 1)
 				elseif remainingTime and remainingTime <= 5 then
@@ -300,13 +303,13 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------------------------------
 		--- process text to show
 		---------------------------------
-		if profile["showText"..indicatorFrame.position] or profile["showStack"..indicatorFrame.position] then
+		if indicatorFrame.profile["showText"] or indicatorFrame.profile["showStack"] then
 			-- Pretty formatting of the remaining time text
 			local formattedTime = ""
 			local formattedCount = ""
 
 			-- determine the formatted time string
-			if profile["showText"..indicatorFrame.position] and expirationTime ~= 0 then
+			if indicatorFrame.profile["showText"] and expirationTime ~= 0 then
 				if remainingTime > 60 then
 					formattedTime = string.format("%.0f", remainingTime/60).."m" -- Show minutes without seconds
 				elseif remainingTime >= 0 then
@@ -315,7 +318,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			end
 
 			-- determine the formatted count string
-			if profile["showStack"..indicatorFrame.position] and count > 0 then
+			if indicatorFrame.profile["showStack"] and count > 0 then
 				formattedCount = count
 			end
 
@@ -338,13 +341,13 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------------------------------
 		--set default textColor to user selected choice
 		indicatorFrame.text:SetTextColor(
-				profile["textColor" .. indicatorFrame.position].r,
-				profile["textColor" .. indicatorFrame.position].g,
-				profile["textColor" .. indicatorFrame.position].b,
-				profile["textColor" .. indicatorFrame.position].a)
+				indicatorFrame.profile["textColor"].r,
+				indicatorFrame.profile["textColor"].g,
+				indicatorFrame.profile["textColor"].b,
+				indicatorFrame.profile["textColor"].a)
 
 		-- determine if we should change the textColor from the default (player set color)
-		if profile["colorTextByStack"..indicatorFrame.position] then -- Color by stack
+		if indicatorFrame.profile["colorTextByStack"] then -- Color by stack
 			if count == 1 then
 				indicatorFrame.text:SetTextColor(0.77, 0.12, 0.23, 1)
 			elseif count == 2 then
@@ -352,7 +355,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			elseif count >= 3 then
 				indicatorFrame.text:SetTextColor(0.67, 0.83, 0.45, 1)
 			end
-		elseif profile["colorTextByDebuff"..indicatorFrame.position] and debuffType then -- Color by debuff type
+		elseif indicatorFrame.profile["colorTextByDebuff"] and debuffType then -- Color by debuff type
 			if debuffType == "curse" then
 				indicatorFrame.text:SetTextColor(0.64, 0.19, 0.79, 1)
 			elseif debuffType == "disease" then
@@ -363,7 +366,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 				indicatorFrame.text:SetTextColor(0.67, 0.83, 0.45, 1)
 			end
 		end
-		if profile["colorTextByTime"..indicatorFrame.position] then -- Color by remaining time
+		if indicatorFrame.profile["colorTextByTime"] then -- Color by remaining time
 			if remainingTime and remainingTime <= 2 then
 				indicatorFrame.text:SetTextColor(0.77, 0.12, 0.23, 1)
 			elseif remainingTime and remainingTime <= 5 then
@@ -374,20 +377,20 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------------------------------
 		--- set cooldown animation
 		---------------------------------
-		if profile["showCountdownSwipe"..indicatorFrame.position] and expirationTime and duration then
+		if indicatorFrame.profile["showCountdownSwipe"] and expirationTime and duration then
 			CooldownFrame_Set(indicatorFrame.cooldown, expirationTime - duration, duration, true, true)
 		end
 
 		---------------------------------
 		--- set glow animation
 		---------------------------------
-		if profile["indicatorGlow"..indicatorFrame.position] and (profile["glowRemainingSecs"..indicatorFrame.position] == 0 or profile["glowRemainingSecs"..indicatorFrame.position] >= remainingTime) then
+		if indicatorFrame.profile["indicatorGlow"] and (indicatorFrame.profile["glowRemainingSecs"] == 0 or indicatorFrame.profile["glowRemainingSecs"] >= remainingTime) then
 			ActionButton_ShowOverlayGlow(indicatorFrame)
 		end
 
 		indicatorFrame:Show() --show the frame
 
-	elseif not foundAura and profile["missingOnly"..indicatorFrame.position] then --deal with "show only if missing"
+	elseif not foundAura and indicatorFrame.profile["missingOnly"] then --deal with "show only if missing"
 		local auraName = EnhancedRaidFrames.auraStrings[indicatorFrame.position][1] --show the icon for the first auraString position
 
 		--check our iconCache for the auraName. Note the icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons
@@ -400,7 +403,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			icon = EnhancedRaidFrames.iconCache[auraName]
 		end
 
-		if profile["showIcon"..indicatorFrame.position] then
+		if indicatorFrame.profile["showIcon"] then
 			indicatorFrame.icon:SetTexture(icon)
 			indicatorFrame.text:SetText("")
 		else
@@ -537,7 +540,7 @@ end
 function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame)
 	local profile = EnhancedRaidFrames.db.profile
 
-	if not profile["showTooltip"..indicatorFrame.position] then --don't show tooltips unless we have the option set for this position
+	if not indicatorFrame.profile["showTooltip"] then --don't show tooltips unless we have the option set for this position
 		return
 	end
 
@@ -546,7 +549,7 @@ function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame)
 	-- Set the tooltip
 	if indicatorFrame.auraIndex and indicatorFrame.icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
 		-- Set the buff/debuff as tooltip and anchor to the cursor
-		GameTooltip:SetOwner(UIParent, profile["tooltipLocation"..indicatorFrame.position])
+		GameTooltip:SetOwner(UIParent, indicatorFrame.profile["tooltipLocation"])
 		if indicatorFrame.auraType == "buff" then
 			GameTooltip:SetUnitAura(frame.unit, indicatorFrame.auraIndex, "HELPFUL")
 		else

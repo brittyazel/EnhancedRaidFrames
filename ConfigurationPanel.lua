@@ -230,6 +230,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args[v].args = {
 
 			--------------------------------------------
+
 			auras = {
 				type = "input",
 				name = "Buff and/or Debuff Watch List:",
@@ -243,9 +244,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						"\n"..
 						"You can use ToT to show if a unit is the target of your target.\n",
 				multiline = true,
-				get = function() return profile["auras"..i] end,
+				get = function() return profile[i]["auras"] end,
 				set = function(_, value)
-					profile["auras"..i] = value
+					profile[i]["auras"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH*2,
@@ -263,9 +264,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "toggle",
 				name = "Mine Only",
 				desc = "Only show buffs and debuffs cast by me",
-				get = function() return profile["mineOnly"..i] end,
+				get = function() return profile[i]["mineOnly"] end,
 				set = function(_, value)
-					profile["mineOnly"..i] = value
+					profile[i]["mineOnly"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -275,9 +276,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "toggle",
 				name = "Show On Me Only",
 				desc = "Only show this indicator on myself",
-				get = function() return profile["meOnly"..i] end,
+				get = function() return profile[i]["meOnly"] end,
 				set = function(_, value)
-					profile["meOnly"..i] = value
+					profile[i]["meOnly"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -287,9 +288,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "toggle",
 				name = "Show Only if Missing",
 				desc = "Show only if the specified buff or debuff is missing on the target (first item in the list)",
-				get = function() return profile["missingOnly"..i] end,
+				get = function() return profile[i]["missingOnly"] end,
 				set = function(_, value)
-					profile["missingOnly"..i] = value
+					profile[i]["missingOnly"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -299,9 +300,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "toggle",
 				name = "Show Tooltip",
 				desc = "Show tooltip on mouseover",
-				get = function() return profile["showTooltip"..i] end,
+				get = function() return profile[i]["showTooltip"] end,
 				set = function(_, value)
-					profile["showTooltip"..i] = value
+					profile[i]["showTooltip"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -314,9 +315,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				style = "dropdown",
 				values = {["ANCHOR_CURSOR"]="Attached to Cursor", ["ANCHOR_PRESERVE"]="Blizzard Default"},
 				sorting = {[1] = "ANCHOR_CURSOR", [2] = "ANCHOR_PRESERVE"},
-				get = function() return profile["tooltipLocation"..i] end,
+				get = function() return profile[i]["tooltipLocation"] end,
 				set = function(_, value)
-					profile["tooltipLocation"..i] = value
+					profile[i]["tooltipLocation"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -335,9 +336,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "toggle",
 				name = "Show Icon",
 				desc = "Show an icon if the buff or debuff is currently on the unit (if unchecked, a solid color will be used instead)",
-				get = function() return profile["showIcon"..i] end,
+				get = function() return profile[i]["showIcon"] end,
 				set = function(_, value)
-					profile["showIcon"..i] = value
+					profile[i]["showIcon"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -348,13 +349,13 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				name = "Indicator Color",
 				desc = "The a solid color for the indicator frame (disabled if showing icon)",
 				get = function()
-					return profile["indicatorColor"..i].r, profile["indicatorColor"..i].g, profile["indicatorColor"..i].b, profile["indicatorColor"..i].a
+					return profile[i]["indicatorColor"].r, profile[i]["indicatorColor"].g, profile[i]["indicatorColor"].b, profile[i]["indicatorColor"].a
 				end,
 				set = function(_, r, g, b, a)
-					profile["indicatorColor"..i].r, profile["indicatorColor"..i].g, profile["indicatorColor"..i].b, profile["indicatorColor"..i].a = r, g, b, a
+					profile[i]["indicatorColor"].r, profile[i]["indicatorColor"].g, profile[i]["indicatorColor"].b, profile[i]["indicatorColor"].a = r, g, b, a
 					EnhancedRaidFrames:RefreshConfig()
 				end,
-				disabled = function () return profile["showIcon"..i] end,
+				disabled = function () return profile[i]["showIcon"] end,
 				width = THIRD_WIDTH,
 				order = 32,
 			},
@@ -362,12 +363,12 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "toggle",
 				name = "Color By Remaining Time",
 				desc = "Color the indicator based on remaining time (>5 seconds: normal, 2-5 seconds: |cFFFFF569yellow|r, <2 seconds: |cFFC41F3Bred|r)",
-				get = function() return profile["colorIndicatorByTime"..i] end,
+				get = function() return profile[i]["colorIndicatorByTime"] end,
 				set = function(_, value)
-					profile["colorIndicatorByTime"..i] = value
+					profile[i]["colorIndicatorByTime"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
-				disabled = function () return profile["showIcon"..i] end,
+				disabled = function () return profile[i]["showIcon"] end,
 				width = THIRD_WIDTH,
 				order = 33,
 			},
@@ -375,12 +376,12 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "toggle",
 				name = "Color By Debuff Type",
 				desc = "Color the indicator depending on the debuff type, will override the normal coloring (poison = |cFFA9D271green|r, magic = |cFF0070DEblue|r, curse = |cFFA330C9purple|r, and disease = |cFFC79C6Ebrown|r)",
-				get = function() return profile["colorIndicatorByDebuff"..i] end,
+				get = function() return profile[i]["colorIndicatorByDebuff"] end,
 				set = function(_, value)
-					profile["colorIndicatorByDebuff"..i] = value
+					profile[i]["colorIndicatorByDebuff"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
-				disabled = function () return profile["showIcon"..i] end,
+				disabled = function () return profile[i]["showIcon"] end,
 				width = THIRD_WIDTH,
 				order = 34,
 			},
@@ -391,9 +392,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				min = -1,
 				max = 1,
 				step = .01,
-				get = function() return profile["indicatorVerticalOffset"..i] end,
+				get = function() return profile[i]["indicatorVerticalOffset"] end,
 				set = function(_, value)
-					profile["indicatorVerticalOffset"..i] = value
+					profile[i]["indicatorVerticalOffset"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -406,9 +407,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				min = -1,
 				max = 1,
 				step = .01,
-				get = function() return profile["indicatorHorizontalOffset"..i] end,
+				get = function() return profile[i]["indicatorHorizontalOffset"] end,
 				set = function(_, value)
-					profile["indicatorHorizontalOffset"..i] = value
+					profile[i]["indicatorHorizontalOffset"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -421,9 +422,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				min = 1,
 				max = 30,
 				step = 1,
-				get = function() return profile["indicatorSize"..i] end,
+				get = function() return profile[i]["indicatorSize"] end,
 				set = function(_, value)
-					profile["indicatorSize"..i] = value
+					profile[i]["indicatorSize"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -441,9 +442,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "toggle",
 				name = "Show Countdown Text",
 				desc = "Show countdown text specifying the time left of the buff or debuff",
-				get = function() return profile["showText"..i] end,
+				get = function() return profile[i]["showText"] end,
 				set = function(_, value)
-					profile["showText"..i] = value
+					profile[i]["showText"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -453,9 +454,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "toggle",
 				name = "Show Stack Size",
 				desc = "Show stack size for buffs and debuffs that have stacks",
-				get = function() return profile["showStack"..i] end,
+				get = function() return profile[i]["showStack"] end,
 				set = function(_, value)
-					profile["showStack"..i] = value
+					profile[i]["showStack"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -466,10 +467,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				name = "Text Color",
 				desc = "The text color for an indicator (unless augmented by other text color options)",
 				get = function()
-					return profile["textColor"..i].r, profile["textColor"..i].g, profile["textColor"..i].b, profile["textColor"..i].a
+					return profile[i]["textColor"].r, profile[i]["textColor"].g, profile[i]["textColor"].b, profile[i]["textColor"].a
 				end,
 				set = function(_, r, g, b, a)
-					profile["textColor"..i].r, profile["textColor"..i].g, profile["textColor"..i].b, profile["textColor"..i].a = r, g, b, a
+					profile[i]["textColor"].r, profile[i]["textColor"].g, profile[i]["textColor"].b, profile[i]["textColor"].a = r, g, b, a
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -479,12 +480,12 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "toggle",
 				name = "Color By Stack Size",
 				desc = "Color the text depending on the stack size, will override the normal text coloring (3+: |cFFA9D271green|r, 2: |cFFFFF569yellow|r, 1: |cFFC41F3Bred|r)",
-				get = function() return profile["colorTextByStack"..i] end,
+				get = function() return profile[i]["colorTextByStack"] end,
 				set = function(_, value)
-					profile["colorTextByStack"..i] = value
+					profile[i]["colorTextByStack"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
-				disabled = function () return profile["colorTextByDebuff"..i] end,
+				disabled = function () return profile[i]["colorTextByDebuff"] end,
 				width = THIRD_WIDTH,
 				order = 54,
 			},
@@ -492,9 +493,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "toggle",
 				name = "Color by Remaining Time",
 				desc = "Color the text based on remaining time (>5 seconds: normal, 2-5 seconds: |cFFFFF569yellow|r, <2 seconds: |cFFC41F3Bred|r)",
-				get = function() return profile["colorTextByTime"..i] end,
+				get = function() return profile[i]["colorTextByTime"] end,
 				set = function(_, value)
-					profile["colorTextByTime"..i] = value
+					profile[i]["colorTextByTime"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -504,12 +505,12 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "toggle",
 				name = "Color By Debuff Type",
 				desc = "Color the text depending on the debuff type, will override the normal text coloring (poison = |cFFA9D271green|r, magic = |cFF0070DEblue|r, curse = |cFFA330C9purple|r, and disease = |cFFC79C6Ebrown|r)",
-				get = function() return profile["colorTextByDebuff"..i] end,
+				get = function() return profile[i]["colorTextByDebuff"] end,
 				set = function(_, value)
-					profile["colorTextByDebuff"..i] = value
+					profile[i]["colorTextByDebuff"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
-				disabled = function () return profile["colorTextByStack"..i] end,
+				disabled = function () return profile[i]["colorTextByStack"] end,
 				width = THIRD_WIDTH,
 				order = 56,
 			},
@@ -520,9 +521,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				min = 1,
 				max = 30,
 				step = 1,
-				get = function() return profile["textSize"..i] end,
+				get = function() return profile[i]["textSize"] end,
 				set = function(_, value)
-					profile["textSize"..i] = value
+					profile[i]["textSize"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -540,9 +541,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "toggle",
 				name = "Show Countdown Swipe",
 				desc = "Show the clockwise swipe animation specifying the time left of the buff or debuff",
-				get = function() return profile["showCountdownSwipe"..i] end,
+				get = function() return profile[i]["showCountdownSwipe"] end,
 				set = function(_, value)
-					profile["showCountdownSwipe"..i] = value
+					profile[i]["showCountdownSwipe"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -552,9 +553,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "toggle",
 				name = "Indicator Glow Effect",
 				desc = "Display a glow animation effect on the indicator to make it easier to spot",
-				get = function() return profile["indicatorGlow"..i] end,
+				get = function() return profile[i]["indicatorGlow"] end,
 				set = function(_, value)
-					profile["indicatorGlow"..i] = value
+					profile[i]["indicatorGlow"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -567,12 +568,12 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				min = 0,
 				max = 10,
 				step = 1,
-				get = function() return profile["glowRemainingSecs"..i] end,
+				get = function() return profile[i]["glowRemainingSecs"] end,
 				set = function(_, value)
-					profile["glowRemainingSecs"..i] = value
+					profile[i]["glowRemainingSecs"] = value
 					EnhancedRaidFrames:RefreshConfig()
 				end,
-				disabled = function () return not profile["indicatorGlow"..i] end,
+				disabled = function () return not profile[i]["indicatorGlow"] end,
 				width = THIRD_WIDTH,
 				order = 73,
 			},

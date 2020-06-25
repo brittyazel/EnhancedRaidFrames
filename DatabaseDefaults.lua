@@ -49,33 +49,36 @@ function EnhancedRaidFrames:CreateDefaults()
 	}
 
 	for i = 1, 9 do
-		defaults.profile["auras"..i] = ""
+		defaults.profile[i] = {
+			auras = "",
 
-		defaults.profile["mineOnly"..i] = false
-		defaults.profile["meOnly"..i] = false
-		defaults.profile["missingOnly"..i] = false
-		defaults.profile["showTooltip"..i] = true
-		defaults.profile["tooltipLocation"..i] = "ANCHOR_CURSOR"
+			mineOnly= false,
+			meOnly = false,
+			missingOnly = false,
 
-		defaults.profile["showIcon"..i] = true
-		defaults.profile["indicatorColor"..i] = {r = 1, g = 1, b = 1, a = 1}
-		defaults.profile["colorIndicatorByTime"..i] = false
-		defaults.profile["colorIndicatorByDebuff"..i] = false
-		defaults.profile["indicatorSize"..i] = 18
-		defaults.profile["indicatorHorizontalOffset"..i] = 0
-		defaults.profile["indicatorVerticalOffset"..i] = 0
+			showTooltip = true,
+			tooltipLocation = "ANCHOR_CURSOR",
 
-		defaults.profile["showText"..i] = false
-		defaults.profile["showStack"..i] = false
-		defaults.profile["textColor"..i] = {r = 1, g = 1, b = 1, a = 1}
-		defaults.profile["colorTextByStack"..i] = false
-		defaults.profile["colorTextByTime"..i] = false
-		defaults.profile["colorTextByDebuff"..i] = false
-		defaults.profile["textSize"..i] = 14
+			showIcon = true,
+			indicatorColor = {r = 1, g = 1, b = 1, a = 1},
+			colorIndicatorByTime = false,
+			colorIndicatorByDebuff = false,
+			indicatorSize = 18,
+			indicatorHorizontalOffset = 0,
+			indicatorVerticalOffset = 0,
 
-		defaults.profile["showCountdownSwipe"..i] = true
-		defaults.profile["indicatorGlow"..i] = false
-		defaults.profile["glowRemainingSecs"..i] = 3
+			showText = false,
+			showStack = false,
+			textColor = {r = 1, g = 1, b = 1, a = 1},
+			colorTextByStack = false,
+			colorTextByTime = false,
+			colorTextByDebuff = false,
+			textSize = 14,
+
+			showCountdownSwipe = true,
+			indicatorGlow = false,
+			glowRemainingSecs = 3,
+		}
 	end
 
 	return defaults
