@@ -342,7 +342,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			showIcon = {
 				type = "toggle",
 				name = "Show Icon",
-				desc = "Show an icon if the buff or debuff is currently on the unit (if unchecked, a solid color will be used)",
+				desc = "Show an icon if the buff or debuff is currently on the unit (if unchecked, a solid indicator color will be used instead)",
 				get = function() return self.db.profile[i].showIcon end,
 				set = function(_, value)
 					self.db.profile[i].showIcon = value
@@ -354,7 +354,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			indicatorColor = {
 				type = "color",
 				name = "Indicator Color",
-				desc = "The a solid color for the indicator frame (disabled if showing icon)",
+				desc = "The solid color used for the indicator when not showing the buff or debuff icon",
 				get = function()
 					return self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g, self.db.profile[i].indicatorColor.b, self.db.profile[i].indicatorColor.a
 				end,

@@ -259,7 +259,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------------------------------
 		--- process icon to show
 		---------------------------------
-		if self.db.profile[i].showIcon then
+		if icon and self.db.profile[i].showIcon then
 			indicatorFrame.icon:SetTexture(icon)
 		else
 			--set color of custom texture
