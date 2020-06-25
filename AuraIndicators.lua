@@ -61,8 +61,15 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		--create local pointer for readability
 		local indicatorFrame = frame.ERFIndicators[i]
 
+		--mark the position of this particular frame for use later (i.e. 1->9)
+		indicatorFrame.position = i
+
+		--add a local  pointer to the indicator position specific profile
+		indicatorFrame.profile = profile[i]
+
 		--register clicks
 		indicatorFrame:RegisterForClicks("LeftButtonDown", "RightButtonUp")
+
 		--set proper frame level
 		indicatorFrame:SetFrameStrata("HIGH")
 
@@ -70,17 +77,11 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		--the font string is further modified in SetIndicatorAppearance()
 		indicatorFrame.cd_textPtr = indicatorFrame.cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the animation, text should be on the parent frame
 		indicatorFrame.cd_textPtr:SetPoint("CENTER", indicatorFrame, "CENTER", 0, 0)
-		indicatorFrame.normal_textPtr = indicatorFrame:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the cooldown animation or the icon, text should be on the parent frame
+		indicatorFrame.normal_textPtr = indicatorFrame:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the cooldown animation, text should be on the parent frame
 		indicatorFrame.normal_textPtr:SetPoint("CENTER", indicatorFrame, "CENTER", 0, 0)
 
 		--create a pointer at indicatorFrame.text that will be our handle going forward to our two string pointers
 		indicatorFrame.text = indicatorFrame.normal_textPtr --set initial pointer to indicatorFrame.text
-
-		--mark the position of this particular frame for use later (i.e. 1->9)
-		indicatorFrame.position = i
-
-		--add a local  pointer to the indicator position specific profile
-		indicatorFrame.profile = profile[i]
 
 		--hook enter and leave for showing ability tooltips
 		EnhancedRaidFrames:SecureHookScript(indicatorFrame, "OnEnter", function() EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame) end)
@@ -201,6 +202,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 	for i = 1, 9 do
 		--create local pointer for readability
 		local indicatorFrame = frame.ERFIndicators[i]
+
 		-- this is the meat of our processing loop
 		EnhancedRaidFrames:ProcessIndicator(indicatorFrame, frame.unit)
 	end
@@ -244,11 +246,9 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 
 		-- when tracking multiple things, this determines "where" we stop in the list
 		-- if we find the aura, we can stop querying down the list
-		if foundAura then
-			-- we want to stop only when castBy == "player" if we are tracking "mine only"
-			if not indicatorFrame.profile["mineOnly"] or (indicatorFrame.profile["mineOnly"] and castBy == "player") then
-				break
-			end
+		-- we want to stop only when castBy == "player" if we are tracking "mine only"
+		if foundAura and (not indicatorFrame.profile["mineOnly"] or (indicatorFrame.profile["mineOnly"] and castBy == "player")) then
+			break
 		end
 	end
 
@@ -324,16 +324,16 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 
 			-- determine the final output string concatenation
 			if formattedCount ~= "" and formattedTime ~= "" then
-				indicatorFrame.text:SetText(formattedCount .. "-" .. formattedTime)
+				indicatorFrame.text:SetText(formattedCount .. "-" .. formattedTime) --append both values together with a hyphen separating
 			elseif formattedCount ~= "" then
-				indicatorFrame.text:SetText(formattedCount)
+				indicatorFrame.text:SetText(formattedCount) --show just the count
 			elseif formattedTime ~= "" then
-				indicatorFrame.text:SetText(formattedTime)
+				indicatorFrame.text:SetText(formattedTime) --show just the time remaining
 			else
-				indicatorFrame.text:SetText("")
+				indicatorFrame.text:SetText("") --clear all text
 			end
 		else
-			indicatorFrame.text:SetText("")
+			indicatorFrame.text:SetText("") --clear all text
 		end
 
 		---------------------------------
@@ -407,8 +407,13 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			indicatorFrame.icon:SetTexture(icon)
 			indicatorFrame.text:SetText("")
 		else
-			indicatorFrame.icon:SetTexture(nil)
-			indicatorFrame.text:SetText("X") --if we aren't showing the icon, show an "X" to show 'something' to indicate the missing aura
+			--set color of custom texture
+			indicatorFrame.icon:SetColorTexture(
+					indicatorFrame.profile["indicatorColor"].r,
+					indicatorFrame.profile["indicatorColor"].g,
+					indicatorFrame.profile["indicatorColor"].b,
+					indicatorFrame.profile["indicatorColor"].a)
+			indicatorFrame.text:SetText("")
 		end
 
 		indicatorFrame:Show() --show the frame

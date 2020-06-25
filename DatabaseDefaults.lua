@@ -60,7 +60,7 @@ function EnhancedRaidFrames:CreateDefaults()
 			tooltipLocation = "ANCHOR_CURSOR",
 
 			showIcon = true,
-			indicatorColor = {r = 1, g = 1, b = 1, a = 1},
+			indicatorColor = {r = 0, g = 1, b = 0.59, a = 1},
 			colorIndicatorByTime = false,
 			colorIndicatorByDebuff = false,
 			indicatorSize = 18,
