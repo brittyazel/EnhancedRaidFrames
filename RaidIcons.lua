@@ -24,16 +24,12 @@ local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 -------------------------------------------------------------------------
 
 function EnhancedRaidFrames:CreateIcon(frame)
-	local profile = EnhancedRaidFrames.db.profile
-
 	frame.ERFIcons = {}
 	frame.ERFIcons.texture = frame:CreateTexture(nil, "OVERLAY")
-	EnhancedRaidFrames:SetIconAppearance(frame)
+	self:SetIconAppearance(frame)
 end
 
 function EnhancedRaidFrames:SetIconAppearance(frame)
-	local profile = EnhancedRaidFrames.db.profile
-
 	if not frame.ERFIcons then
 		return
 	end
@@ -41,12 +37,12 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 	local tex = frame.ERFIcons.texture
 
 	local PAD = 3
-	local pos = profile.iconPosition
+	local pos = self.db.profile.iconPosition
 
-	local iconVerticalOffset = profile.iconVerticalOffset * frame:GetHeight()
-	local iconHorizontalOffset = profile.iconHorizontalOffset * frame:GetWidth()
+	local iconVerticalOffset = self.db.profile.iconVerticalOffset * frame:GetHeight()
+	local iconHorizontalOffset = self.db.profile.iconHorizontalOffset * frame:GetWidth()
 
-	--we probably don't want to overlap the power bar (rage,mana,energy,etc) so we need a compensation factor
+	--we probably don't want to overlap the power bar (rage, mana, energy, etc) so we need a compensation factor
 	local powerBarVertOffset
 	if frame.powerBar:IsShown() then
 		powerBarVertOffset = frame.powerBar:GetHeight() + 2 --add 2 to not overlap the powerBar border
@@ -67,16 +63,14 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 	if pos == 9 then tex:SetPoint("BOTTOMRIGHT", -PAD + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset) end
 
 	-- Set the icon size
-	tex:SetWidth(profile.iconSize)
-	tex:SetHeight(profile.iconSize)
+	tex:SetWidth(self.db.profile.iconSize)
+	tex:SetHeight(self.db.profile.iconSize)
 
 	-- Set the icon opacity
-	tex:SetAlpha(profile.iconAlpha)
+	tex:SetAlpha(self.db.profile.iconAlpha)
 end
 
 function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
-	local profile = EnhancedRaidFrames.db.profile
-
 	-- If frame doesn't point at anything, no need for an icon
 	if not frame.unit then
 		return
@@ -84,15 +78,15 @@ function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
 
 	-- Initialize our storage and create texture
 	if not frame.ERFIcons then -- No icon on this frame before, need a texture
-		EnhancedRaidFrames:CreateIcon(frame)
+		self:CreateIcon(frame)
 	end
 
 	if setAppearance then
-		EnhancedRaidFrames:SetIconAppearance(frame)
+		self:SetIconAppearance(frame)
 	end
 
 	--if they don't have raid icons set to show, don't show anything
-	if not profile.showRaidIcons then
+	if not self.db.profile.showRaidIcons then
 		frame.ERFIcons.texture:Hide() -- hide the frame
 		return
 	end

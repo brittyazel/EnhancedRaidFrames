@@ -36,12 +36,12 @@ end
 --- or setting up slash commands.
 function EnhancedRaidFrames:OnInitialize()
 	-- Set up config pane
-	EnhancedRaidFrames:Setup()
+	self:Setup()
 
 	-- Register callbacks for profile switching
-	EnhancedRaidFrames.db.RegisterCallback(EnhancedRaidFrames, "OnProfileChanged", "RefreshConfig")
-	EnhancedRaidFrames.db.RegisterCallback(EnhancedRaidFrames, "OnProfileCopied", "RefreshConfig")
-	EnhancedRaidFrames.db.RegisterCallback(EnhancedRaidFrames, "OnProfileReset", "RefreshConfig")
+	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
+	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
+	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 end
 
 --- **OnEnable** which gets called during the PLAYER_LOGIN event, when most of the data provided by the game is already present.
@@ -49,22 +49,20 @@ end
 --- Register Events, Hook functions, Create Frames, Get information from
 --- the game that wasn't available in OnInitialize
 function EnhancedRaidFrames:OnEnable()
-	local profile = EnhancedRaidFrames.db.profile
-
 	--start a repeating timer to updated every frame every 0.8sec to make sure the the countdown timer stays accurate
-	EnhancedRaidFrames.updateTimer = EnhancedRaidFrames:ScheduleRepeatingTimer("UpdateAllFrames", 0.5) --this is so countdown text is smooth
+	self.updateTimer = self:ScheduleRepeatingTimer("UpdateAllFrames", 0.5) --this is so countdown text is smooth
 
 	--hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. The payload of the original function carries the identity of the frame needing updating
-	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) EnhancedRaidFrames:UpdateIndicators(frame) end)
+	self:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) self:UpdateIndicators(frame) end)
 
 	-- Updates Range Alpha
-	EnhancedRaidFrames:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) EnhancedRaidFrames:UpdateInRange(frame) end)
+	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) self:UpdateInRange(frame) end)
 
 	-- Hook raid icon updates
-	EnhancedRaidFrames:RegisterBucketEvent({"RAID_TARGET_UPDATE", "RAID_ROSTER_UPDATE"}, 1, "UpdateAllFrames")
+	self:RegisterBucketEvent({"RAID_TARGET_UPDATE", "RAID_ROSTER_UPDATE"}, 1, "UpdateAllFrames")
 
 	-- Make sure any icons already existing are shown
-	EnhancedRaidFrames:RefreshConfig()
+	self:RefreshConfig()
 end
 
 --- **OnDisable**, which is only called when your addon is manually being disabled.
@@ -81,32 +79,32 @@ end
 -- Create our database, import saved variables, and set up our configuration panels
 function EnhancedRaidFrames:Setup()
 	-- Set up database defaults
-	local defaults = EnhancedRaidFrames:CreateDefaults()
+	local defaults = self:CreateDefaults()
 
 	-- Create database object
-	EnhancedRaidFrames.db = LibStub("AceDB-3.0"):New("EnhancedRaidFramesDB", defaults) --EnhancedRaidFramesDB is our saved variable table
+	self.db = LibStub("AceDB-3.0"):New("EnhancedRaidFramesDB", defaults) --EnhancedRaidFramesDB is our saved variable table
 
 	-- Profile handling
-	local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(EnhancedRaidFrames.db) --create the config panel for profiles
+	local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) --create the config panel for profiles
 
 	-- Per spec profiles
-	if not EnhancedRaidFrames.isWoWClassic then
+	if not self.isWoWClassic then
 		local LibDualSpec = LibStub('LibDualSpec-1.0')
-		LibDualSpec:EnhanceDatabase(EnhancedRaidFrames.db, "EnhancedRaidFrames") --enhance the database object with per spec profile features
-		LibDualSpec:EnhanceOptions(profiles, EnhancedRaidFrames.db) -- enhance the profiles config panel with per spec profile features
+		LibDualSpec:EnhanceDatabase(self.db, "EnhancedRaidFrames") --enhance the database object with per spec profile features
+		LibDualSpec:EnhanceOptions(profiles, self.db) -- enhance the profiles config panel with per spec profile features
 	end
 
 	-- LibClassicDurations
-	if EnhancedRaidFrames.isWoWClassic then
+	if self.isWoWClassic then
 		local LibClassicDurations = LibStub("LibClassicDurations")
 		LibClassicDurations:Register(addonName) -- tell library it's being used and should start working
-		EnhancedRaidFrames.UnitAuraWrapper = LibClassicDurations.UnitAuraWrapper
+		self.UnitAuraWrapper = LibClassicDurations.UnitAuraWrapper
 	end
 
 	-- Build our config panels
-	local generalOptions = EnhancedRaidFrames:CreateGeneralOptions()
-	local indicatorOptions = EnhancedRaidFrames:CreateIndicatorOptions()
-	local iconOptions = EnhancedRaidFrames:CreateIconOptions()
+	local generalOptions = self:CreateGeneralOptions()
+	local indicatorOptions = self:CreateIndicatorOptions()
+	local iconOptions = self:CreateIconOptions()
 
 	local config = LibStub("AceConfig-3.0")
 	config:RegisterOptionsTable("Enhanced Raid Frames", generalOptions)
@@ -124,8 +122,6 @@ end
 
 -- Update all raid frames
 function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
-	local profile = EnhancedRaidFrames.db.profile
-
 	--don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown() then
 		return
@@ -133,36 +129,35 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 
 	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal",
 			function(frame)
-				EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
-				EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
-				EnhancedRaidFrames:UpdateInRange(frame)
-				EnhancedRaidFrames:UpdateBackgroundAlpha(frame)
+				self:UpdateIndicators(frame, setAppearance)
+				self:UpdateIcons(frame, setAppearance)
+				self:UpdateInRange(frame)
+				self:UpdateBackgroundAlpha(frame)
 			end)
 end
 
 -- Refresh everything that is affected by changes to the configuration
 function EnhancedRaidFrames:RefreshConfig()
-	local profile = EnhancedRaidFrames.db.profile
 
-	EnhancedRaidFrames:UpdateAllFrames(true)
+	self:UpdateAllFrames(true)
 
 	if not InCombatLockdown() then
-		CompactRaidFrameContainer:SetScale(profile.frameScale)
+		CompactRaidFrameContainer:SetScale(self.db.profile.frameScale)
 	end
 
 	-- reset aura strings
-	EnhancedRaidFrames.allAuras = " "
-	EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
+	self.allAuras = " "
+	self.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
 
 	for i = 1, 9 do
 		local j = 1
-		for auraName in string.gmatch(profile["auras"..i], "[^\n]+") do -- Grab each line
+		for auraName in string.gmatch(self.db.profile[i].auras, "[^\n]+") do -- Grab each line
 			--sanitize strings
 			auraName = auraName:lower() --force lowercase
 			auraName = auraName:gsub("^%s*(.-)%s*$", "%1") --strip any leading or trailing whitespace
 			auraName = auraName:gsub("\"", "") --strip any quotation marks if there are any
-			EnhancedRaidFrames.allAuras = EnhancedRaidFrames.allAuras.." "..auraName.." " -- Add each watched aura to a string so we later can quickly determine if we need to look for one
-			EnhancedRaidFrames.auraStrings[i][j] = auraName
+			self.allAuras = EnhancedRaidFrames.allAuras.." "..auraName.." " -- Add each watched aura to a string so we later can quickly determine if we need to look for one
+			self.auraStrings[i][j] = auraName
 			j = j + 1
 		end
 	end

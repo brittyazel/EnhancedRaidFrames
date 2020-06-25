@@ -30,7 +30,7 @@ function EnhancedRaidFrames:CreateDefaults()
 	defaults.profile = {
 		showBuffs = true,
 		showDebuffs = true,
-		showDispelDebuffs = true,
+		showDispellableDebuffs = true,
 
 		indicatorFont = "Arial Narrow",
 		frameScale = 1,
@@ -67,8 +67,8 @@ function EnhancedRaidFrames:CreateDefaults()
 			indicatorHorizontalOffset = 0,
 			indicatorVerticalOffset = 0,
 
-			showText = false,
-			showStack = false,
+			showCountdownText = false,
+			showStackSize = false,
 			textColor = {r = 1, g = 1, b = 1, a = 1},
 			colorTextByStack = false,
 			colorTextByTime = false,
