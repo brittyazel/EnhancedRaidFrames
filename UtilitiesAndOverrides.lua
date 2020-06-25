@@ -28,7 +28,7 @@ function EnhancedRaidFrames:UpdateNotifier()
 		self:Print("Welcome to Enhanced Raid Frames 3.0!\n"..
 				"Enhanced Raid Frames has recently undergone a major overhaul and full rewrite. As part of this transition, your profiles have necessarily been reset. We apologize for any inconvenience this may cause.\n"..
 				"\n"..
-				"Please note, your profiles from the 2.0 series are still in tact, and you may downgrade for the time being if you so choose.\n"..
+				"Please note, your profiles from the 2.0 series are still intact, and you may downgrade for the time being if you so choose.\n"..
 				"\n"..
 				"In better news, Enhanced Raid Frames has gained TONS of new features, updates, cleanups, and performance improvements! Check them out!\n"..
 				"Also, we are always looking for help in the form of ideas, code, or donations. If you're interested in lending a hand, please reach out on Github!\n"..
