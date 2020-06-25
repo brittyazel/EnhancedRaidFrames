@@ -23,6 +23,20 @@ local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
+function EnhancedRaidFrames:UpdateNotifier()
+	if not self.db.profile.DB_VERSION or self.db.profile.DB_VERSION < self.DATABASE_VERSION then
+		self:Print("Welcome to Enhanced Raid Frames 3.0!\n"..
+				"Enhanced Raid Frames has recently undergone a major overhaul and full rewrite. As part of this transition, your profiles have necessarily been reset. We apologize for any inconvenience this may cause.\n"..
+				"\n"..
+				"In better news, Enhanced Raid Frames has gained TONS of new features, updates, and performance improvements! Check them out!\n"..
+				"\n"..
+				"Please note, your profiles from the 2.0 series are still in tact, and you may downgrade for the time being if you so choose."
+		)
+
+		self.db.profile.DB_VERSION = self.DATABASE_VERSION
+	end
+end
+
 -- Hook for the CompactUnitFrame_UpdateInRange function
 function EnhancedRaidFrames:UpdateInRange(frame)
 	if not frame.unit then

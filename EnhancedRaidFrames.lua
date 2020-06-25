@@ -18,7 +18,7 @@
 --Copyright for Enhanced Raid Frames is held by Britt Yazel (aka Soyier), 2017-2020.
 
 local addonName, addonTable = ... --make use of the default addon namespace
-addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0")
+addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0", "AceConsole-3.0")
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
 EnhancedRaidFrames.allAuras = " "
@@ -27,6 +27,8 @@ EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix
 if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then --boolean check to set a flag if the current session is WoW Classic. Retail == 1, Classic == 2
 	EnhancedRaidFrames.isWoWClassic = true
 end
+
+EnhancedRaidFrames.DATABASE_VERSION = 2
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
@@ -63,6 +65,9 @@ function EnhancedRaidFrames:OnEnable()
 
 	-- Make sure any icons already existing are shown
 	self:RefreshConfig()
+
+	-- notify of any new major updates, if necessary
+	self:UpdateNotifier()
 end
 
 --- **OnDisable**, which is only called when your addon is manually being disabled.
