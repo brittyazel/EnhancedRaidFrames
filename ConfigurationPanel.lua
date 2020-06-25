@@ -32,13 +32,30 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 	local THIRD_WIDTH = 1.15
 	
 	local generalOptions = {
-		type = 'group',
-		childGroups = 'tree',
+		type = "group",
+		childGroups = "tree",
 		args  = {
 			instructions = {
 				type = "description",
 				name = "Below you will find general configuration options. Please expand the 'Enhanced Raid Frames' menu item in the left-hand column to configure aura indicators, raid icons, and more.",
 				order = 2,
+			},
+
+			-------------------------------------------------
+
+			topSpacer = {
+				type = "header",
+				name = "",
+				order = 3,
+			},
+
+			stockOptionsButton = {
+				type = 'execute',
+				name = "Open the Blizzard Raid Profiles Menu",
+				desc = "Launch the built-in raid profiles interface configuration menu",
+				func = function() InterfaceOptionsFrame_OpenToCategory("Raid Profiles") end,
+				width = THIRD_WIDTH * 1.5,
+				order = 4,
 			},
 
 			-------------------------------------------------
@@ -52,6 +69,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "toggle",
 				name = "Stock Buff Icons",
 				desc = "Show the standard raid frame buff icons",
+				descStyle = "inline",
 				get = function() return self.db.profile.showBuffs end,
 				set = function(_, value)
 					self.db.profile.showBuffs = value
@@ -64,6 +82,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "toggle",
 				name = "Stock Debuff Icons",
 				desc = "Show the standard raid frame debuff icons",
+				descStyle = "inline",
 				get = function() return self.db.profile.showDebuffs end,
 				set = function(_, value)
 					self.db.profile.showDebuffs = value
@@ -75,7 +94,8 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			showDispellableDebuffs = {
 				type = "toggle",
 				name = "Stock Dispellable Icons",
-				desc = "Show the standard raid frame dispellable debuff icons",
+				desc = "Show the standard raid frame dispellable icons",
+				descStyle = "inline",
 				get = function() return self.db.profile.showDispellableDebuffs end,
 				set = function(_, value)
 					self.db.profile.showDispellableDebuffs = value
@@ -83,22 +103,6 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				end,
 				width = THIRD_WIDTH,
 				order = 13,
-			},
-
-			-------------------------------------------------
-
-			generalHeader = {
-				type = "header",
-				name = "General Options",
-				order = 20,
-			},
-			stockOptionsButton = {
-				type = 'execute',
-				name = "Open the Blizzard Raid Profiles Menu",
-				desc = "Launch the built-in raid profiles interface configuration menu",
-				func = function() InterfaceOptionsFrame_OpenToCategory("Raid Profiles") end,
-				width = THIRD_WIDTH * 1.5,
-				order = 21,
 			},
 
 			-------------------------------------------------
@@ -112,7 +116,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = 'select',
 				dialogControl = "LSM30_Font",
 				name = "Indicator Font",
-				desc = "Adjust the font used for the indicators",
+				desc = "The the font used for the indicators",
 				values = AceGUIWidgetLSMlists.font,
 				get = function() return self.db.profile.indicatorFont end,
 				set = function(_, value)
@@ -124,6 +128,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 			frameScale = {
 				name = "Raidframe Scale",
+				desc = "The the scale of the raidframe from 50% to 200% of the normal size",
 				type = "range",
 				min = 0.5,
 				max = 2,
@@ -138,6 +143,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 			backgroundAlpha = {
 				name = "Background Opacity",
+				desc = "The opacity percentage of the raid frame background",
 				type = "range",
 				min = 0,
 				max = 1,
@@ -155,7 +161,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 
 			outOfRangeOptions = {
 				type = "header",
-				name = "Out-of-Range Indicator Options",
+				name = "Out-of-Range Options",
 				order = 40,
 			},
 			customRangeCheck = {
@@ -185,7 +191,8 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				order = 42,
 			},
 			rangeAlpha = {
-				name = "Out-of-Range Fade",
+				name = "Out-of-Range Opacity",
+				desc = "The opacity percentage of the raid frame when out-of-range",
 				type = "range",
 				min = 0,
 				max = 1,
@@ -208,12 +215,13 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 	local THIRD_WIDTH = 1.1
 	
 	local indicatorOptions = {
-		type = 'group',
-		childGroups = 'select',
+		type = "group",
+		childGroups = "select",
+		name = "Indicator Options",
 		args  = {
 			instructions = {
 				type = "description",
-				name = "Please select an indicator position from the menu below:",
+				name = "Please select an indicator position from the dropdown menu below:",
 				order = 1,
 			},
 		}
@@ -222,10 +230,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 	--- Add options for each indicator
 	for i,v in ipairs(POSITIONS) do
 		indicatorOptions.args[v] = {}
-		indicatorOptions.args[v].type = 'group'
+		indicatorOptions.args[v].type = "group"
 		indicatorOptions.args[v].name = i..": "..v
 		indicatorOptions.args[v].desc = "The indicator positioned at the " .. v:lower() .. " of the raid frame"
-		indicatorOptions.args[v].order = i
+		indicatorOptions.args[v].order = i+2
 		indicatorOptions.args[v].args = {
 
 			--------------------------------------------
@@ -274,7 +282,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			meOnly = {
 				type = "toggle",
 				name = "Show On Me Only",
-				desc = "Only show this indicator on myself",
+				desc = "Only only show this indicator on myself",
 				get = function() return self.db.profile[i].meOnly end,
 				set = function(_, value)
 					self.db.profile[i].meOnly = value
@@ -286,7 +294,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			missingOnly = {
 				type = "toggle",
 				name = "Show Only if Missing",
-				desc = "Show only if the specified buff or debuff is missing on the target (first item in the list)",
+				desc = "Show only when the buff or debuff is missing (reverse behavior from normal)",
 				get = function() return self.db.profile[i].missingOnly end,
 				set = function(_, value)
 					self.db.profile[i].missingOnly = value
@@ -298,7 +306,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			showTooltip = {
 				type = "toggle",
 				name = "Show Tooltip",
-				desc = "Show tooltip on mouseover",
+				desc = "Show the tooltip on mouseover",
 				get = function() return self.db.profile[i].showTooltip end,
 				set = function(_, value)
 					self.db.profile[i].showTooltip = value
@@ -310,7 +318,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			tooltipLocation = {
 				type = "select",
 				name = "Tooltip Location",
-				desc = "The place where the tooltip should appear",
+				desc = "The specified place where the tooltip should appear",
 				style = "dropdown",
 				values = {["ANCHOR_CURSOR"] = "Attached to Cursor", ["ANCHOR_PRESERVE"] = "Blizzard Default"},
 				sorting = {[1] = "ANCHOR_CURSOR", [2] = "ANCHOR_PRESERVE"},
@@ -334,7 +342,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			showIcon = {
 				type = "toggle",
 				name = "Show Icon",
-				desc = "Show an icon if the buff or debuff is currently on the unit (if unchecked, a solid color will be used instead)",
+				desc = "Show an icon if the buff or debuff is currently on the unit (if unchecked, a solid color will be used)",
 				get = function() return self.db.profile[i].showIcon end,
 				set = function(_, value)
 					self.db.profile[i].showIcon = value
@@ -440,7 +448,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			showCountdownText = {
 				type = "toggle",
 				name = "Show Countdown Text",
-				desc = "Show countdown text specifying the time left of the buff or debuff",
+				desc = "Show countdown text specifying the time left on the buff or debuff",
 				get = function() return self.db.profile[i].showCountdownText end,
 				set = function(_, value)
 					self.db.profile[i].showCountdownText = value
@@ -452,7 +460,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			showStackSize = {
 				type = "toggle",
 				name = "Show Stack Size",
-				desc = "Show stack size for buffs and debuffs that have stacks",
+				desc = "Show the stack size for buffs and debuffs that have stacks",
 				get = function() return self.db.profile[i].showStackSize end,
 				set = function(_, value)
 					self.db.profile[i].showStackSize = value
@@ -539,7 +547,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			showCountdownSwipe = {
 				type = "toggle",
 				name = "Show Countdown Swipe",
-				desc = "Show the clockwise swipe animation specifying the time left of the buff or debuff",
+				desc = "Show the clockwise swipe animation specifying the time left on the buff or debuff",
 				get = function() return self.db.profile[i].showCountdownSwipe end,
 				set = function(_, value)
 					self.db.profile[i].showCountdownSwipe = value
@@ -586,13 +594,18 @@ function EnhancedRaidFrames:CreateIconOptions()
 	local THIRD_WIDTH = 1.15
 	
 	local iconOptions = {
-		type = 'group',
-		childGroups = 'tree',
+		type = "group",
+		childGroups = "tree",
 		args  = {
 			instructions = {
 				type = "description",
 				name = "Configure how the raid marker icon should appear on the raid frames:",
 				order = 1,
+			},
+			generalHeader = {
+				type = "header",
+				name = "General Options",
+				order = 2,
 			},
 			showRaidIcons = {
 				type = "toggle",
