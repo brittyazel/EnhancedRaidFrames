@@ -28,20 +28,21 @@ function EnhancedRaidFrames:CreateDefaults()
 	local defaults = {}
 
 	defaults.profile = {
-		indicatorFont = "Arial Narrow",
-
 		showBuffs = true,
 		showDebuffs = true,
 		showDispelDebuffs = true,
 
+		indicatorFont = "Arial Narrow",
 		frameScale = 1,
-		rangeAlpha = 0.55,
 		backgroundAlpha = 1,
+
+		customRangeCheck = false,
 		customRange = 30,
+		rangeAlpha = 0.55,
 
 		showRaidIcons = true,
-		iconSize = 20,
 		iconPosition = 5,
+		iconSize = 20,
 		iconVerticalOffset = 0,
 		iconHorizontalOffset = 0,
 		iconAlpha = 1,
@@ -50,9 +51,9 @@ function EnhancedRaidFrames:CreateDefaults()
 	for i = 1, 9 do
 		defaults.profile["auras"..i] = ""
 
-		defaults.profile["mine"..i] = false
-		defaults.profile["me"..i] = false
-		defaults.profile["missing"..i] = false
+		defaults.profile["mineOnly"..i] = false
+		defaults.profile["meOnly"..i] = false
+		defaults.profile["missingOnly"..i] = false
 		defaults.profile["showTooltip"..i] = true
 		defaults.profile["tooltipLocation"..i] = "ANCHOR_CURSOR"
 

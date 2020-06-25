@@ -214,7 +214,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	indicatorFrame.auraType = nil
 
 	-- if we only are to show the indicator on me, then don't bother if I'm not the unit
-	if profile["me"..indicatorFrame.position] then
+	if profile["meOnly"..indicatorFrame.position] then
 		local unitName, unitRealm = UnitName(unit)
 		if unitName ~= UnitName("player") or unitRealm ~= nil then
 			return
@@ -243,7 +243,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		-- if we find the aura, we can stop querying down the list
 		if foundAura then
 			-- we want to stop only when castBy == "player" if we are tracking "mine only"
-			if not profile["mine"..indicatorFrame.position] or (profile["mine"..indicatorFrame.position] and castBy == "player") then
+			if not profile["mineOnly"..indicatorFrame.position] or (profile["mineOnly"..indicatorFrame.position] and castBy == "player") then
 				break
 			end
 		end
@@ -254,8 +254,8 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	------------------------------------------------------
 
 	-- if we find the spell and we don't only want to show when it is missing
-	if foundAura and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) and not profile["missing"..indicatorFrame.position] and
-			(not profile["mine"..indicatorFrame.position] or (profile["mine"..indicatorFrame.position] and castBy == "player")) then
+	if foundAura and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) and not profile["missingOnly"..indicatorFrame.position] and
+			(not profile["mineOnly"..indicatorFrame.position] or (profile["mineOnly"..indicatorFrame.position] and castBy == "player")) then
 		-- calculate remainingTime and round down, this is how the game seems to do it
 		local remainingTime = floor(expirationTime - GetTime())
 
@@ -387,7 +387,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 
 		indicatorFrame:Show() --show the frame
 
-	elseif not foundAura and profile["missing"..indicatorFrame.position] then --deal with "show only if missing"
+	elseif not foundAura and profile["missingOnly"..indicatorFrame.position] then --deal with "show only if missing"
 		local auraName = EnhancedRaidFrames.auraStrings[indicatorFrame.position][1] --show the icon for the first auraString position
 
 		--check our iconCache for the auraName. Note the icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons

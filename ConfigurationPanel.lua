@@ -34,11 +34,6 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 	local generalOptions = {
 		type = 'group',
 		childGroups = 'tree',
-		get = function(item) return profile[item[#item]] end,
-		set = function(item, value)
-			profile[item[#item]] = value
-			EnhancedRaidFrames:RefreshConfig()
-		end,
 		args  = {
 			instructions = {
 				type = "description",
@@ -57,6 +52,11 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "toggle",
 				name = "Stock Buff Icons",
 				desc = "Show the standard raid frame buff icons",
+				get = function() return profile["showBuffs"] end,
+				set = function(_, value)
+					profile["showBuffs"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
 				width = THIRD_WIDTH,
 				order = 11,
 			},
@@ -64,6 +64,11 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "toggle",
 				name = "Stock Debuff Icons",
 				desc = "Show the standard raid frame debuff icons",
+				get = function() return profile["showDebuffs"] end,
+				set = function(_, value)
+					profile["showDebuffs"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
 				width = THIRD_WIDTH,
 				order = 12,
 			},
@@ -71,6 +76,11 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "toggle",
 				name = "Stock Dispellable Icons",
 				desc = "Show the standard raid frame dispellable debuff icons",
+				get = function() return profile["showDispelDebuffs"] end,
+				set = function(_, value)
+					profile["showDispelDebuffs"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
 				width = THIRD_WIDTH,
 				order = 13,
 			},
@@ -104,6 +114,11 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				name = "Indicator Font",
 				desc = "Adjust the font used for the indicators",
 				values = AceGUIWidgetLSMlists.font,
+				get = function() return profile["indicatorFont"] end,
+				set = function(_, value)
+					profile["indicatorFont"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
 				width = THIRD_WIDTH,
 				order = 31,
 			},
@@ -113,6 +128,11 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				min = 0.5,
 				max = 2,
 				step = 0.1,
+				get = function() return profile["frameScale"] end,
+				set = function(_, value)
+					profile["frameScale"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
 				width = THIRD_WIDTH,
 				order = 33,
 			},
@@ -121,8 +141,13 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "range",
 				min = 0,
 				max = 1,
-				width = THIRD_WIDTH,
 				step = 0.05,
+				get = function() return profile["backgroundAlpha"] end,
+				set = function(_, value)
+					profile["backgroundAlpha"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
 				order = 34,
 			},
 
@@ -137,6 +162,11 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				name = "Override Default Distance",
 				type = "toggle",
 				desc = "Overrides the default out-of-range indicator distance (default 40 yards).",
+				get = function() return profile["customRangeCheck"] end,
+				set = function(_, value)
+					profile["customRangeCheck"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
 				width = THIRD_WIDTH,
 				order = 41,
 			},
@@ -144,8 +174,13 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				name = "Select a Custom Distance",
 				type = "select",
 				desc = "Changes the default 40 yard out-of-range distance to the specified distance.",
-				disabled = function() return not profile.customRangeCheck end,
 				values = { [5] = "Melee", [10] = "10 yards", [20] = "20 yards", [30] = "30 yards", [35] = "35 yards"},
+				get = function() return profile["customRange"] end,
+				set = function(_, value)
+					profile["customRange"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				disabled = function() return not profile.customRangeCheck end,
 				width = THIRD_WIDTH,
 				order = 42,
 			},
@@ -155,6 +190,11 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				min = 0,
 				max = 1,
 				step = 0.05,
+				get = function() return profile["rangeAlpha"] end,
+				set = function(_, value)
+					profile["rangeAlpha"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
 				width = THIRD_WIDTH,
 				order = 43,
 			},
@@ -171,11 +211,6 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 	local indicatorOptions = {
 		type = 'group',
 		childGroups = 'select',
-		get = function(item) return profile[item[#item]] end,
-		set = function(item, value)
-			profile[item[#item]] = value
-			EnhancedRaidFrames:RefreshConfig()
-		end,
 		args  = {
 			instructions = {
 				type = "description",
@@ -192,254 +227,355 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args[v].name = i..": "..v
 		indicatorOptions.args[v].desc = "The indicator positioned at the " .. v:lower() .. " of the raid frame"
 		indicatorOptions.args[v].order = i
-		indicatorOptions.args[v].args = {}
+		indicatorOptions.args[v].args = {
 
-		--------------------------------------------
+			--------------------------------------------
+			auras = {
+				type = "input",
+				name = "Buff and/or Debuff Watch List:",
+				desc = "The buffs and/or debuffs to show for the indicator in this position.\n"..
+						"\n"..
+						"Write the name or spell ID of each buff/debuff on a separate line. i.e: Rejuvenation, Regrowth, Wild Growth, 155777, etc.\n"..
+						"\n"..
+						"You can use Magic, Poison, Curse, or Disease to show any debuff of that category.\n"..
+						"\n"..
+						"You can use PvP to show if a unit is PvP flagged.\n"..
+						"\n"..
+						"You can use ToT to show if a unit is the target of your target.\n",
+				multiline = true,
+				get = function() return profile["auras"..i] end,
+				set = function(_, value)
+					profile["auras"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH*2,
+				order = 1,
+			},
 
-		indicatorOptions.args[v].args["auras"..i] = {
-			type = "input",
-			name = "Buff and/or Debuff Watch List:",
-			desc = "The buffs and/or debuffs to show for the indicator in this position.\n"..
-			"\n"..
-			"Write the name or spell ID of each buff/debuff on a separate line. i.e: Rejuvenation, Regrowth, Wild Growth, 155777, etc.\n"..
-			"\n"..
-			"You can use Magic, Poison, Curse, or Disease to show any debuff of that category.\n"..
-			"\n"..
-			"You can use PvP to show if a unit is PvP flagged.\n"..
-			"\n"..
-			"You can use ToT to show if a unit is the target of your target.\n",
-			multiline = true,
-			order = 1,
-			width = THIRD_WIDTH*2,
-		}
+			--------------------------------------------
 
-		--------------------------------------------
+			visibilityHeader = {
+				type = "header",
+				name = "Visibility and Behavior",
+				order = 10,
+			},
+			mineOnly = {
+				type = "toggle",
+				name = "Mine Only",
+				desc = "Only show buffs and debuffs cast by me",
+				get = function() return profile["mineOnly"..i] end,
+				set = function(_, value)
+					profile["mineOnly"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 11,
+			},
+			meOnly = {
+				type = "toggle",
+				name = "Show On Me Only",
+				desc = "Only show this indicator on myself",
+				get = function() return profile["meOnly"..i] end,
+				set = function(_, value)
+					profile["meOnly"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 12,
+			},
+			missingOnly = {
+				type = "toggle",
+				name = "Show Only if Missing",
+				desc = "Show only if the specified buff or debuff is missing on the target (first item in the list)",
+				get = function() return profile["missingOnly"..i] end,
+				set = function(_, value)
+					profile["missingOnly"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 13,
+			},
+			showTooltip = {
+				type = "toggle",
+				name = "Show Tooltip",
+				desc = "Show tooltip on mouseover",
+				get = function() return profile["showTooltip"..i] end,
+				set = function(_, value)
+					profile["showTooltip"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 14,
+			},
+			tooltipLocation = {
+				type = "select",
+				name = "Tooltip Location",
+				desc = "The place where the tooltip should appear",
+				style = "dropdown",
+				values = {["ANCHOR_CURSOR"]="Attached to Cursor", ["ANCHOR_PRESERVE"]="Blizzard Default"},
+				sorting = {[1] = "ANCHOR_CURSOR", [2] = "ANCHOR_PRESERVE"},
+				get = function() return profile["tooltipLocation"..i] end,
+				set = function(_, value)
+					profile["tooltipLocation"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 15,
+			},
 
-		indicatorOptions.args[v].args.visibilityHeader = {
-			type = "header",
-			name = "Visibility and Behavior",
-			order = 10,
-		}
-		indicatorOptions.args[v].args["mine"..i] = {
-			type = "toggle",
-			name = "Mine Only",
-			desc = "Only show buffs and debuffs cast by me",
-			width = THIRD_WIDTH,
-			order = 11,
-		}
-		indicatorOptions.args[v].args["me"..i] = {
-			type = "toggle",
-			name = "Show On Me Only",
-			desc = "Only show this indicator on myself",
-			width = THIRD_WIDTH,
-			order = 12,
-		}
-		indicatorOptions.args[v].args["missing"..i] = {
-			type = "toggle",
-			name = "Show Only if Missing",
-			desc = "Show only if the specified buff or debuff is missing on the target (first item in the list)",
-			width = THIRD_WIDTH,
-			order = 13,
-		}
-		indicatorOptions.args[v].args["showTooltip"..i] = {
-			type = "toggle",
-			name = "Show Tooltip",
-			desc = "Show tooltip on mouseover",
-			width = THIRD_WIDTH,
-			order = 14,
-		}
-		indicatorOptions.args[v].args["tooltipLocation"..i] = {
-			type = "select",
-			name = "Tooltip Location",
-			desc = "The place where the tooltip should appear",
-			style = "dropdown",
-			values = {["ANCHOR_CURSOR"]="Attached to Cursor", ["ANCHOR_PRESERVE"]="Blizzard Default"},
-			sorting = {[1] = "ANCHOR_CURSOR", [2] = "ANCHOR_PRESERVE"},
-			width = THIRD_WIDTH,
-			order = 15,
-		}
 
+			--------------------------------------------
 
-		--------------------------------------------
+			iconHeader = {
+				type = "header",
+				name = "Icon and Position",
+				order = 30,
+			},
+			showIcon = {
+				type = "toggle",
+				name = "Show Icon",
+				desc = "Show an icon if the buff or debuff is currently on the unit (if unchecked, a solid color will be used instead)",
+				get = function() return profile["showIcon"..i] end,
+				set = function(_, value)
+					profile["showIcon"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 31,
+			},
+			indicatorColor = {
+				type = "color",
+				name = "Indicator Color",
+				desc = "The a solid color for the indicator frame (disabled if showing icon)",
+				get = function()
+					return profile["indicatorColor"..i].r, profile["indicatorColor"..i].g, profile["indicatorColor"..i].b, profile["indicatorColor"..i].a
+				end,
+				set = function(_, r, g, b, a)
+					profile["indicatorColor"..i].r, profile["indicatorColor"..i].g, profile["indicatorColor"..i].b, profile["indicatorColor"..i].a = r, g, b, a
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				disabled = function () return profile["showIcon"..i] end,
+				width = THIRD_WIDTH,
+				order = 32,
+			},
+			colorIndicatorByTime = {
+				type = "toggle",
+				name = "Color By Remaining Time",
+				desc = "Color the indicator based on remaining time (>5 seconds: normal, 2-5 seconds: |cFFFFF569yellow|r, <2 seconds: |cFFC41F3Bred|r)",
+				get = function() return profile["colorIndicatorByTime"..i] end,
+				set = function(_, value)
+					profile["colorIndicatorByTime"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				disabled = function () return profile["showIcon"..i] end,
+				width = THIRD_WIDTH,
+				order = 33,
+			},
+			colorIndicatorByDebuff = {
+				type = "toggle",
+				name = "Color By Debuff Type",
+				desc = "Color the indicator depending on the debuff type, will override the normal coloring (poison = |cFFA9D271green|r, magic = |cFF0070DEblue|r, curse = |cFFA330C9purple|r, and disease = |cFFC79C6Ebrown|r)",
+				get = function() return profile["colorIndicatorByDebuff"..i] end,
+				set = function(_, value)
+					profile["colorIndicatorByDebuff"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				disabled = function () return profile["showIcon"..i] end,
+				width = THIRD_WIDTH,
+				order = 34,
+			},
+			indicatorVerticalOffset = {
+				type = "range",
+				name = "Vertical Offset",
+				desc = "Vertical offset percentage of the indicator relative to its starting position",
+				min = -1,
+				max = 1,
+				step = .01,
+				get = function() return profile["indicatorVerticalOffset"..i] end,
+				set = function(_, value)
+					profile["indicatorVerticalOffset"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 35,
+			},
+			indicatorHorizontalOffset = {
+				type = "range",
+				name = "Horizontal Offset",
+				desc = "Horizontal offset percentage of the indicator relative to its starting position",
+				min = -1,
+				max = 1,
+				step = .01,
+				get = function() return profile["indicatorHorizontalOffset"..i] end,
+				set = function(_, value)
+					profile["indicatorHorizontalOffset"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 36,
+			},
+			indicatorSize = {
+				type = "range",
+				name = "Indicator Size",
+				desc = "The size of the indicator in pixels",
+				min = 1,
+				max = 30,
+				step = 1,
+				get = function() return profile["indicatorSize"..i] end,
+				set = function(_, value)
+					profile["indicatorSize"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 37,
+			},
 
-		indicatorOptions.args[v].args.iconHeader = {
-			type = "header",
-			name = "Icon and Position",
-			order = 30,
-		}
-		indicatorOptions.args[v].args["showIcon"..i] = {
-			type = "toggle",
-			name = "Show Icon",
-			desc = "Show an icon if the buff or debuff is currently on the unit (if unchecked, a solid color will be used instead)",
-			width = THIRD_WIDTH,
-			order = 31,
-		}
-		indicatorOptions.args[v].args["indicatorColor"..i] = {
-			type = "color",
-			name = "Indicator Color",
-			desc = "The a solid color for the indicator frame (disabled if showing icon)",
-			get = function(item)
-				local t = profile[item[#item]]
-				return t.r, t.g, t.b, t.a
-			end,
-			set = function(item, r, g, b, a)
-				local t = profile[item[#item]]
-				t.r, t.g, t.b, t.a = r, g, b, a
-				EnhancedRaidFrames:RefreshConfig()
-			end,
-			disabled = function () return profile["showIcon"..i] end,
-			width = THIRD_WIDTH,
-			order = 32,
-		}
-		indicatorOptions.args[v].args["colorIndicatorByTime"..i] = {
-			type = "toggle",
-			name = "Color By Remaining Time",
-			desc = "Color the indicator based on remaining time (>5 seconds: normal, 2-5 seconds: |cFFFFF569yellow|r, <2 seconds: |cFFC41F3Bred|r)",
-			disabled = function () return profile["showIcon"..i] end,
-			width = THIRD_WIDTH,
-			order = 33,
-		}
-		indicatorOptions.args[v].args["colorIndicatorByDebuff"..i] = {
-			type = "toggle",
-			name = "Color By Debuff Type",
-			desc = "Color the indicator depending on the debuff type, will override the normal coloring (poison = |cFFA9D271green|r, magic = |cFF0070DEblue|r, curse = |cFFA330C9purple|r, and disease = |cFFC79C6Ebrown|r)",
-			disabled = function () return profile["showIcon"..i] end,
-			width = THIRD_WIDTH,
-			order = 34,
-		}
-		indicatorOptions.args[v].args["indicatorVerticalOffset"..i] = {
-			type = "range",
-			name = "Vertical Offset",
-			desc = "Vertical offset percentage of the indicator relative to its starting position",
-			min = -1,
-			max = 1,
-			step = .01,
-			width = THIRD_WIDTH,
-			order = 35,
-		}
-		indicatorOptions.args[v].args["indicatorHorizontalOffset"..i] = {
-			type = "range",
-			name = "Horizontal Offset",
-			desc = "Horizontal offset percentage of the indicator relative to its starting position",
-			min = -1,
-			max = 1,
-			step = .01,
-			width = THIRD_WIDTH,
-			order = 36,
-		}
-		indicatorOptions.args[v].args["indicatorSize"..i] = {
-			type = "range",
-			name = "Indicator Size",
-			desc = "The size of the indicator in pixels",
-			min = 1,
-			max = 30,
-			step = 1,
-			width = THIRD_WIDTH,
-			order = 37,
-		}
+			--------------------------------------------
 
-		--------------------------------------------
+			textHeader = {
+				type = "header",
+				name = "Text and Color",
+				order = 50,
+			},
+			showText = {
+				type = "toggle",
+				name = "Show Countdown Text",
+				desc = "Show countdown text specifying the time left of the buff or debuff",
+				get = function() return profile["showText"..i] end,
+				set = function(_, value)
+					profile["showText"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 51,
+			},
+			showStack = {
+				type = "toggle",
+				name = "Show Stack Size",
+				desc = "Show stack size for buffs and debuffs that have stacks",
+				get = function() return profile["showStack"..i] end,
+				set = function(_, value)
+					profile["showStack"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 52,
+			},
+			textColor = {
+				type = "color",
+				name = "Text Color",
+				desc = "The text color for an indicator (unless augmented by other text color options)",
+				get = function()
+					return profile["textColor"..i].r, profile["textColor"..i].g, profile["textColor"..i].b, profile["textColor"..i].a
+				end,
+				set = function(_, r, g, b, a)
+					profile["textColor"..i].r, profile["textColor"..i].g, profile["textColor"..i].b, profile["textColor"..i].a = r, g, b, a
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 53,
+			},
+			colorTextByStack = {
+				type = "toggle",
+				name = "Color By Stack Size",
+				desc = "Color the text depending on the stack size, will override the normal text coloring (3+: |cFFA9D271green|r, 2: |cFFFFF569yellow|r, 1: |cFFC41F3Bred|r)",
+				get = function() return profile["colorTextByStack"..i] end,
+				set = function(_, value)
+					profile["colorTextByStack"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				disabled = function () return profile["colorTextByDebuff"..i] end,
+				width = THIRD_WIDTH,
+				order = 54,
+			},
+			colorTextByTime = {
+				type = "toggle",
+				name = "Color by Remaining Time",
+				desc = "Color the text based on remaining time (>5 seconds: normal, 2-5 seconds: |cFFFFF569yellow|r, <2 seconds: |cFFC41F3Bred|r)",
+				get = function() return profile["colorTextByTime"..i] end,
+				set = function(_, value)
+					profile["colorTextByTime"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 55,
+			},
+			colorTextByDebuff = {
+				type = "toggle",
+				name = "Color By Debuff Type",
+				desc = "Color the text depending on the debuff type, will override the normal text coloring (poison = |cFFA9D271green|r, magic = |cFF0070DEblue|r, curse = |cFFA330C9purple|r, and disease = |cFFC79C6Ebrown|r)",
+				get = function() return profile["colorTextByDebuff"..i] end,
+				set = function(_, value)
+					profile["colorTextByDebuff"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				disabled = function () return profile["colorTextByStack"..i] end,
+				width = THIRD_WIDTH,
+				order = 56,
+			},
+			textSize = {
+				type = "range",
+				name = "Text Size",
+				desc = "The size of the indicator (in pixels)",
+				min = 1,
+				max = 30,
+				step = 1,
+				get = function() return profile["textSize"..i] end,
+				set = function(_, value)
+					profile["textSize"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 57,
+			},
 
-		indicatorOptions.args[v].args.textHeader = {
-			type = "header",
-			name = "Text and Color",
-			order = 50,
-		}
-		indicatorOptions.args[v].args["showText"..i] = {
-			type = "toggle",
-			name = "Show Countdown Text",
-			desc = "Show countdown text specifying the time left of the buff or debuff",
-			width = THIRD_WIDTH,
-			order = 51,
-		}
-		indicatorOptions.args[v].args["showStack"..i] = {
-			type = "toggle",
-			name = "Show Stack Size",
-			desc = "Show stack size for buffs and debuffs that have stacks",
-			width = THIRD_WIDTH,
-			order = 52,
-		}
-		indicatorOptions.args[v].args["textColor"..i] = {
-			type = "color",
-			name = "Text Color",
-			desc = "The text color for an indicator (unless augmented by other text color options)",
-			get = function(item)
-				local t = profile[item[#item]]
-				return t.r, t.g, t.b, t.a
-			end,
-			set = function(item, r, g, b, a)
-				local t = profile[item[#item]]
-				t.r, t.g, t.b, t.a = r, g, b, a
-				EnhancedRaidFrames:RefreshConfig()
-			end,
-			width = THIRD_WIDTH,
-			order = 53,
-		}
-		indicatorOptions.args[v].args["colorTextByStack"..i] = {
-			type = "toggle",
-			name = "Color By Stack Size",
-			desc = "Color the text depending on the stack size, will override the normal text coloring (3+: |cFFA9D271green|r, 2: |cFFFFF569yellow|r, 1: |cFFC41F3Bred|r)",
-			disabled = function () return profile["colorTextByDebuff"..i] end,
-			width = THIRD_WIDTH,
-			order = 54,
-		}
-		indicatorOptions.args[v].args["colorTextByTime"..i] = {
-			type = "toggle",
-			name = "Color by Remaining Time",
-			desc = "Color the text based on remaining time (>5 seconds: normal, 2-5 seconds: |cFFFFF569yellow|r, <2 seconds: |cFFC41F3Bred|r)",
-			width = THIRD_WIDTH,
-			order = 55,
-		}
-		indicatorOptions.args[v].args["colorTextByDebuff"..i] = {
-			type = "toggle",
-			name = "Color By Debuff Type",
-			desc = "Color the text depending on the debuff type, will override the normal text coloring (poison = |cFFA9D271green|r, magic = |cFF0070DEblue|r, curse = |cFFA330C9purple|r, and disease = |cFFC79C6Ebrown|r)",
-			disabled = function () return profile["colorTextByStack"..i] end,
-			width = THIRD_WIDTH,
-			order = 56,
-		}
-		indicatorOptions.args[v].args["textSize"..i] = {
-			type = "range",
-			name = "Text Size",
-			desc = "The size of the indicator (in pixels)",
-			min = 1,
-			max = 30,
-			step = 1,
-			width = THIRD_WIDTH,
-			order = 57,
-		}
+			--------------------------------------------
 
-		--------------------------------------------
-
-		indicatorOptions.args[v].args.animationHeader = {
-			type = "header",
-			name = "Animations and Effects",
-			order = 70,
-		}
-		indicatorOptions.args[v].args["showCountdownSwipe"..i] = {
-			type = "toggle",
-			name = "Show Countdown Swipe",
-			desc = "Show the clockwise swipe animation specifying the time left of the buff or debuff",
-			width = THIRD_WIDTH,
-			order = 71,
-		}
-		indicatorOptions.args[v].args["indicatorGlow"..i] = {
-			type = "toggle",
-			name = "Indicator Glow Effect",
-			desc = "Display a glow animation effect on the indicator to make it easier to spot",
-			width = THIRD_WIDTH,
-			order = 72,
-		}
-		indicatorOptions.args[v].args["glowRemainingSecs"..i] = {
-			type = "range",
-			name = "Glow By Remaining Time",
-			desc = "The amount of time remaining on the aura countdown before glowing starts (0 means to always glow)",
-			min = 0,
-			max = 10,
-			step = 1,
-			disabled = function () return not profile["indicatorGlow"..i] end,
-			width = THIRD_WIDTH,
-			order = 73,
+			animationHeader = {
+				type = "header",
+				name = "Animations and Effects",
+				order = 70,
+			},
+			showCountdownSwipe = {
+				type = "toggle",
+				name = "Show Countdown Swipe",
+				desc = "Show the clockwise swipe animation specifying the time left of the buff or debuff",
+				get = function() return profile["showCountdownSwipe"..i] end,
+				set = function(_, value)
+					profile["showCountdownSwipe"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 71,
+			},
+			indicatorGlow = {
+				type = "toggle",
+				name = "Indicator Glow Effect",
+				desc = "Display a glow animation effect on the indicator to make it easier to spot",
+				get = function() return profile["indicatorGlow"..i] end,
+				set = function(_, value)
+					profile["indicatorGlow"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 72,
+			},
+			glowRemainingSecs = {
+				type = "range",
+				name = "Glow By Remaining Time",
+				desc = "The amount of time remaining on the aura countdown before glowing starts (0 means to always glow)",
+				min = 0,
+				max = 10,
+				step = 1,
+				get = function() return profile["glowRemainingSecs"..i] end,
+				set = function(_, value)
+					profile["glowRemainingSecs"..i] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
+				disabled = function () return not profile["indicatorGlow"..i] end,
+				width = THIRD_WIDTH,
+				order = 73,
+			},
 		}
 	end
 
@@ -453,11 +589,6 @@ function EnhancedRaidFrames:CreateIconOptions()
 	local iconOptions = {
 		type = 'group',
 		childGroups = 'tree',
-		get = function(item) return profile[item[#item]] end,
-		set = function(item, value)
-			profile[item[#item]] = value
-			EnhancedRaidFrames:RefreshConfig()
-		end,
 		args  = {
 			instructions = {
 				type = "description",
@@ -468,6 +599,11 @@ function EnhancedRaidFrames:CreateIconOptions()
 				type = "toggle",
 				name = "Show Raid Icons",
 				desc = "Show the raid marker icon on the raid frames",
+				get = function() return profile["showRaidIcons"] end,
+				set = function(_, value)
+					profile["showRaidIcons"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
 				width = THIRD_WIDTH,
 				order = 3,
 			},
@@ -476,6 +612,11 @@ function EnhancedRaidFrames:CreateIconOptions()
 				name = "Icon Position",
 				desc = "Position of the raid icon relative to the frame",
 				values = POSITIONS,
+				get = function() return profile["iconPosition"] end,
+				set = function(_, value)
+					profile["iconPosition"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
 				disabled = function () return not profile.showRaidIcons end,
 				width = THIRD_WIDTH,
 				order = 10,
@@ -495,6 +636,11 @@ function EnhancedRaidFrames:CreateIconOptions()
 				min = 1,
 				max = 40,
 				step = 1,
+				get = function() return profile["iconSize"] end,
+				set = function(_, value)
+					profile["iconSize"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
 				disabled = function () return not profile.showRaidIcons end,
 				width = THIRD_WIDTH,
 				order = 21,
@@ -506,6 +652,11 @@ function EnhancedRaidFrames:CreateIconOptions()
 				min = -1,
 				max = 1,
 				step = .01,
+				get = function() return profile["iconVerticalOffset"] end,
+				set = function(_, value)
+					profile["iconVerticalOffset"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
 				disabled = function () return not profile.showRaidIcons end,
 				width = THIRD_WIDTH,
 				order = 22,
@@ -517,6 +668,11 @@ function EnhancedRaidFrames:CreateIconOptions()
 				min = -1,
 				max = 1,
 				step = .01,
+				get = function() return profile["iconHorizontalOffset"] end,
+				set = function(_, value)
+					profile["iconHorizontalOffset"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
 				disabled = function () return not profile.showRaidIcons end,
 				width = THIRD_WIDTH,
 				order = 23,
@@ -528,6 +684,11 @@ function EnhancedRaidFrames:CreateIconOptions()
 				min = 0,
 				max = 1,
 				step = 0.05,
+				get = function() return profile["iconAlpha"] end,
+				set = function(_, value)
+					profile["iconAlpha"] = value
+					EnhancedRaidFrames:RefreshConfig()
+				end,
 				disabled = function () return not profile.showRaidIcons end,
 				width = THIRD_WIDTH,
 				order = 24,
