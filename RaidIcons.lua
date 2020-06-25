@@ -15,9 +15,7 @@
 --You should have received a copy of the GNU General Public License
 --along with this add-on.  If not, see <https://www.gnu.org/licenses/>.
 --
---Copyright for portions of Neuron are held in the public domain,
---as determined by Szandos. All other copyrights for
---Enhanced Raid Frame are held by Britt Yazel, 2017-2019.
+--Copyright for Enhanced Raid Frames is held by Britt Yazel (aka Soyier), 2017-2020.
 
 local _, addonTable = ...
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
@@ -28,7 +26,7 @@ local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 function EnhancedRaidFrames:CreateIcon(frame)
 	frame.ERFIcons = {}
 	frame.ERFIcons.texture = frame:CreateTexture(nil, "OVERLAY")
-	EnhancedRaidFrames:SetIconAppearance(frame)
+	self:SetIconAppearance(frame)
 end
 
 function EnhancedRaidFrames:SetIconAppearance(frame)
@@ -36,25 +34,15 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 		return
 	end
 
-	--------------------------
-	--TODO: this is just temp becasue we're changing from pixel to percentage relativity, remove this in the future
-	if EnhancedRaidFrames.db.profile.iconVerticalOffset > 1 then
-		EnhancedRaidFrames.db.profile.iconVerticalOffset = 0
-	end
-	if EnhancedRaidFrames.db.profile.iconHorizontalOffset > 1 then
-		EnhancedRaidFrames.db.profile.iconHorizontalOffset = 0
-	end
-	--------------------------
-
 	local tex = frame.ERFIcons.texture
 
 	local PAD = 3
-	local pos = EnhancedRaidFrames.db.profile.iconPlacement
+	local pos = self.db.profile.iconPosition
 
-	local iconVerticalOffset = EnhancedRaidFrames.db.profile.iconVerticalOffset * frame:GetHeight()
-	local iconHorizontalOffset = EnhancedRaidFrames.db.profile.iconHorizontalOffset * frame:GetWidth()
+	local iconVerticalOffset = self.db.profile.iconVerticalOffset * frame:GetHeight()
+	local iconHorizontalOffset = self.db.profile.iconHorizontalOffset * frame:GetWidth()
 
-	--we probably don't want to overlap the power bar (rage,mana,energy,etc) so we need a compensation factor
+	--we probably don't want to overlap the power bar (rage, mana, energy, etc) so we need a compensation factor
 	local powerBarVertOffset
 	if frame.powerBar:IsShown() then
 		powerBarVertOffset = frame.powerBar:GetHeight() + 2 --add 2 to not overlap the powerBar border
@@ -75,11 +63,11 @@ function EnhancedRaidFrames:SetIconAppearance(frame)
 	if pos == 9 then tex:SetPoint("BOTTOMRIGHT", -PAD + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset) end
 
 	-- Set the icon size
-	tex:SetWidth(EnhancedRaidFrames.db.profile.iconSize)
-	tex:SetHeight(EnhancedRaidFrames.db.profile.iconSize)
+	tex:SetWidth(self.db.profile.iconSize)
+	tex:SetHeight(self.db.profile.iconSize)
 
 	-- Set the icon opacity
-	tex:SetAlpha(EnhancedRaidFrames.db.profile.iconAlpha)
+	tex:SetAlpha(self.db.profile.iconAlpha)
 end
 
 function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
@@ -90,15 +78,15 @@ function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
 
 	-- Initialize our storage and create texture
 	if not frame.ERFIcons then -- No icon on this frame before, need a texture
-		EnhancedRaidFrames:CreateIcon(frame)
+		self:CreateIcon(frame)
 	end
 
 	if setAppearance then
-		EnhancedRaidFrames:SetIconAppearance(frame)
+		self:SetIconAppearance(frame)
 	end
 
 	--if they don't have raid icons set to show, don't show anything
-	if not EnhancedRaidFrames.db.profile.showRaidIcons then
+	if not self.db.profile.showRaidIcons then
 		frame.ERFIcons.texture:Hide() -- hide the frame
 		return
 	end
