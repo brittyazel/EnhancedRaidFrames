@@ -63,9 +63,10 @@ function EnhancedRaidFrames:CreateDefaults()
 			indicatorColor = {r = 0, g = 1, b = 0.59, a = 1},
 			colorIndicatorByTime = false,
 			colorIndicatorByDebuff = false,
-			indicatorSize = 18,
 			indicatorHorizontalOffset = 0,
 			indicatorVerticalOffset = 0,
+			indicatorSize = 18,
+			indicatorAlpha = 1,
 
 			showCountdownText = false,
 			showStackSize = false,

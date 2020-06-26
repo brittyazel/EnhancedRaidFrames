@@ -295,6 +295,12 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		end
 
 		---------------------------------
+		--- set indicator opacity
+		---------------------------------
+
+		indicatorFrame.icon:SetAlpha(self.db.profile[i].indicatorAlpha)
+
+		---------------------------------
 		--- process text to show
 		---------------------------------
 		if self.db.profile[i].showCountdownText or self.db.profile[i].showStackSize then

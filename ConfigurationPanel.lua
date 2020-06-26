@@ -437,6 +437,21 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				width = THIRD_WIDTH,
 				order = 37,
 			},
+			indicatorAlpha = {
+				type = "range",
+				name = "Indicator Opacity",
+				desc = "The opacity percentage of the indicator",
+				min = 0,
+				max = 1,
+				step = 0.05,
+				get = function() return self.db.profile[i].indicatorAlpha end,
+				set = function(_, value)
+					self.db.profile[i].indicatorAlpha = value
+					self:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 38,
+			},
 
 			--------------------------------------------
 
