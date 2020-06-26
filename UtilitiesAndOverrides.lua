@@ -24,7 +24,7 @@ local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 -------------------------------------------------------------------------
 
 function EnhancedRaidFrames:UpdateNotifier()
-	if not self.db.profile.DB_VERSION or self.db.profile.DB_VERSION < self.DATABASE_VERSION then
+	if not self.db.global.DB_VERSION or self.db.global.DB_VERSION < self.DATABASE_VERSION then
 		self:Print("Welcome to Enhanced Raid Frames 3.0!\n"..
 				"Enhanced Raid Frames has recently undergone a major overhaul and full rewrite. As part of this transition, your profiles have necessarily been reset. We apologize for any inconvenience this may cause.\n"..
 				"\n"..
@@ -36,7 +36,7 @@ function EnhancedRaidFrames:UpdateNotifier()
 				"-Soyier"
 		)
 
-		self.db.profile.DB_VERSION = self.DATABASE_VERSION
+		self.db.global.DB_VERSION = self.DATABASE_VERSION
 	end
 end
 
