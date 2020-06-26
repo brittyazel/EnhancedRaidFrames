@@ -415,7 +415,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 					self.db.profile[i].indicatorColor.a)
 			indicatorFrame.text:SetText("")
 		end
-		
+
 		indicatorFrame.icon:SetAlpha(self.db.profile[i].indicatorAlpha)
 
 		indicatorFrame:Show() --show the frame

@@ -30,7 +30,7 @@ local POSITIONS = { [1] = "Top Left", [2] = "Top Center", [3] = "Top Right" ,
 function EnhancedRaidFrames:CreateGeneralOptions()
 
 	local THIRD_WIDTH = 1.15
-	
+
 	local generalOptions = {
 		type = "group",
 		childGroups = "tree",
@@ -38,6 +38,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			instructions = {
 				type = "description",
 				name = "Below you will find general configuration options. Please expand the 'Enhanced Raid Frames' menu item in the left-hand column to configure aura indicators, raid icons, and more.",
+				fontSize = "medium",
 				order = 2,
 			},
 
@@ -213,7 +214,7 @@ end
 
 function EnhancedRaidFrames:CreateIndicatorOptions()
 	local THIRD_WIDTH = 1.1
-	
+
 	local indicatorOptions = {
 		type = "group",
 		childGroups = "select",
@@ -222,6 +223,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			instructions = {
 				type = "description",
 				name = "Please select an indicator position from the dropdown menu below:",
+				fontSize = "medium",
 				order = 1,
 			},
 		}
@@ -237,27 +239,44 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		indicatorOptions.args[v].args = {
 
 			--------------------------------------------
-
+			instructions = {
+				type = "description",
+				name = "The box to the right contains the list of auras to watch for the".." |cFFFFF569"..v:lower().."|r ".."position.\n"..
+						"\n"..
+						"Type the names or spellIDs of each aura to track, each on a separate line.\n",
+				fontSize = "medium",
+				width = THIRD_WIDTH,
+				order = 1,
+			},
 			auras = {
 				type = "input",
 				name = "Buff and/or Debuff Watch List:",
-				desc = "The buffs and/or debuffs to show for the indicator in this position.\n"..
+				desc = "The list of buffs, debuffs, and/or wildcards to watch in this position",
+				usage = "\n"..
 						"\n"..
-						"Write the name or spell ID of each buff/debuff on a separate line. i.e: Rejuvenation, Regrowth, Wild Growth, 155777, etc.\n"..
+						"Any valid aura name or spellID found in the game, spelled correctly, should work. Example:\n"..
 						"\n"..
-						"You can use Magic, Poison, Curse, or Disease to show any debuff of that category.\n"..
+						"Rejuvenation\n"..
+						"PvP\n"..
+						"Curse\n"..
+						"155777\n"..
+						"Magic\n"..
 						"\n"..
-						"You can use PvP to show if a unit is PvP flagged.\n"..
-						"\n"..
-						"You can use ToT to show if a unit is the target of your target.\n",
-				multiline = true,
+						"Wildcards:\n"..
+						"|cFFA9D271Poison|r: any poison effects\n"..
+						"|cFFA330C9Curse|r: any curse effects\n"..
+						"|cFFC79C6EDisease|r: any disease effects\n"..
+						"|cFF0070DEMagic|r: any magic effects\n"..
+						"|cFFC41F3BPvP|r: if the unit is PvP flagged\n"..
+						"|cFFC41F3BToT|r: if the unit is the target of target\n",
+				multiline = 5,
 				get = function() return self.db.profile[i].auras end,
 				set = function(_, value)
 					self.db.profile[i].auras = value
 					self:RefreshConfig()
 				end,
 				width = THIRD_WIDTH*2,
-				order = 1,
+				order = 2,
 			},
 
 			--------------------------------------------
@@ -618,7 +637,7 @@ end
 
 function EnhancedRaidFrames:CreateIconOptions()
 	local THIRD_WIDTH = 1.15
-	
+
 	local iconOptions = {
 		type = "group",
 		childGroups = "tree",
@@ -626,6 +645,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 			instructions = {
 				type = "description",
 				name = "Configure how the raid marker icon should appear on the raid frames:",
+				fontSize = "medium",
 				order = 1,
 			},
 			generalHeader = {
