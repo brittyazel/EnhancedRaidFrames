@@ -336,7 +336,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 
 			iconHeader = {
 				type = "header",
-				name = "Icon and Position",
+				name = "Icon and Color",
 				order = 30,
 			},
 			showIcon = {
@@ -392,36 +392,6 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				width = THIRD_WIDTH,
 				order = 34,
 			},
-			indicatorVerticalOffset = {
-				type = "range",
-				name = "Vertical Offset",
-				desc = "Vertical offset percentage of the indicator relative to its starting position",
-				min = -1,
-				max = 1,
-				step = .01,
-				get = function() return self.db.profile[i].indicatorVerticalOffset end,
-				set = function(_, value)
-					self.db.profile[i].indicatorVerticalOffset = value
-					self:RefreshConfig()
-				end,
-				width = THIRD_WIDTH,
-				order = 35,
-			},
-			indicatorHorizontalOffset = {
-				type = "range",
-				name = "Horizontal Offset",
-				desc = "Horizontal offset percentage of the indicator relative to its starting position",
-				min = -1,
-				max = 1,
-				step = .01,
-				get = function() return self.db.profile[i].indicatorHorizontalOffset end,
-				set = function(_, value)
-					self.db.profile[i].indicatorHorizontalOffset = value
-					self:RefreshConfig()
-				end,
-				width = THIRD_WIDTH,
-				order = 36,
-			},
 			indicatorSize = {
 				type = "range",
 				name = "Indicator Size",
@@ -435,7 +405,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					self:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
-				order = 37,
+				order = 35,
 			},
 			indicatorAlpha = {
 				type = "range",
@@ -450,7 +420,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					self:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
-				order = 38,
+				order = 36,
 			},
 
 			--------------------------------------------
@@ -599,6 +569,47 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				width = THIRD_WIDTH,
 				order = 73,
 			},
+
+			--------------------------------------------
+
+			positionHeader = {
+				type = "header",
+				name = "Position",
+				order = 90,
+			},
+
+			indicatorVerticalOffset = {
+				type = "range",
+				name = "Vertical Offset",
+				desc = "Vertical offset percentage of the indicator relative to its starting position",
+				min = -1,
+				max = 1,
+				step = .01,
+				get = function() return self.db.profile[i].indicatorVerticalOffset end,
+				set = function(_, value)
+					self.db.profile[i].indicatorVerticalOffset = value
+					self:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 91,
+			},
+			indicatorHorizontalOffset = {
+				type = "range",
+				name = "Horizontal Offset",
+				desc = "Horizontal offset percentage of the indicator relative to its starting position",
+				min = -1,
+				max = 1,
+				step = .01,
+				get = function() return self.db.profile[i].indicatorHorizontalOffset end,
+				set = function(_, value)
+					self.db.profile[i].indicatorHorizontalOffset = value
+					self:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 92,
+			},
+
+			--------------------------------------------
 		}
 	end
 
@@ -672,6 +683,29 @@ function EnhancedRaidFrames:CreateIconOptions()
 				width = THIRD_WIDTH,
 				order = 21,
 			},
+			iconAlpha = {
+				type = "range",
+				name = "Icon Opacity",
+				desc = "The opacity percentage of the raid icon",
+				min = 0,
+				max = 1,
+				step = 0.05,
+				get = function() return self.db.profile.iconAlpha end,
+				set = function(_, value)
+					self.db.profile.iconAlpha = value
+					self:RefreshConfig()
+				end,
+				disabled = function () return not self.db.profile.showRaidIcons end,
+				width = THIRD_WIDTH,
+				order = 22,
+			},
+
+			-------------------------------------------------
+			positionOptions = {
+				type = "header",
+				name = "Position Options",
+				order = 30,
+			},
 			iconVerticalOffset = {
 				type = "range",
 				name = "Icon Vertical Offset",
@@ -686,7 +720,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 				end,
 				disabled = function () return not self.db.profile.showRaidIcons end,
 				width = THIRD_WIDTH,
-				order = 22,
+				order = 31,
 			},
 			iconHorizontalOffset = {
 				type = "range",
@@ -702,23 +736,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 				end,
 				disabled = function () return not self.db.profile.showRaidIcons end,
 				width = THIRD_WIDTH,
-				order = 23,
-			},
-			iconAlpha = {
-				type = "range",
-				name = "Icon Opacity",
-				desc = "The opacity percentage of the raid icon",
-				min = 0,
-				max = 1,
-				step = 0.05,
-				get = function() return self.db.profile.iconAlpha end,
-				set = function(_, value)
-					self.db.profile.iconAlpha = value
-					self:RefreshConfig()
-				end,
-				disabled = function () return not self.db.profile.showRaidIcons end,
-				width = THIRD_WIDTH,
-				order = 24,
+				order = 32,
 			},
 		}
 	}
