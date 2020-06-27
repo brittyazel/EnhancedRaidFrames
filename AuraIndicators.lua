@@ -366,6 +366,8 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------------------------------
 		if self.db.profile[i].showCountdownSwipe and expirationTime and duration then
 			CooldownFrame_Set(indicatorFrame.cooldown, expirationTime - duration, duration, true, true)
+		else
+			CooldownFrame_Clear(indicatorFrame.cooldown)
 		end
 
 		---------------------------------
@@ -373,6 +375,8 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------------------------------
 		if self.db.profile[i].indicatorGlow and (self.db.profile[i].glowRemainingSecs == 0 or self.db.profile[i].glowRemainingSecs >= remainingTime) then
 			ActionButton_ShowOverlayGlow(indicatorFrame)
+		else
+			ActionButton_HideOverlayGlow(indicatorFrame)
 		end
 
 		indicatorFrame:Show() --show the frame
@@ -392,6 +396,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 
 		if self.db.profile[i].showIcon then
 			indicatorFrame.icon:SetTexture(icon)
+			indicatorFrame.icon:SetAlpha(self.db.profile[i].indicatorAlpha)
 			indicatorFrame.text:SetText("")
 		else
 			--set color of custom texture
@@ -402,8 +407,6 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 					self.db.profile[i].indicatorColor.a)
 			indicatorFrame.text:SetText("")
 		end
-
-		indicatorFrame.icon:SetAlpha(self.db.profile[i].indicatorAlpha)
 
 		indicatorFrame:Show() --show the frame
 

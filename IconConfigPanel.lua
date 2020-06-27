@@ -112,7 +112,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 			},
 			iconVerticalOffset = {
 				type = "range",
-				name = "Icon Vertical Offset",
+				name = "Vertical Offset",
 				desc = "Vertical offset percentage of the raid icon relative to its starting position",
 				min = -1,
 				max = 1,
@@ -128,7 +128,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 			},
 			iconHorizontalOffset = {
 				type = "range",
-				name = "Icon Horizontal Offset",
+				name = "Horizontal Offset",
 				desc = "Horizontal offset percentage of the raid icon relative to its starting position",
 				min = -1,
 				max = 1,
