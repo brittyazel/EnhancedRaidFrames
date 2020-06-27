@@ -111,18 +111,18 @@ function EnhancedRaidFrames:Setup()
 	local indicatorOptions = self:CreateIndicatorOptions()
 	local iconOptions = self:CreateIconOptions()
 
-	local config = LibStub("AceConfig-3.0")
-	config:RegisterOptionsTable("Enhanced Raid Frames", generalOptions)
-	config:RegisterOptionsTable("Indicator Options", indicatorOptions)
-	config:RegisterOptionsTable("Icon Options", iconOptions)
-	config:RegisterOptionsTable("Profiles", profiles)
+	self.config = LibStub("AceConfigRegistry-3.0")
+	self.config:RegisterOptionsTable("Enhanced Raid Frames", generalOptions)
+	self.config:RegisterOptionsTable("Indicator Options", indicatorOptions)
+	self.config:RegisterOptionsTable("Icon Options", iconOptions)
+	self.config:RegisterOptionsTable("Profiles", profiles)
 
 	-- Add to config panels to in-game interface options
-	local dialog = LibStub("AceConfigDialog-3.0")
-	dialog:AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
-	dialog:AddToBlizOptions("Indicator Options", "Indicator Options", "Enhanced Raid Frames")
-	dialog:AddToBlizOptions("Icon Options", "Icon Options", "Enhanced Raid Frames")
-	dialog:AddToBlizOptions("Profiles", "Profiles", "Enhanced Raid Frames")
+	self.dialog = LibStub("AceConfigDialog-3.0")
+	self.dialog:AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
+	self.dialog:AddToBlizOptions("Indicator Options", "Indicator Options", "Enhanced Raid Frames")
+	self.dialog:AddToBlizOptions("Icon Options", "Icon Options", "Enhanced Raid Frames")
+	self.dialog:AddToBlizOptions("Profiles", "Profiles", "Enhanced Raid Frames")
 end
 
 -- Update all raid frames
@@ -143,7 +143,6 @@ end
 
 -- Refresh everything that is affected by changes to the configuration
 function EnhancedRaidFrames:RefreshConfig()
-
 	self:UpdateAllFrames(true)
 
 	if not InCombatLockdown() then

@@ -253,6 +253,12 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	-- if we find the spell and we don't only want to show when it is missing
 	if foundAura and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) and not self.db.profile[i].missingOnly and
 			(not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and castBy == "player")) then
+
+		--zero out the frame
+		indicatorFrame.icon:SetTexture(nil)
+		indicatorFrame.text:SetText("")
+		indicatorFrame.icon:SetAlpha(1)
+
 		-- calculate remainingTime and round down, this is how the game seems to do it
 		local remainingTime = floor(expirationTime - GetTime())
 
@@ -265,6 +271,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------------------------------
 		if icon and self.db.profile[i].showIcon then
 			indicatorFrame.icon:SetTexture(icon)
+			indicatorFrame.icon:SetAlpha(self.db.profile[i].indicatorAlpha)
 		else
 			--set color of custom texture
 			indicatorFrame.icon:SetColorTexture(
@@ -286,30 +293,23 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 				end
 			end
 			if self.db.profile[i].colorIndicatorByTime then -- Color by remaining time
-				if remainingTime and remainingTime <= 2 then
+				if remainingTime and self.db.profile[i].colorIndicatorByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_low then
 					indicatorFrame.icon:SetColorTexture(0.77, 0.12, 0.23, 1)
-				elseif remainingTime and remainingTime <= 5 then
+				elseif remainingTime and self.db.profile[i].colorIndicatorByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_high then
 					indicatorFrame.icon:SetColorTexture(1, 0.96, 0.41, 1)
 				end
 			end
 		end
 
 		---------------------------------
-		--- set indicator opacity
-		---------------------------------
-
-		indicatorFrame.icon:SetAlpha(self.db.profile[i].indicatorAlpha)
-
-		---------------------------------
 		--- process text to show
 		---------------------------------
-		if self.db.profile[i].showCountdownText or self.db.profile[i].showStackSize then
-			-- Pretty formatting of the remaining time text
+		if self.db.profile[i].showText ~= "none" then
 			local formattedTime = ""
 			local formattedCount = ""
 
 			-- determine the formatted time string
-			if self.db.profile[i].showCountdownText and expirationTime ~= 0 then
+			if remainingTime and (self.db.profile[i].showText == "stack+countdown" or self.db.profile[i].showText == "countdown") then
 				if remainingTime > 60 then
 					formattedTime = string.format("%.0f", remainingTime/60).."m" -- Show minutes without seconds
 				elseif remainingTime >= 0 then
@@ -317,23 +317,19 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 				end
 			end
 
-			-- determine the formatted count string
-			if self.db.profile[i].showStackSize and count > 0 then
+			-- determine the formatted stack string
+			if count and count > 0 and (self.db.profile[i].showText == "stack+countdown" or self.db.profile[i].showText == "stack") then
 				formattedCount = count
 			end
 
 			-- determine the final output string concatenation
-			if formattedCount ~= "" and formattedTime ~= "" then
+			if remainingTime ~= "" and formattedCount ~= "" then
 				indicatorFrame.text:SetText(formattedCount .. "-" .. formattedTime) --append both values together with a hyphen separating
 			elseif formattedCount ~= "" then
 				indicatorFrame.text:SetText(formattedCount) --show just the count
-			elseif formattedTime ~= "" then
+			elseif remainingTime ~= "" then
 				indicatorFrame.text:SetText(formattedTime) --show just the time remaining
-			else
-				indicatorFrame.text:SetText("") --clear all text
 			end
-		else
-			indicatorFrame.text:SetText("") --clear all text
 		end
 
 		---------------------------------
@@ -346,16 +342,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 				self.db.profile[i].textColor.b,
 				self.db.profile[i].textColor.a)
 
-		-- determine if we should change the textColor from the default (player set color)
-		if self.db.profile[i].colorTextByStack then -- Color by stack
-			if count == 1 then
-				indicatorFrame.text:SetTextColor(0.77, 0.12, 0.23, 1)
-			elseif count == 2 then
-				indicatorFrame.text:SetTextColor(1, 0.96, 0.41, 1)
-			elseif count >= 3 then
-				indicatorFrame.text:SetTextColor(0.67, 0.83, 0.45, 1)
-			end
-		elseif self.db.profile[i].colorTextByDebuff and debuffType then -- Color by debuff type
+		if self.db.profile[i].colorTextByDebuff and debuffType then -- Color by debuff type
 			if debuffType == "curse" then
 				indicatorFrame.text:SetTextColor(0.64, 0.19, 0.79, 1)
 			elseif debuffType == "disease" then
@@ -367,10 +354,10 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			end
 		end
 		if self.db.profile[i].colorTextByTime then -- Color by remaining time
-			if remainingTime and remainingTime <= 2 then
-				indicatorFrame.text:SetTextColor(0.77, 0.12, 0.23, 1)
-			elseif remainingTime and remainingTime <= 5 then
-				indicatorFrame.text:SetTextColor(1, 0.96, 0.41, 1)
+			if remainingTime and self.db.profile[i].colorTextByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_low then
+				indicatorFrame.text:SetColorTexture(0.77, 0.12, 0.23, 1)
+			elseif remainingTime and self.db.profile[i].colorTextByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_high then
+				indicatorFrame.text:SetColorTexture(1, 0.96, 0.41, 1)
 			end
 		end
 
