@@ -156,6 +156,7 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		--clear any animations
 		ActionButton_HideOverlayGlow(indicatorFrame)
 		CooldownFrame_Clear(indicatorFrame.cooldown)
+		indicatorFrame.icon:SetAlpha(1)
 	end
 end
 
@@ -253,11 +254,6 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	-- if we find the spell and we don't only want to show when it is missing
 	if foundAura and UnitIsConnected(unit) and not self.db.profile[i].missingOnly and (not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and castBy == "player")) then
 
-		--zero out the frame
-		indicatorFrame.icon:SetTexture(nil)
-		indicatorFrame.text:SetText("")
-		indicatorFrame.icon:SetAlpha(1)
-
 		-- calculate remainingTime and round down, this is how the game seems to do it
 		local remainingTime = floor(expirationTime - GetTime())
 
@@ -329,6 +325,8 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			elseif remainingTime ~= "" then
 				indicatorFrame.text:SetText(formattedTime) --show just the time remaining
 			end
+		else
+			indicatorFrame.text:SetText("")
 		end
 
 		---------------------------------
@@ -354,9 +352,9 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		end
 		if self.db.profile[i].colorTextByTime then -- Color by remaining time
 			if remainingTime and self.db.profile[i].colorTextByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_low then
-				indicatorFrame.text:SetColorTexture(0.77, 0.12, 0.23, 1)
+				indicatorFrame.text:SetTextColor(0.77, 0.12, 0.23, 1)
 			elseif remainingTime and self.db.profile[i].colorTextByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_high then
-				indicatorFrame.text:SetColorTexture(1, 0.96, 0.41, 1)
+				indicatorFrame.text:SetTextColor(1, 0.96, 0.41, 1)
 			end
 		end
 
