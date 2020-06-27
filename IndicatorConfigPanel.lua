@@ -62,7 +62,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			--------------------------------------------
 			instructions = {
 				type = "description",
-				name = "The box to the right contains the list of auras to watch at the position"..": ".. gsub(yellowCode,"<text>", v:lower()) .."\n"..
+				name = "The box to the right contains the list of auras to watch at the position"..": "..gsub(yellowCode,"<text>", v:lower()).."\n"..
 						"\n"..
 						"Type the names or spellIDs of each aura to track, each on a separate line".."\n",
 				fontSize = "medium",
@@ -84,12 +84,12 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						"Magic".."\n"..
 						"\n"..
 						"Wildcards"..":\n"..
-						gsub(greenCode, "<text>", "Poison")..": ".."any poison effects\n"..
-						gsub(purpleCode, "<text>", "Curse")..": ".."any curse effects\n"..
-						gsub(brownCode, "<text>", "Disease")..": ".."any disease effects\n"..
-						gsub(blueCode, "<text>", "Magic")..": ".."any magic effects\n"..
-						gsub(redCode, "<text>", "PvP")..": ".."if the unit is PvP flagged\n"..
-						gsub(redCode, "<text>", "ToT")..": ".."if the unit is the target of target\n",
+						gsub(greenCode, "<text>", "Poison")..": ".."any poison effects".."\n"..
+						gsub(purpleCode, "<text>", "Curse")..": ".."any curse effects".."\n"..
+						gsub(brownCode, "<text>", "Disease")..": ".."any disease effects".."\n"..
+						gsub(blueCode, "<text>", "Magic")..": ".."any magic effects".."\n"..
+						gsub(redCode, "<text>", "PvP")..": ".."if the unit is PvP flagged".."\n"..
+						gsub(redCode, "<text>", "ToT")..": ".."if the unit is the target of target".."\n",
 				multiline = 5,
 				get = function() return self.db.profile[i].auras end,
 				set = function(_, value)
@@ -180,8 +180,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						name = "Tooltip Location",
 						desc = "The specified location where the tooltip should appear",
 						style = "dropdown",
-						values = { ["ANCHOR_CURSOR"] = "Attached to Cursor", ["ANCHOR_PRESERVE"] = "Blizzard Default" },
-						sorting = { [1] = "ANCHOR_CURSOR", [2] = "ANCHOR_PRESERVE" },
+						values = {["ANCHOR_CURSOR"] = "Attached to Cursor", ["ANCHOR_PRESERVE"] = "Blizzard Default"},
+						sorting = {[1] = "ANCHOR_CURSOR", [2] = "ANCHOR_PRESERVE"},
 						get = function()
 							return self.db.profile[i].tooltipLocation
 						end,
@@ -322,12 +322,13 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					colorIndicatorByDebuff = {
 						type = "toggle",
 						name = "Color By Debuff Type",
-						desc = "Color the indicator depending on the debuff type, will override the normal coloring".."\n" ..
-								"\n" ..
-								gsub(greenCode, "<text>", "Poison") .. "\n" ..
-								gsub(purpleCode, "<text>", "Curse") .. "\n" ..
-								gsub(brownCode, "<text>", "Disease") .. "\n" ..
-								gsub(blueCode, "<text>", "Magic") .. "\n",
+						desc = "Color the indicator depending on the debuff type".."\n"..
+								"(this will override the normal coloring)".."\n"..
+								"\n"..
+								gsub(greenCode, "<text>", "Poison").."\n"..
+								gsub(purpleCode, "<text>", "Curse").."\n"..
+								gsub(brownCode, "<text>", "Disease").."\n"..
+								gsub(blueCode, "<text>", "Magic").."\n",
 						get = function()
 							return self.db.profile[i].colorIndicatorByDebuff
 						end,
@@ -344,9 +345,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					colorIndicatorByTime = {
 						type = "toggle",
 						name = "Color By Remaining Time",
-						desc = "Color the indicator based on remaining time" .. "\n" ..
-								"\n" ..
-								gsub(redCode, "<text>", "Time #1") .. "\n" ..
+						desc = "Color the indicator based on remaining time".."\n"..
+								"(this will override the normal coloring)".."\n"..
+								"\n"..
+								gsub(redCode, "<text>", "Time #1").."\n"..
 								gsub(yellowCode, "<text>", "Time #2"),
 						get = function()
 							return self.db.profile[i].colorIndicatorByTime
@@ -364,7 +366,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					colorIndicatorByTime_low = {
 						type = "range",
 						name = "Time #1",
-						desc = "If 'Color By Remaining Time' is enabled, this will be the time (in seconds) for the lower boundary".."\n" ..
+						desc = "The time (in seconds) for the lower boundary".."\n"..
 								"('0' means ignored)",
 						min = 0,
 						max = 10,
@@ -385,7 +387,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					colorIndicatorByTime_high = {
 						type = "range",
 						name = "Time #2",
-						desc = "If 'Color By Remaining Time' is enabled, this will be the time (in seconds) for the upper boundary".."\n"..
+						desc = "The time (in seconds) for the upper boundary".."\n"..
 								"('0' means ignored)",
 						min = 0,
 						max = 10,
@@ -422,8 +424,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						name = "Show Text",
 						desc = "The text to show on the indicator frame",
 						style = "dropdown",
-						values = { ["stack"] = "Stack Size", ["countdown"] = "Countdown", ["stack+countdown"] = "Stack Size + Countdown", ["none"] = "None" },
-						sorting = { [1] = "stack", [2] = "countdown", [3] = "stack+countdown", [4] = "none" },
+						values = {["stack"] = "Stack Size", ["countdown"] = "Countdown", ["stack+countdown"] = "Stack Size + Countdown", ["none"] = "None"},
+						sorting = {[1] = "stack", [2] = "countdown", [3] = "stack+countdown", [4] = "none"},
 						get = function()
 							return self.db.profile[i].showText
 						end,
@@ -465,7 +467,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					textColor = {
 						type = "color",
 						name = "Text Color",
-						desc = "The color used for the indicator text (unless augmented by other text color options)",
+						desc = "The color used for the indicator text".."\n"..
+						"(unless augmented by other text color options)",
 						hasAlpha = true,
 						get = function()
 							return self.db.profile[i].textColor.r, self.db.profile[i].textColor.g, self.db.profile[i].textColor.b, self.db.profile[i].textColor.a
@@ -485,8 +488,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					colorTextByDebuff = {
 						type = "toggle",
 						name = "Color By Debuff Type",
-						desc = "Color the indicator text depending on the debuff type, will override the normal coloring".."\n"..
-								"\n" ..
+						desc = "Color the indicator text depending on the debuff type".."\n"..
+								"(this will override the normal coloring)".."\n"..
+								"\n"..
 								gsub(greenCode, "<text>", "Poison").."\n"..
 								gsub(purpleCode, "<text>", "Curse").."\n"..
 								gsub(brownCode, "<text>", "Disease").."\n"..
@@ -509,9 +513,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					colorTextByTime = {
 						type = "toggle",
 						name = "Color By Remaining Time",
-						desc = "Color the indicator text based on remaining time".."\n" ..
-								"\n" ..
-								gsub(redCode, "<text>", "Time #1").."\n" ..
+						desc = "Color the indicator text based on remaining time".."\n"..
+								"(this will override the normal coloring)".."\n"..
+								"\n"..
+								gsub(redCode, "<text>", "Time #1").."\n"..
 								gsub(yellowCode, "<text>", "Time #2"),
 						get = function()
 							return self.db.profile[i].colorTextByTime
@@ -531,7 +536,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					colorTextByTime_low = {
 						type = "range",
 						name = "Time #1",
-						desc = "If 'Color By Remaining Time' is enabled, this will be the time (in seconds) for the lower boundary".."\n" ..
+						desc = "The time (in seconds) for the lower boundary".."\n"..
 								"('0' means ignored)",
 						min = 0,
 						max = 10,
@@ -554,7 +559,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					colorTextByTime_high = {
 						type = "range",
 						name = "Time #2",
-						desc = "If 'Color By Remaining Time' is enabled, this will be the time (in seconds) for the upper boundary".."\n"..
+						desc = "The time (in seconds) for the upper boundary".."\n"..
 								"('0' means ignored)",
 						min = 0,
 						max = 10,
@@ -619,7 +624,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					glowRemainingSecs = {
 						type = "range",
 						name = "Glow At Countdown Time",
-						desc = "The amount of time (in seconds) remaining on the buff or debuff countdown before the glowing starts\n" ..
+						desc = "The amount of time (in seconds) remaining on the buff or debuff countdown before the glowing starts".."\n"..
 								"('0' means it will always glow)",
 						min = 0,
 						max = 10,
