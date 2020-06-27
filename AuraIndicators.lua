@@ -251,8 +251,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	------------------------------------------------------
 
 	-- if we find the spell and we don't only want to show when it is missing
-	if foundAura and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) and not self.db.profile[i].missingOnly and
-			(not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and castBy == "player")) then
+	if foundAura and UnitIsConnected(unit) and not self.db.profile[i].missingOnly and (not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and castBy == "player")) then
 
 		--zero out the frame
 		indicatorFrame.icon:SetTexture(nil)
