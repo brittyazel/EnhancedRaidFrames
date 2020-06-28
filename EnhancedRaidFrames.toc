@@ -9,6 +9,7 @@
 ## X-Email: bwyazel@gmail.com
 
 Libs\embeds.xml
+Localizations\Localizations.xml
 
 EnhancedRaidFrames.lua
 DatabaseDefaults.lua

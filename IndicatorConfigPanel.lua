@@ -2,12 +2,12 @@
 
 --This file is part of Enhanced Raid Frames.
 --
---Enhanced Raid Frame is free software: you can redistribute it and/or modify
+--Enhanced Raid Frames is free software: you can redistribute it and/or modify
 --it under the terms of the GNU General Public License as published by
 --the Free Software Foundation, either version 3 of the License, or
 --(at your option) any later version.
 --
---Enhanced Raid Frame is distributed in the hope that it will be useful,
+--Enhanced Raid Frames is distributed in the hope that it will be useful,
 --but WITHOUT ANY WARRANTY; without even the implied warranty of
 --MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 --GNU General Public License for more details.
@@ -19,6 +19,8 @@
 
 local _, addonTable = ...
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
+
+local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 
 local POSITIONS = { [1] = "Top Left", [2] = "Top Center", [3] = "Top Right" ,
 					[4] = "Middle Left", [5] = "Middle Center", [6] = "Middle Right",
@@ -64,7 +66,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "description",
 				name = "The box to the right contains the list of auras to watch at the position"..": "..gsub(yellowCode,"<text>", v:lower()).."\n"..
 						"\n"..
-						"Type the names or spellIDs of each aura to track, each on a separate line".."\n",
+						"Type the names or spell IDs of each aura to track, each on a separate line".."\n",
 				fontSize = "medium",
 				width = THIRD_WIDTH,
 				order = 1,
@@ -75,7 +77,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				desc = "The list of buffs, debuffs, and/or wildcards to watch in this position",
 				usage = "\n"..
 						"\n"..
-						"Any valid aura name or spellID found in the game, spelled correctly, should work"..". ".."Example"..":\n"..
+						"Any valid aura name or spell ID found in the game, spelled correctly, should work"..". ".."Example"..":\n"..
 						"\n"..
 						"Rejuvenation".."\n"..
 						"PvP".."\n"..
