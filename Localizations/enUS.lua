@@ -20,3 +20,57 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("EnhancedRaidFrames", "enUS", true)
 
 if not L then return end
+
+----------------------------------------------------
+---------------------- Common ----------------------
+----------------------------------------------------
+L["General"] = true
+
+L["Indicator Options"] = true
+L["Icon Options"] = true
+L["Profiles"] = true
+
+
+
+----------------------------------------------------
+------------------- General Panel ------------------
+----------------------------------------------------
+
+L["generalOptions_desc"] = "Below you will find general configuration options. Please expand the 'Enhanced Raid Frames' menu item in the left-hand column to configure aura indicators, raid icons, and more"
+
+L["blizzardRaidOptionsButton_name"] = "Open the Blizzard Raid Profiles Menu"
+L["blizzardRaidOptionsButton_desc"] = "Launch the built-in raid profiles interface configuration menu"
+
+L["Default Icon Visibility"] = true
+
+L["showBuffs_name"] = "Stock Buff Icons"
+L["showBuffs_desc"] = "Show the standard raid frame buff icons"
+
+L["showDebuffs_name"] = "Stock Debuff Icons"
+L["showDebuffs_desc"] = "Show the standard raid frame debuff icons"
+
+L["showDispellableDebuffs_name"] = "Stock Dispellable Icons"
+L["showDispellableDebuffs_desc"] = "Show the standard raid frame dispellable icons"
+
+L["indicatorFont_name"] = "Indicator Font"
+L["indicatorFont_desc"] = "The the font used for the indicators"
+
+L["frameScale_name"] = "Raidframe Scale"
+L["frameScale_desc"] = "The the scale of the raidframe from 50% to 200% of the normal size"
+
+L["backgroundAlpha_name"] = "Background Opacity"
+L["backgroundAlpha_desc"] = "The opacity percentage of the raid frame background"
+
+L["Out-of-Range"] = true
+
+L["customRange_name"] = "Override Default Distance"
+L["customRange_desc"] = "Overrides the default out-of-range indicator distance (default 40 yards)"
+
+L["customRangeCheck_name"] = "Select a Custom Distance"
+L["customRangeCheck_desc"] = "Changes the default 40 yard out-of-range distance to the specified distance"
+
+L["rangeAlpha_name"] = "Out-of-Range Opacity"
+L["rangeAlpha_desc"] = "The opacity percentage of the raid frame when out-of-range"
+
+
+

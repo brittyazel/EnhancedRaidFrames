@@ -21,6 +21,8 @@ local addonName, addonTable = ... --make use of the default addon namespace
 addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0", "AceConsole-3.0")
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
+local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
+
 EnhancedRaidFrames.allAuras = " "
 EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
 
@@ -120,9 +122,9 @@ function EnhancedRaidFrames:Setup()
 	-- Add to config panels to in-game interface options
 	self.dialog = LibStub("AceConfigDialog-3.0")
 	self.dialog:AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
-	self.dialog:AddToBlizOptions("Indicator Options", "Indicator Options", "Enhanced Raid Frames")
-	self.dialog:AddToBlizOptions("Icon Options", "Icon Options", "Enhanced Raid Frames")
-	self.dialog:AddToBlizOptions("Profiles", "Profiles", "Enhanced Raid Frames")
+	self.dialog:AddToBlizOptions("Indicator Options", L["Indicator Options"], "Enhanced Raid Frames")
+	self.dialog:AddToBlizOptions("Icon Options", L["Icon Options"], "Enhanced Raid Frames")
+	self.dialog:AddToBlizOptions("Profiles", L["Profiles"], "Enhanced Raid Frames")
 end
 
 -- Update all raid frames

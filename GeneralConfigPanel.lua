@@ -34,7 +34,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 		args  = {
 			instructions = {
 				type = "description",
-				name = "Below you will find general configuration options. Please expand the 'Enhanced Raid Frames' menu item in the left-hand column to configure aura indicators, raid icons, and more",
+				name = L["generalOptions_desc"],
 				fontSize = "medium",
 				order = 2,
 			},
@@ -44,10 +44,10 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				name = "",
 				order = 3,
 			},
-			stockOptionsButton = {
+			blizzardRaidOptionsButton = {
 				type = 'execute',
-				name = "Open the Blizzard Raid Profiles Menu",
-				desc = "Launch the built-in raid profiles interface configuration menu",
+				name = L["blizzardRaidOptionsButton_name"],
+				desc = L["blizzardRaidOptionsButton_desc"],
 				func = function() InterfaceOptionsFrame_OpenToCategory("Raid Profiles") end,
 				width = THIRD_WIDTH * 1.5,
 				order = 4,
@@ -55,13 +55,13 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			-------------------------------------------------
 			textHeader = {
 				type = "header",
-				name = "Default Icon Visibility",
+				name = L["Default Icon Visibility"],
 				order = 10,
 			},
 			showBuffs = {
 				type = "toggle",
-				name = "Stock Buff Icons",
-				desc = "Show the standard raid frame buff icons",
+				name = L["showBuffs_name"],
+				desc = L["showBuffs_desc"],
 				descStyle = "inline",
 				get = function() return self.db.profile.showBuffs end,
 				set = function(_, value)
@@ -73,8 +73,8 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 			showDebuffs = {
 				type = "toggle",
-				name = "Stock Debuff Icons",
-				desc = "Show the standard raid frame debuff icons",
+				name = L["showDebuffs_name"],
+				desc = L["showDebuffs_desc"],
 				descStyle = "inline",
 				get = function() return self.db.profile.showDebuffs end,
 				set = function(_, value)
@@ -86,8 +86,8 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 			showDispellableDebuffs = {
 				type = "toggle",
-				name = "Stock Dispellable Icons",
-				desc = "Show the standard raid frame dispellable icons",
+				name = L["showDispellableDebuffs_name"],
+				desc = L["showDispellableDebuffs_desc"],
 				descStyle = "inline",
 				get = function() return self.db.profile.showDispellableDebuffs end,
 				set = function(_, value)
@@ -100,14 +100,14 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			-------------------------------------------------
 			visualOptions = {
 				type = "header",
-				name = "General",
+				name = L["General"],
 				order = 30,
 			},
 			indicatorFont = {
 				type = 'select',
 				dialogControl = "LSM30_Font",
-				name = "Indicator Font",
-				desc = "The the font used for the indicators",
+				name = L["indicatorFont_name"],
+				desc = L["indicatorFont_desc"],
 				values = AceGUIWidgetLSMlists.font,
 				get = function() return self.db.profile.indicatorFont end,
 				set = function(_, value)
@@ -118,9 +118,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				order = 31,
 			},
 			frameScale = {
-				name = "Raidframe Scale",
-				desc = "The the scale of the raidframe from 50% to 200% of the normal size",
 				type = "range",
+				name = L["frameScale_name"],
+				desc = L["frameScale_desc"],
 				min = 0.5,
 				max = 2,
 				step = 0.1,
@@ -133,9 +133,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				order = 33,
 			},
 			backgroundAlpha = {
-				name = "Background Opacity",
-				desc = "The opacity percentage of the raid frame background",
 				type = "range",
+				name = L["backgroundAlpha_name"],
+				desc = L["backgroundAlpha_desc"],
 				min = 0,
 				max = 1,
 				step = 0.05,
@@ -150,13 +150,13 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			-------------------------------------------------
 			outOfRangeOptions = {
 				type = "header",
-				name = "Out-of-Range",
+				name = L["Out-of-Range"],
 				order = 40,
 			},
 			customRangeCheck = {
-				name = "Override Default Distance",
 				type = "toggle",
-				desc = "Overrides the default out-of-range indicator distance (default 40 yards)",
+				name = L["customRangeCheck_name"],
+				desc = L["customRangeCheck_desc"],
 				get = function() return self.db.profile.customRangeCheck end,
 				set = function(_, value)
 					self.db.profile.customRangeCheck = value
@@ -166,9 +166,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				order = 41,
 			},
 			customRange = {
-				name = "Select a Custom Distance",
 				type = "select",
-				desc = "Changes the default 40 yard out-of-range distance to the specified distance",
+				name = L["customRangeCheck_name"],
+				desc = L["customRangeCheck_desc"],
 				values = { [5] = "Melee", [10] = "10 yards", [20] = "20 yards", [30] = "30 yards", [35] = "35 yards"},
 				get = function() return self.db.profile.customRange end,
 				set = function(_, value)
@@ -180,9 +180,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				order = 42,
 			},
 			rangeAlpha = {
-				name = "Out-of-Range Opacity",
-				desc = "The opacity percentage of the raid frame when out-of-range",
 				type = "range",
+				name = L["rangeAlpha_name"],
+				desc = L["rangeAlpha_desc"],
 				min = 0,
 				max = 1,
 				step = 0.05,
