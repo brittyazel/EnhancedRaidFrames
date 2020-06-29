@@ -46,7 +46,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 			blizzardRaidOptionsButton = {
 				type = 'execute',
-				name = L["blizzardRaidOptionsButton_name"],
+				name = L["Open the Blizzard Raid Profiles Menu"],
 				desc = L["blizzardRaidOptionsButton_desc"],
 				func = function() InterfaceOptionsFrame_OpenToCategory("Raid Profiles") end,
 				width = THIRD_WIDTH * 1.5,
@@ -60,7 +60,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 			showBuffs = {
 				type = "toggle",
-				name = L["showBuffs_name"],
+				name = L["Stock Buff Icons"],
 				desc = L["showBuffs_desc"],
 				descStyle = "inline",
 				get = function() return self.db.profile.showBuffs end,
@@ -73,7 +73,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 			showDebuffs = {
 				type = "toggle",
-				name = L["showDebuffs_name"],
+				name = L["Stock Debuff Icons"],
 				desc = L["showDebuffs_desc"],
 				descStyle = "inline",
 				get = function() return self.db.profile.showDebuffs end,
@@ -86,7 +86,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 			showDispellableDebuffs = {
 				type = "toggle",
-				name = L["showDispellableDebuffs_name"],
+				name = L["Stock Dispellable Icons"],
 				desc = L["showDispellableDebuffs_desc"],
 				descStyle = "inline",
 				get = function() return self.db.profile.showDispellableDebuffs end,
@@ -106,7 +106,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			indicatorFont = {
 				type = 'select',
 				dialogControl = "LSM30_Font",
-				name = L["indicatorFont_name"],
+				name = L["Indicator Font"],
 				desc = L["indicatorFont_desc"],
 				values = AceGUIWidgetLSMlists.font,
 				get = function() return self.db.profile.indicatorFont end,
@@ -119,7 +119,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 			frameScale = {
 				type = "range",
-				name = L["frameScale_name"],
+				name = L["Raidframe Scale"],
 				desc = L["frameScale_desc"],
 				min = 0.5,
 				max = 2,
@@ -134,7 +134,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 			backgroundAlpha = {
 				type = "range",
-				name = L["backgroundAlpha_name"],
+				name = L["Background Opacity"],
 				desc = L["backgroundAlpha_desc"],
 				min = 0,
 				max = 1,
@@ -155,7 +155,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 			customRangeCheck = {
 				type = "toggle",
-				name = L["customRangeCheck_name"],
+				name = L["Override Default Distance"],
 				desc = L["customRangeCheck_desc"],
 				get = function() return self.db.profile.customRangeCheck end,
 				set = function(_, value)
@@ -167,7 +167,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 			customRange = {
 				type = "select",
-				name = L["customRangeCheck_name"],
+				name = L["Select a Custom Distancee"],
 				desc = L["customRangeCheck_desc"],
 				values = { [5] = "Melee", [10] = "10 yards", [20] = "20 yards", [30] = "30 yards", [35] = "35 yards"},
 				get = function() return self.db.profile.customRange end,
@@ -181,7 +181,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 			rangeAlpha = {
 				type = "range",
-				name = L["rangeAlpha_name"],
+				name = L["Out-of-Range Opacity"],
 				desc = L["rangeAlpha_desc"],
 				min = 0,
 				max = 1,

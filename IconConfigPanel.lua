@@ -50,7 +50,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 			},
 			showRaidIcons = {
 				type = "toggle",
-				name = L["showRaidIcons_name"],
+				name = L["Show Raid Icons"],
 				desc = L["showRaidIcons_desc"],
 				get = function() return self.db.profile.showRaidIcons end,
 				set = function(_, value)
@@ -62,7 +62,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 			},
 			iconSize = {
 				type = 'range',
-				name = L["iconSize_name"],
+				name = L["Icon Size"],
 				desc = L["iconSize_desc"],
 				min = 1,
 				max = 40,
@@ -78,7 +78,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 			},
 			iconAlpha = {
 				type = "range",
-				name = L["iconAlpha_name"],
+				name = L["Icon Opacity"],
 				desc = L["iconAlpha_desc"],
 				min = 0,
 				max = 1,
@@ -100,7 +100,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 			},
 			iconPosition = {
 				type = "select",
-				name = L["iconPosition_name"],
+				name = L["Icon Position"],
 				desc = L["iconPosition_desc"],
 				values = POSITIONS,
 				get = function() return self.db.profile.iconPosition end,

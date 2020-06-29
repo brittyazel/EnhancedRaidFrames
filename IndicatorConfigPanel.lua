@@ -42,11 +42,11 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 	local indicatorOptions = {
 		type = "group",
 		childGroups = "select",
-		name = "Indicator Options",
+		name = L["Indicator Options"],
 		args  = {
 			instructions = {
 				type = "description",
-				name = "Please select an indicator position from the dropdown menu below"..":",
+				name = L["indicatorOptions_desc"]..":",
 				fontSize = "medium",
 				order = 1,
 			},
@@ -64,20 +64,20 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			--------------------------------------------
 			instructions = {
 				type = "description",
-				name = "The box to the right contains the list of auras to watch at the position"..": "..gsub(yellowCode,"<text>", v:lower()).."\n"..
+				name = L["instructions_desc1"]..": "..gsub(yellowCode,"<text>", v:lower()).."\n"..
 						"\n"..
-						"Type the names or spell IDs of each aura to track, each on a separate line".."\n",
+						L["instructions_desc2"].."\n",
 				fontSize = "medium",
 				width = THIRD_WIDTH,
 				order = 1,
 			},
 			auras = {
 				type = "input",
-				name = "Aura Watch List",
-				desc = "The list of buffs, debuffs, and/or wildcards to watch in this position",
+				name = L["Aura Watch List"],
+				desc = L["auras_desc"],
 				usage = "\n"..
 						"\n"..
-						"Any valid aura name or spell ID found in the game, spelled correctly, should work"..". ".."Example"..":\n"..
+						L["auras_usage"]..". "..L["Example"]..":\n"..
 						"\n"..
 						"Rejuvenation".."\n"..
 						"PvP".."\n"..
@@ -85,13 +85,13 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						"155777".."\n"..
 						"Magic".."\n"..
 						"\n"..
-						"Wildcards"..":\n"..
-						gsub(greenCode, "<text>", "Poison")..": ".."any poison effects".."\n"..
-						gsub(purpleCode, "<text>", "Curse")..": ".."any curse effects".."\n"..
-						gsub(brownCode, "<text>", "Disease")..": ".."any disease effects".."\n"..
-						gsub(blueCode, "<text>", "Magic")..": ".."any magic effects".."\n"..
-						gsub(redCode, "<text>", "PvP")..": ".."if the unit is PvP flagged".."\n"..
-						gsub(redCode, "<text>", "ToT")..": ".."if the unit is the target of target".."\n",
+						L["Wildcards"]..":\n"..
+						gsub(greenCode, "<text>", "Poison")..": "..L["poison_desc"].."\n"..
+						gsub(purpleCode, "<text>", "Curse")..": "..L["curse_desc"].."\n"..
+						gsub(brownCode, "<text>", "Disease")..": "..L["disease_desc"].."\n"..
+						gsub(blueCode, "<text>", "Magic")..": "..L["magic_desc"].."\n"..
+						gsub(redCode, "<text>", "PvP")..": "..L["pvp_desc"].."\n"..
+						gsub(redCode, "<text>", "ToT")..": "..L["tot_desc"].."\n",
 				multiline = 5,
 				get = function() return self.db.profile[i].auras end,
 				set = function(_, value)
@@ -104,18 +104,18 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			--------------------------------------------
 			visibilityOptions = {
 				type = "group",
-				name = "Visibility and Behavior",
+				name = L["Visibility and Behavior"],
 				order = 3,
 				args = {
 					generalOptions = {
 						type = "header",
-						name = "General",
+						name = L["General"],
 						order = 1,
 					},
 					mineOnly = {
 						type = "toggle",
-						name = "Mine Only",
-						desc = "Only show buffs and debuffs cast by me",
+						name = L["Mine Only"],
+						desc = L["mineOnly_desc"],
 						descStyle = "inline",
 						get = function()
 							return self.db.profile[i].mineOnly
@@ -129,8 +129,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					meOnly = {
 						type = "toggle",
-						name = "Show On Me Only",
-						desc = "Only only show this indicator on myself",
+						name = L["Show On Me Only"],
+						desc = L["meOnly_desc"],
 						descStyle = "inline",
 						get = function()
 							return self.db.profile[i].meOnly
@@ -144,8 +144,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					missingOnly = {
 						type = "toggle",
-						name = "Show Only if Missing",
-						desc = "Show only when the buff or debuff is missing",
+						name = L["Show Only if Missing"],
+						desc = L["missingOnly_desc"],
 						descStyle = "inline",
 						get = function()
 							return self.db.profile[i].missingOnly
@@ -160,13 +160,13 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					-------------------------------------------------
 					tooltipOptions = {
 						type = "header",
-						name = "Tooltips",
+						name = L["Tooltips"],
 						order = 10,
 					},
 					showTooltip = {
 						type = "toggle",
-						name = "Show Tooltip",
-						desc = "Show the tooltip on mouseover",
+						name = L["Show Tooltip"],
+						desc = L["showTooltip_desc"],
 						get = function()
 							return self.db.profile[i].showTooltip
 						end,
@@ -179,10 +179,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					tooltipLocation = {
 						type = "select",
-						name = "Tooltip Location",
-						desc = "The specified location where the tooltip should appear",
+						name = L["Tooltip Location"],
+						desc = L["tooltipLocation_desc"],
 						style = "dropdown",
-						values = {["ANCHOR_CURSOR"] = "Attached to Cursor", ["ANCHOR_PRESERVE"] = "Blizzard Default"},
+						values = {["ANCHOR_CURSOR"] = L["Attached to Cursor"], ["ANCHOR_PRESERVE"] = L["Blizzard Default"]},
 						sorting = {[1] = "ANCHOR_CURSOR", [2] = "ANCHOR_PRESERVE"},
 						get = function()
 							return self.db.profile[i].tooltipLocation
@@ -206,7 +206,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					-------------------------------------------------
 					generalHeader = {
 						type = "header",
-						name = "General",
+						name = L["General"],
 						order = 1,
 					},
 					indicatorSize = {
@@ -228,8 +228,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					indicatorVerticalOffset = {
 						type = "range",
-						name = "Vertical Offset",
-						desc = "Vertical offset percentage of the indicator relative to its starting position",
+						name = L["Vertical Offset"],
+						desc = L["verticalOffset_desc"],
 						min = -1,
 						max = 1,
 						step = .01,
@@ -243,8 +243,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					indicatorHorizontalOffset = {
 						type = "range",
-						name = "Horizontal Offset",
-						desc = "Horizontal offset percentage of the indicator relative to its starting position",
+						name = L["Horizontal Offset"],
+						desc = L["horizontalOffset_desc"],
 						min = -1,
 						max = 1,
 						step = .01,
@@ -418,7 +418,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					-------------------------------------------------
 					generalHeader = {
 						type = "header",
-						name = "General",
+						name = L["General"],
 						order = 1,
 					},
 					showText = {
@@ -592,7 +592,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					-------------------------------------------------
 					generalOptions = {
 						type = "header",
-						name = "General",
+						name = L["General"],
 						order = 1,
 					},
 					showCountdownSwipe = {

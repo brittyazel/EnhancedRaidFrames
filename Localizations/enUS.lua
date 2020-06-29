@@ -27,7 +27,6 @@ if not L then return end
 L["Enhanced Raid Frames"] = true
 
 L["General"] = true
-L["Position"] = true
 
 L["Indicator Options"] = true
 L["Icon Options"] = true
@@ -39,44 +38,47 @@ L["verticalOffset_desc"] = "Vertical offset percentage relative to the starting 
 L["Horizontal Offset"] = true
 L["horizontalOffset_desc"] = "Horizontal offset percentage relative to the starting position"
 
+L["Example"] = true
+L["Wildcards"] = true
+
 ----------------------------------------------------
 ------------------- General Panel ------------------
 ----------------------------------------------------
 
 L["generalOptions_desc"] = "Below you will find general configuration options. Please expand the 'Enhanced Raid Frames' menu item in the left-hand column to configure aura indicators, raid icons, and more"
 
-L["blizzardRaidOptionsButton_name"] = "Open the Blizzard Raid Profiles Menu"
+L["Open the Blizzard Raid Profiles Menu"] = true
 L["blizzardRaidOptionsButton_desc"] = "Launch the built-in raid profiles interface configuration menu"
 
 L["Default Icon Visibility"] = true
 
-L["showBuffs_name"] = "Stock Buff Icons"
+L["Stock Buff Icons"] = true
 L["showBuffs_desc"] = "Show the standard raid frame buff icons"
 
-L["showDebuffs_name"] = "Stock Debuff Icons"
+L["Stock Debuff Icons"] = true
 L["showDebuffs_desc"] = "Show the standard raid frame debuff icons"
 
-L["showDispellableDebuffs_name"] = "Stock Dispellable Icons"
+L["Stock Dispellable Icons"] = true
 L["showDispellableDebuffs_desc"] = "Show the standard raid frame dispellable icons"
 
-L["indicatorFont_name"] = "Indicator Font"
+L["Indicator Font"] = true
 L["indicatorFont_desc"] = "The the font used for the indicators"
 
-L["frameScale_name"] = "Raidframe Scale"
+L["Raidframe Scale"] = true
 L["frameScale_desc"] = "The the scale of the raidframe from 50% to 200% of the normal size"
 
-L["backgroundAlpha_name"] = "Background Opacity"
+L["Background Opacity"] = true
 L["backgroundAlpha_desc"] = "The opacity percentage of the raid frame background"
 
 L["Out-of-Range"] = true
 
-L["customRange_name"] = "Override Default Distance"
+L["Override Default Distance"] = true
 L["customRange_desc"] = "Overrides the default out-of-range indicator distance (default 40 yards)"
 
-L["customRangeCheck_name"] = "Select a Custom Distance"
+L["Select a Custom Distance"] = true
 L["customRangeCheck_desc"] = "Changes the default 40 yard out-of-range distance to the specified distance"
 
-L["rangeAlpha_name"] = "Out-of-Range Opacity"
+L["Out-of-Range Opacity"] = true
 L["rangeAlpha_desc"] = "The opacity percentage of the raid frame when out-of-range"
 
 
@@ -86,16 +88,58 @@ L["rangeAlpha_desc"] = "The opacity percentage of the raid frame when out-of-ran
 
 L["generalOptions_desc"] = "Configure how the raid marker icon should appear on the raid frames"
 
-L["showRaidIcons_name"] = "Show Raid Icons"
+L["Show Raid Icons"] = true
 L["showRaidIcons_desc"] = "Show the raid marker icon on the raid frames"
 
-L["iconSize_name"] = "Icon Size"
+L["Icon Size"] = true
 L["iconSize_desc"] = "The size of the raid icon in pixels"
 
-L["iconAlpha_name"] = "Icon Opacity"
+L["Icon Opacity"] = true
 L["iconAlpha_desc"] = "The opacity percentage of the raid icon"
 
-L["iconPosition_name"] = "Icon Position"
+L["Position"] = true
+
+L["Icon Position"] = true
 L["iconPosition_desc"] = "Position of the raid icon relative to the frame"
 
 
+----------------------------------------------------
+------------------ Indicator Panel -----------------
+----------------------------------------------------
+
+L["indicatorOptions_desc"] = "Please select an indicator position from the dropdown menu below"
+
+L["instructions_desc1"] = "The box to the right contains the list of auras to watch at the selected position"
+L["instructions_desc2"] = "Type the names or spell IDs of each aura to track, each on a separate line"
+
+L["Aura Watch List"] = true
+L["auras_desc"] = "The list of buffs, debuffs, and/or wildcards to watch in this position"
+L["auras_usage"] = "Any valid aura name or spell ID found in the game, spelled correctly, should work"
+
+L["poison_desc"] = "any poison debuffs"
+L["curse_desc"] = "any curse debuffs"
+L["disease_desc"] = "any disease debuffs"
+L["magic_desc"] = "any magic debuffs"
+L["pvp_desc"] = "if the unit is PvP flagged"
+L["tot_desc"] = "if the unit is the target of target"
+
+L["Visibility and Behavior"] = true
+
+L["Mine Only"] = true
+L["mineOnly_desc"] = "Only show buffs and debuffs cast by me"
+
+L["Show On Me Only"] = true
+L["meOnly_desc"] = "Only only show this indicator on myself"
+
+L["Show Only if Missing"] = true
+L["missingOnly_desc"] = "Show only when the buff or debuff is missing"
+
+L["Tooltips"] = true
+
+L["Show Tooltip"] = true
+L["showTooltip_desc"] = "Show the tooltip on mouseover"
+
+L["Tooltip Location"] = true
+L["tooltipLocation_desc"] = "The specified location where the tooltip should appear"
+L["Attached to Cursor"] = true
+L["Blizzard Default"] = true
