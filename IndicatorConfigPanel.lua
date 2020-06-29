@@ -22,10 +22,11 @@ local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 
-local POSITIONS = { [1] = "Top Left", [2] = "Top Center", [3] = "Top Right" ,
-					[4] = "Middle Left", [5] = "Middle Center", [6] = "Middle Right",
-					[7] = "Bottom Left", [8] = "Bottom Center", [9] = "Bottom Right"}
+local POSITIONS = { [1] = L["Top left"], [2] = L["Top Center"], [3] = L["Top Right"],
+					[4] = L["Middle Left"], [5] = L["Middle Center"], [6] = L["Middle Right"],
+					[7] = L["Bottom Left"], [8] = L["Bottom Center"], [9] = L["Bottom Right"]}
 
+local systemYellowCode = "|cFFffd100<text>|r"
 local yellowCode = "|cFFFFF569<text>|r"
 local redCode = "|cFFC41F3B<text>|r"
 local greenCode = "|cFFA9D271<text>|r"
@@ -64,7 +65,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			--------------------------------------------
 			instructions = {
 				type = "description",
-				name = L["instructions_desc1"]..": "..gsub(yellowCode,"<text>", v:lower()).."\n"..
+				name = gsub(systemYellowCode,"<text>", v).."\n"..
+						"\n"..
+						L["instructions_desc1"].."\n"..
 						"\n"..
 						L["instructions_desc2"].."\n",
 				fontSize = "medium",
@@ -86,12 +89,12 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						"Magic".."\n"..
 						"\n"..
 						L["Wildcards"]..":\n"..
-						gsub(greenCode, "<text>", "Poison")..": "..L["poison_desc"].."\n"..
-						gsub(purpleCode, "<text>", "Curse")..": "..L["curse_desc"].."\n"..
-						gsub(brownCode, "<text>", "Disease")..": "..L["disease_desc"].."\n"..
-						gsub(blueCode, "<text>", "Magic")..": "..L["magic_desc"].."\n"..
-						gsub(redCode, "<text>", "PvP")..": "..L["pvp_desc"].."\n"..
-						gsub(redCode, "<text>", "ToT")..": "..L["tot_desc"].."\n",
+						gsub(greenCode, "<text>", "Poison")..": "..L["poisonWildcard_desc"].."\n"..
+						gsub(purpleCode, "<text>", "Curse")..": "..L["curseWildcard_desc"].."\n"..
+						gsub(brownCode, "<text>", "Disease")..": "..L["diseaseWildcard_desc"].."\n"..
+						gsub(blueCode, "<text>", "Magic")..": "..L["magicWildcard_desc"].."\n"..
+						gsub(redCode, "<text>", "PvP")..": "..L["pvpWildcard_desc"].."\n"..
+						gsub(redCode, "<text>", "ToT")..": "..L["totWildcard_desc"].."\n",
 				multiline = 5,
 				get = function() return self.db.profile[i].auras end,
 				set = function(_, value)
@@ -200,7 +203,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			-------------------------------------------------
 			iconOptions = {
 				type = "group",
-				name = "Icon and Visuals",
+				name = L["Icon and Visuals"],
 				order = 4,
 				args = {
 					-------------------------------------------------
@@ -211,8 +214,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					indicatorSize = {
 						type = "range",
-						name = "Indicator Size",
-						desc = "The size of the indicator in pixels",
+						name = L["Indicator Size"],
+						desc = L["indicatorSize_desc"],
 						min = 1,
 						max = 30,
 						step = 1,
@@ -237,6 +240,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						set = function(_, value)
 							self.db.profile[i].indicatorVerticalOffset = value
 							self:RefreshConfig()
+							self:RefreshConfig()
 						end,
 						width = THIRD_WIDTH,
 						order = 3,
@@ -259,14 +263,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					-------------------------------------------------
 					iconHeader = {
 						type = "header",
-						name = "Icon",
+						name = L["Icon"],
 						order = 10,
 					},
 					showIcon = {
 						type = "toggle",
-						name = "Show Icon",
-						desc = "Show an icon if the buff or debuff is currently on the unit".."\n"..
-								"(if unchecked, a solid indicator color will be used)",
+						name = L["Show Icon"],
+						desc = L["showIcon_desc1"].."\n"..
+								"("..L["showIcon_desc2"]..")",
 						get = function()
 							return self.db.profile[i].showIcon
 						end,
@@ -279,8 +283,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					indicatorAlpha = {
 						type = "range",
-						name = "Icon Opacity",
-						desc = "The opacity percentage of the indicator icon",
+						name = L["Icon Opacity"],
+						desc = L["indicatorAlpha_desc"],
 						min = 0,
 						max = 1,
 						step = 0.05,
@@ -300,13 +304,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					-------------------------------------------------
 					colorHeader = {
 						type = "header",
-						name = "Color",
+						name = L["Color"],
 						order = 20,
 					},
 					indicatorColor = {
 						type = "color",
-						name = "Indicator Color",
-						desc = "The solid color used for the indicator when not showing the buff or debuff icon (unless augmented by other color options)",
+						name = L["Indicator Color"],
+						desc = L["indicatorColor_desc1"].."\n"..
+								"("..L["indicatorColor_desc2"]..")",
 						hasAlpha = true,
 						get = function()
 							return self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g, self.db.profile[i].indicatorColor.b, self.db.profile[i].indicatorColor.a
@@ -323,14 +328,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					colorIndicatorByDebuff = {
 						type = "toggle",
-						name = "Color By Debuff Type",
-						desc = "Color the indicator depending on the debuff type".."\n"..
-								"(this will override the normal coloring)".."\n"..
+						name = L["Color By Debuff Type"],
+						desc = L["colorByDebuff_desc"].."\n"..
+								"("..L["colorOverride_desc"]..")".."\n"..
 								"\n"..
-								gsub(greenCode, "<text>", "Poison").."\n"..
-								gsub(purpleCode, "<text>", "Curse").."\n"..
-								gsub(brownCode, "<text>", "Disease").."\n"..
-								gsub(blueCode, "<text>", "Magic").."\n",
+								gsub(greenCode, "<text>", L["Poison"]).."\n"..
+								gsub(purpleCode, "<text>", L["Curse"]).."\n"..
+								gsub(brownCode, "<text>", L["Disease"]).."\n"..
+								gsub(blueCode, "<text>", L["Magic"]).."\n",
 						get = function()
 							return self.db.profile[i].colorIndicatorByDebuff
 						end,
@@ -346,12 +351,12 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					colorIndicatorByTime = {
 						type = "toggle",
-						name = "Color By Remaining Time",
-						desc = "Color the indicator based on remaining time".."\n"..
-								"(this will override the normal coloring)".."\n"..
+						name = L["Color By Remaining Time"],
+						desc = L["colorByTime_desc"].."\n"..
+								"("..L["colorOverride_desc"]..")".."\n"..
 								"\n"..
-								gsub(redCode, "<text>", "Time #1").."\n"..
-								gsub(yellowCode, "<text>", "Time #2"),
+								gsub(redCode, "<text>", L["Time #1"]).."\n"..
+								gsub(yellowCode, "<text>", L["Time #2"]),
 						get = function()
 							return self.db.profile[i].colorIndicatorByTime
 						end,
@@ -367,9 +372,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					colorIndicatorByTime_low = {
 						type = "range",
-						name = "Time #1",
-						desc = "The time (in seconds) for the lower boundary".."\n"..
-								"('0' means ignored)",
+						name = L["Time #1"],
+						desc = L["colorByTime_low_desc"].."\n"..
+								"("..L["zeroMeansIgnored_desc"]..")",
 						min = 0,
 						max = 10,
 						step = 1,
@@ -388,9 +393,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					colorIndicatorByTime_high = {
 						type = "range",
-						name = "Time #2",
-						desc = "The time (in seconds) for the upper boundary".."\n"..
-								"('0' means ignored)",
+						name = L["Time #2"],
+						desc = L["colorByTime_high_desc"].."\n"..
+								"("..L["zeroMeansIgnored_desc"]..")",
 						min = 0,
 						max = 10,
 						step = 1,
@@ -412,7 +417,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			--------------------------------------------
 			textOptions = {
 				type = "group",
-				name = "Text",
+				name = L["Text"],
 				order = 5,
 				args = {
 					-------------------------------------------------
@@ -423,10 +428,11 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					showText = {
 						type = "select",
-						name = "Show Text",
-						desc = "The text to show on the indicator frame",
+						name = L["Show Text"],
+						desc = L["showText_desc"],
 						style = "dropdown",
-						values = {["stack"] = "Stack Size", ["countdown"] = "Countdown", ["stack+countdown"] = "Stack Size + Countdown", ["none"] = "None"},
+						values = {["stack"] = L["Show Text"], ["countdown"] = L["Countdown"],
+								  ["stack+countdown"] = L["Stack Size + Countdown"], ["none"] = L["None"]},
 						sorting = {[1] = "stack", [2] = "countdown", [3] = "stack+countdown", [4] = "none"},
 						get = function()
 							return self.db.profile[i].showText
@@ -440,8 +446,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					textSize = {
 						type = "range",
-						name = "Text Size",
-						desc = "The size of the indicator (in pixels)",
+						name = L["Text Size"],
+						desc = L["textSize_desc"],
 						min = 1,
 						max = 30,
 						step = 1,
@@ -463,14 +469,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					-------------------------------------------------
 					colorHeader = {
 						type = "header",
-						name = "Color",
+						name = L["Color"],
 						order = 10,
 					},
 					textColor = {
 						type = "color",
-						name = "Text Color",
-						desc = "The color used for the indicator text".."\n"..
-						"(unless augmented by other text color options)",
+						name = L["Text Color"],
+						desc = L["textColor_desc1"].."\n"..
+						"("..L["textColor_desc2"]..")",
 						hasAlpha = true,
 						get = function()
 							return self.db.profile[i].textColor.r, self.db.profile[i].textColor.g, self.db.profile[i].textColor.b, self.db.profile[i].textColor.a
@@ -489,14 +495,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					colorTextByDebuff = {
 						type = "toggle",
-						name = "Color By Debuff Type",
-						desc = "Color the indicator text depending on the debuff type".."\n"..
-								"(this will override the normal coloring)".."\n"..
+						name = L["Color By Debuff Type"],
+						desc = L["colorByDebuff_desc"].."\n"..
+								"("..L["colorOverride_desc"]..")".."\n"..
 								"\n"..
-								gsub(greenCode, "<text>", "Poison").."\n"..
-								gsub(purpleCode, "<text>", "Curse").."\n"..
-								gsub(brownCode, "<text>", "Disease").."\n"..
-								gsub(blueCode, "<text>", "Magic").."\n",
+								gsub(greenCode, "<text>", L["Poison"]).."\n"..
+								gsub(purpleCode, "<text>", L["Curse"]).."\n"..
+								gsub(brownCode, "<text>", L["Disease"]).."\n"..
+								gsub(blueCode, "<text>", L["Magic"]).."\n",
 						get = function()
 							return self.db.profile[i].colorTextByDebuff
 						end,
@@ -514,9 +520,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					colorTextByTime = {
 						type = "toggle",
-						name = "Color By Remaining Time",
-						desc = "Color the indicator text based on remaining time".."\n"..
-								"(this will override the normal coloring)".."\n"..
+						name = L["Color By Remaining Time"],
+						desc = L["colorByTime_desc"].."\n"..
+								"("..L["colorOverride_desc"]..")".."\n"..
 								"\n"..
 								gsub(redCode, "<text>", "Time #1").."\n"..
 								gsub(yellowCode, "<text>", "Time #2"),
@@ -537,9 +543,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					colorTextByTime_low = {
 						type = "range",
-						name = "Time #1",
-						desc = "The time (in seconds) for the lower boundary".."\n"..
-								"('0' means ignored)",
+						name = L["Time #1"],
+						desc = L["colorByTime_low_desc"].."\n"..
+								"("..L["zeroMeansIgnored_desc"]..")",
 						min = 0,
 						max = 10,
 						step = 1,
@@ -560,9 +566,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					colorTextByTime_high = {
 						type = "range",
-						name = "Time #2",
-						desc = "The time (in seconds) for the upper boundary".."\n"..
-								"('0' means ignored)",
+						name = L["Time #2"],
+						desc = L["colorByTime_high_desc"].."\n"..
+								"("..L["zeroMeansIgnored_desc"]..")",
 						min = 0,
 						max = 10,
 						step = 1,
@@ -586,7 +592,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			--------------------------------------------
 			animationOptions = {
 				type = "group",
-				name = "Animations",
+				name = L["Animations"],
 				order = 6,
 				args = {
 					-------------------------------------------------
@@ -597,8 +603,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					showCountdownSwipe = {
 						type = "toggle",
-						name = "Show Countdown Swipe",
-						desc = "Show the clockwise swipe animation specifying the time left on the buff or debuff",
+						name = L["Show Countdown Swipe"],
+						desc = L["showCountdownSwipe_desc"],
 						get = function()
 							return self.db.profile[i].showCountdownSwipe
 						end,
@@ -611,8 +617,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					indicatorGlow = {
 						type = "toggle",
-						name = "Indicator Glow Effect",
-						desc = "Display a glow animation effect on the indicator to make it easier to spot",
+						name = L["Indicator Glow Effect"],
+						desc = L["showCountdownSwipe_desc"],
 						get = function()
 							return self.db.profile[i].indicatorGlow
 						end,
@@ -625,9 +631,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					},
 					glowRemainingSecs = {
 						type = "range",
-						name = "Glow At Countdown Time",
-						desc = "The amount of time (in seconds) remaining on the buff or debuff countdown before the glowing starts".."\n"..
-								"('0' means it will always glow)",
+						name = L["Glow At Countdown Time"],
+						desc = L["glowRemainingSecs_desc1"].."\n"..
+								"("..L["glowRemainingSecs_desc2"]..")",
 						min = 0,
 						max = 10,
 						step = 1,
