@@ -24,13 +24,20 @@ if not L then return end
 ----------------------------------------------------
 ---------------------- Common ----------------------
 ----------------------------------------------------
+L["Enhanced Raid Frames"] = true
+
 L["General"] = true
+L["Position"] = true
 
 L["Indicator Options"] = true
 L["Icon Options"] = true
 L["Profiles"] = true
 
+L["Vertical Offset"] = true
+L["verticalOffset_desc"] = "Vertical offset percentage relative to the starting position"
 
+L["Horizontal Offset"] = true
+L["horizontalOffset_desc"] = "Horizontal offset percentage relative to the starting position"
 
 ----------------------------------------------------
 ------------------- General Panel ------------------
@@ -72,5 +79,23 @@ L["customRangeCheck_desc"] = "Changes the default 40 yard out-of-range distance 
 L["rangeAlpha_name"] = "Out-of-Range Opacity"
 L["rangeAlpha_desc"] = "The opacity percentage of the raid frame when out-of-range"
 
+
+----------------------------------------------------
+--------------------- Icon Panel -------------------
+----------------------------------------------------
+
+L["generalOptions_desc"] = "Configure how the raid marker icon should appear on the raid frames"
+
+L["showRaidIcons_name"] = "Show Raid Icons"
+L["showRaidIcons_desc"] = "Show the raid marker icon on the raid frames"
+
+L["iconSize_name"] = "Icon Size"
+L["iconSize_desc"] = "The size of the raid icon in pixels"
+
+L["iconAlpha_name"] = "Icon Opacity"
+L["iconAlpha_desc"] = "The opacity percentage of the raid icon"
+
+L["iconPosition_name"] = "Icon Position"
+L["iconPosition_desc"] = "Position of the raid icon relative to the frame"
 
 

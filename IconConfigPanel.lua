@@ -38,20 +38,20 @@ function EnhancedRaidFrames:CreateIconOptions()
 		args  = {
 			instructions = {
 				type = "description",
-				name = "Configure how the raid marker icon should appear on the raid frames:",
+				name = L["generalOptions_desc"]..":",
 				fontSize = "medium",
 				order = 1,
 			},
 			-------------------------------------------------
 			generalHeader = {
 				type = "header",
-				name = "General",
+				name = L["General"],
 				order = 2,
 			},
 			showRaidIcons = {
 				type = "toggle",
-				name = "Show Raid Icons",
-				desc = "Show the raid marker icon on the raid frames",
+				name = L["showRaidIcons_name"],
+				desc = L["showRaidIcons_desc"],
 				get = function() return self.db.profile.showRaidIcons end,
 				set = function(_, value)
 					self.db.profile.showRaidIcons = value
@@ -62,8 +62,8 @@ function EnhancedRaidFrames:CreateIconOptions()
 			},
 			iconSize = {
 				type = 'range',
-				name = "Icon Size",
-				desc = "The size of the raid icon in pixels",
+				name = L["iconSize_name"],
+				desc = L["iconSize_desc"],
 				min = 1,
 				max = 40,
 				step = 1,
@@ -78,8 +78,8 @@ function EnhancedRaidFrames:CreateIconOptions()
 			},
 			iconAlpha = {
 				type = "range",
-				name = "Icon Opacity",
-				desc = "The opacity percentage of the raid icon",
+				name = L["iconAlpha_name"],
+				desc = L["iconAlpha_desc"],
 				min = 0,
 				max = 1,
 				step = 0.05,
@@ -95,13 +95,13 @@ function EnhancedRaidFrames:CreateIconOptions()
 			-------------------------------------------------
 			positionOptions = {
 				type = "header",
-				name = "Position",
+				name = L["Position"],
 				order = 20,
 			},
 			iconPosition = {
 				type = "select",
-				name = "Icon Position",
-				desc = "Position of the raid icon relative to the frame",
+				name = L["iconPosition_name"],
+				desc = L["iconPosition_desc"],
 				values = POSITIONS,
 				get = function() return self.db.profile.iconPosition end,
 				set = function(_, value)
@@ -114,8 +114,8 @@ function EnhancedRaidFrames:CreateIconOptions()
 			},
 			iconVerticalOffset = {
 				type = "range",
-				name = "Vertical Offset",
-				desc = "Vertical offset percentage of the raid icon relative to its starting position",
+				name = L["Vertical Offset"],
+				desc = L["verticalOffset_desc"],
 				min = -1,
 				max = 1,
 				step = .01,
@@ -130,8 +130,8 @@ function EnhancedRaidFrames:CreateIconOptions()
 			},
 			iconHorizontalOffset = {
 				type = "range",
-				name = "Horizontal Offset",
-				desc = "Horizontal offset percentage of the raid icon relative to its starting position",
+				name = L["Horizontal Offset"],
+				desc = L["horizontalOffset_desc"],
 				min = -1,
 				max = 1,
 				step = .01,
