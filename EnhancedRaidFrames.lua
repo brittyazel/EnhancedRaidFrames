@@ -70,6 +70,11 @@ function EnhancedRaidFrames:OnEnable()
 
 	-- notify of any new major updates, if necessary
 	self:UpdateNotifier()
+
+	self:RegisterChatCommand("erf",function()
+		InterfaceOptionsFrame_OpenToCategory("Enhanced Raid Frames")
+		InterfaceOptionsFrame_OpenToCategory("Enhanced Raid Frames")
+	end)
 end
 
 --- **OnDisable**, which is only called when your addon is manually being disabled.
@@ -115,16 +120,16 @@ function EnhancedRaidFrames:Setup()
 
 	self.config = LibStub("AceConfigRegistry-3.0")
 	self.config:RegisterOptionsTable("Enhanced Raid Frames", generalOptions)
-	self.config:RegisterOptionsTable("Indicator Options", indicatorOptions)
-	self.config:RegisterOptionsTable("Icon Options", iconOptions)
-	self.config:RegisterOptionsTable("Profiles", profiles)
+	self.config:RegisterOptionsTable("ERF Indicator Options", indicatorOptions)
+	self.config:RegisterOptionsTable("ERF Icon Options", iconOptions)
+	self.config:RegisterOptionsTable("ERF Profiles", profiles)
 
 	-- Add to config panels to in-game interface options
 	self.dialog = LibStub("AceConfigDialog-3.0")
 	self.dialog:AddToBlizOptions("Enhanced Raid Frames", L["Enhanced Raid Frames"])
-	self.dialog:AddToBlizOptions("Indicator Options", L["Indicator Options"], "Enhanced Raid Frames")
-	self.dialog:AddToBlizOptions("Icon Options", L["Icon Options"], "Enhanced Raid Frames")
-	self.dialog:AddToBlizOptions("Profiles", L["Profiles"], "Enhanced Raid Frames")
+	self.dialog:AddToBlizOptions("ERF Indicator Options", L["Indicator Options"], "Enhanced Raid Frames")
+	self.dialog:AddToBlizOptions("ERF Icon Options", L["Icon Options"], "Enhanced Raid Frames")
+	self.dialog:AddToBlizOptions("ERF Profiles", L["Profiles"], "Enhanced Raid Frames")
 end
 
 -- Update all raid frames
