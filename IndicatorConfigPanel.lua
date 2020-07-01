@@ -431,8 +431,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						name = L["Show Text"],
 						desc = L["showText_desc"],
 						style = "dropdown",
-						values = {["stack"] = L["Show Text"], ["countdown"] = L["Countdown"],
-								  ["stack+countdown"] = L["Stack Size + Countdown"], ["none"] = L["None"]},
+						values = {["stack"] = L["Stack Size"], ["countdown"] = L["Countdown"],
+								  ["stack+countdown"] = L["Stack Size"].." + "..L["Countdown"], ["none"] = L["None"]},
 						sorting = {[1] = "stack", [2] = "countdown", [3] = "stack+countdown", [4] = "none"},
 						get = function()
 							return self.db.profile[i].showText

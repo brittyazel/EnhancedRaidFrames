@@ -197,9 +197,8 @@ L["Text"] = true
 L["Show Text"] = true
 L["showText_desc"] = "The text to show on the indicator frame"
 
-L["Show Text"] = true
+L["Stack Size"] = true
 L["Countdown"] = true
-L["Stack Size + Countdown"] = true
 L["None"] = true
 
 L["Text Size"] = true
