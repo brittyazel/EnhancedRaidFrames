@@ -95,7 +95,7 @@ L["Indicator Font"] = true
 L["indicatorFont_desc"] = "The the font used for the indicators"
 
 L["Raidframe Scale"] = true
-L["frameScale_desc"] = "The the scale of the raidframe from 50% to 200% of the normal size"
+L["frameScale_desc"] = "The the scale of the raidframe relative to the normal size"
 
 L["Background Opacity"] = true
 L["backgroundAlpha_desc"] = "The opacity percentage of the raid frame background"
