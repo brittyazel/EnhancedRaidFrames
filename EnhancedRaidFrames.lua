@@ -126,7 +126,7 @@ function EnhancedRaidFrames:Setup()
 
 	-- Add to config panels to in-game interface options
 	self.dialog = LibStub("AceConfigDialog-3.0")
-	self.dialog:AddToBlizOptions("Enhanced Raid Frames", L["Enhanced Raid Frames"])
+	self.dialog:AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
 	self.dialog:AddToBlizOptions("ERF Indicator Options", L["Indicator Options"], "Enhanced Raid Frames")
 	self.dialog:AddToBlizOptions("ERF Icon Options", L["Icon Options"], "Enhanced Raid Frames")
 	self.dialog:AddToBlizOptions("ERF Profiles", L["Profiles"], "Enhanced Raid Frames")

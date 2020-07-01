@@ -24,8 +24,6 @@ if not L then return end
 ----------------------------------------------------
 ---------------------- Common ----------------------
 ----------------------------------------------------
-L["Enhanced Raid Frames"] = true
-
 L["General"] = true
 
 L["Indicator Options"] = true
