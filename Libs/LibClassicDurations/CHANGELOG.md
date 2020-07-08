@@ -1,6 +1,6 @@
 # LibClassicDurations
 
-## [1.59](https://github.com/rgd87/LibClassicDurations/tree/1.59) (2020-06-23)
-[Full Changelog](https://github.com/rgd87/LibClassicDurations/compare/1.58...1.59)
+## [1.61](https://github.com/rgd87/LibClassicDurations/tree/1.61) (2020-06-29)
+[Full Changelog](https://github.com/rgd87/LibClassicDurations/compare/1.60...1.61) [Previous Releases](https://github.com/rgd87/LibClassicDurations/releases)
 
-- Check for standalone after all addons are loaded  
+- Purging old guids before merge  
