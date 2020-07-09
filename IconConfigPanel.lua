@@ -35,6 +35,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 	local iconOptions = {
 		type = "group",
 		childGroups = "tree",
+		name = L["Icon Options"],
 		args  = {
 			instructions = {
 				type = "description",

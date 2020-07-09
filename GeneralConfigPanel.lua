@@ -31,6 +31,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 	local generalOptions = {
 		type = "group",
 		childGroups = "tree",
+		name = L["General Options"],
 		args  = {
 			instructions = {
 				type = "description",

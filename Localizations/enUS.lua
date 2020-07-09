@@ -26,6 +26,7 @@ if not L then return end
 ----------------------------------------------------
 L["General"] = true
 
+L["General Options"] = true
 L["Indicator Options"] = true
 L["Icon Options"] = true
 L["Profiles"] = true
