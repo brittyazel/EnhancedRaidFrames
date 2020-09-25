@@ -1,4 +1,4 @@
-﻿## Interface: 80300
+﻿## Interface: 90001
 ## Title: Enhanced Raid Frames
 ## Notes: Enhances the Blizzard raid frames with configurable Buff/Debuff indicators
 ## Author: Soyier
