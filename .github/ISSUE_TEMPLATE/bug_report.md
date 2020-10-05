@@ -1,7 +1,7 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: "[Client Version] Title for my issue..."
+title: ''
 labels: bug
 assignees: brittyazel
 
@@ -24,8 +24,9 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Versions:**
- - Neuron Version [e.g. 1.3.6a]
- - Client Version [e.g. Retail or Classic]
+ - Addon Version [e.g. 1.2.1]
+ - Client [e.g. Retail or Classic]
+ - Client Patch Version [e.g. 9.0.1]
 
 **Additional context**
 Add any other context about the problem here.
