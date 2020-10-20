@@ -1,18 +1,18 @@
-tag b3710b114646b1d8d131c2eb5877c45473c7f9f5 v1.14
-Author:	Hendrik Leppkes <h.leppkes@gmail.com>
-Date:	Tue Aug 13 11:32:57 2019 +0200
+tag 86a0d38e50b44b34c45fae4d9e00e8822b48b1d5 v1.16
+Author:	Kyle Buller <bullerk@gmail.com>
+Date:	Sun Oct 18 11:14:43 2020 -0500
 
-Tag as v1.14
+Tagging as v1.16
 
-commit 218cdbdbc25348863124728fdf748eb4ea1e3608
-Author: Hendrik Leppkes <h.leppkes@gmail.com>
-Date:   Tue Aug 13 11:32:47 2019 +0200
+commit da9763c90430bf561918166e3436e62eaa0369b6
+Author: Kyle Buller <bullerk@gmail.com>
+Date:   Sun Oct 18 10:56:05 2020 -0500
 
-    Update TOC
+    Always show the config options
 
-commit 6ef8d5183a3efeb8d8fc9e96890dffaddb203bc5
-Author: Hendrik Leppkes <h.leppkes@gmail.com>
-Date:   Sat Aug 10 20:40:20 2019 +0200
+commit 044c32eb446e6e4d8b0779511fbc37c5475b7aa5
+Author: Kyle Buller <bullerk@gmail.com>
+Date:   Wed Oct 14 02:10:18 2020 -0500
 
-    Don't load on WoW Classic
+    Update TOC for 9.0.1
 
