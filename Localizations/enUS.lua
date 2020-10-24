@@ -117,7 +117,7 @@ L["rangeAlpha_desc"] = "The opacity percentage of the raid frame when out-of-ran
 --------------------- Icon Panel -------------------
 ----------------------------------------------------
 
-L["generalOptions_desc"] = "Configure how the raid marker icon should appear on the raid frames"
+L["iconOptions_desc"] = "Configure how the raid marker icon should appear on the raid frames"
 
 L["Show Raid Icons"] = true
 L["showRaidIcons_desc"] = "Show the raid marker icon on the raid frames"

@@ -39,7 +39,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 		args  = {
 			instructions = {
 				type = "description",
-				name = L["generalOptions_desc"]..":",
+				name = L["iconOptions_desc"]..":",
 				fontSize = "medium",
 				order = 1,
 			},
