@@ -69,7 +69,7 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 
 		--create font strings for both layers, the normal layer and the cooldown frame layer
 		--the font string is further modified in SetIndicatorAppearance()
-		indicatorFrame.cd_textPtr = indicatorFrame.cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the animation, text should be on the parent frame
+		indicatorFrame.cd_textPtr = indicatorFrame.cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we show the cooldown animation, text should be on the cooldown frame
 		indicatorFrame.cd_textPtr:SetPoint("CENTER", indicatorFrame, "CENTER", 0, 0)
 		indicatorFrame.normal_textPtr = indicatorFrame:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the cooldown animation, text should be on the parent frame
 		indicatorFrame.normal_textPtr:SetPoint("CENTER", indicatorFrame, "CENTER", 0, 0)
@@ -502,7 +502,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 			break
 		end
 
-		--it's important to use the 4th argument in string.find to turn of pattern matching, otherwise things with parentheses in them will fail to be found
+		--it's important to use the 4th argument in string.find to turn off pattern matching, otherwise things with parentheses in them will fail to be found
 		if auraName and self.allAuras:find(" "..auraName:lower().." ", nil, true) or self.allAuras:find(" "..spellID.." ", nil, true) or (debuffType and self.allAuras:find(" "..debuffType:lower().." ", nil, true)) then -- Only add the spell if we're watching for it
 			local auraTable = {}
 			auraTable.auraType = "debuff"
