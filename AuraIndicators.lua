@@ -53,29 +53,13 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 	-- Create indicators
 	for i = 1, 9 do
 		--We have to use CompactAuraTemplate to allow for our clicks to be passed through, otherwise our frames won't allow selecting the raid frame behind it
-		frame.ERFIndicators[i] = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
+		frame.ERFIndicators[i] = CreateFrame("Button", nil, frame, "ERFIndicatorTemplate")
 
 		--create local pointer for readability
 		local indicatorFrame = frame.ERFIndicators[i]
 
 		--mark the position of this particular frame for use later (i.e. 1->9)
 		indicatorFrame.position = i
-
-		--register clicks
-		indicatorFrame:RegisterForClicks("LeftButtonDown", "RightButtonUp")
-
-		--set proper frame level
-		indicatorFrame:SetFrameStrata("HIGH")
-
-		--create font strings for both layers, the normal layer and the cooldown frame layer
-		--the font string is further modified in SetIndicatorAppearance()
-		indicatorFrame.cd_textPtr = indicatorFrame.cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we show the cooldown animation, text should be on the cooldown frame
-		indicatorFrame.cd_textPtr:SetPoint("CENTER", indicatorFrame, "CENTER", 0, 0)
-		indicatorFrame.normal_textPtr = indicatorFrame:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall") --if we don't show the cooldown animation, text should be on the parent frame
-		indicatorFrame.normal_textPtr:SetPoint("CENTER", indicatorFrame, "CENTER", 0, 0)
-
-		--create a pointer at indicatorFrame.text that will be our handle going forward to our two string pointers
-		indicatorFrame.text = indicatorFrame.normal_textPtr --set initial pointer to indicatorFrame.text
 
 		--hook enter and leave for showing ability tooltips
 		self:SecureHookScript(indicatorFrame, "OnEnter", function() self:Tooltip_OnEnter(indicatorFrame) end)
@@ -139,18 +123,16 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 
 		--------------------------------------
 
-		--set font size, shape, font, and switch our pointer if necessary
+		--set font size, shape, font, and switch our text object
+		indicatorFrame.text:SetText("") --clear previous text
 		local font = (media and media:Fetch('font', self.db.profile.indicatorFont)) or STANDARD_TEXT_FONT
+		indicatorFrame.text:SetFont(font, self.db.profile[i].textSize, "OUTLINE")
 
-		--switch the pointer for the text overlay
+		--switch the parent for our text frame to keep the text on top of the cooldown animation
 		if not self.db.profile[i].showCountdownSwipe then
-			indicatorFrame.text:SetText("") --clear previous text pointer
-			indicatorFrame.text = indicatorFrame.normal_textPtr --switch indicatorFrame.text to point to normal_textPtr
-			indicatorFrame.text:SetFont(font, self.db.profile[i].textSize, "OUTLINE")
+			indicatorFrame.text:SetParent(indicatorFrame)
 		else
-			indicatorFrame.text:SetText("") --clear previous text pointer
-			indicatorFrame.text = indicatorFrame.cd_textPtr --switch indicatorFrame.text to point to cd_textPtr
-			indicatorFrame.text:SetFont(font, self.db.profile[i].textSize, "OUTLINE")
+			indicatorFrame.text:SetParent(indicatorFrame.cooldown)
 		end
 
 		--clear any animations
