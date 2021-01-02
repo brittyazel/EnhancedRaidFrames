@@ -18,6 +18,8 @@ UtilitiesAndOverrides.lua
 AuraIndicators.lua
 RaidIcons.lua
 
+XML\ERFIndicatorTemplate.xml
+
 GeneralConfigPanel.lua
 IndicatorConfigPanel.lua
 IconConfigPanel.lua
