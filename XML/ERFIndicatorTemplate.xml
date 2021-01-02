@@ -31,7 +31,7 @@
         </Layers>
         <Scripts>
             <OnLoad>
-                self:RegisterForClicks("LeftButtonUp", "RightButtonDown");
+                self:RegisterForClicks("LeftButtonDown", "RightButtonUp", "MiddleButtonDown");
             </OnLoad>
         </Scripts>
     </Button>
