@@ -68,9 +68,9 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		--mark the position of this particular frame for use later (i.e. 1->9)
 		indicatorFrame.position = i
 
-		--hook enter and leave for showing ability tooltips
-		self:SecureHookScript(indicatorFrame, "OnEnter", function() self:Tooltip_OnEnter(indicatorFrame) end)
-		self:SecureHookScript(indicatorFrame, "OnLeave", function() GameTooltip:Hide() end)
+		--hook OnEnter and OnLeave for showing and hiding ability tooltips
+		indicatorFrame:SetScript("OnEnter", function() self:Tooltip_OnEnter(indicatorFrame) end)
+		indicatorFrame:SetScript("OnLeave", function() GameTooltip:Hide() end)
 	end
 
 	--set our initial indicator appearance
