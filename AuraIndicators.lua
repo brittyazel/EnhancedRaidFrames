@@ -52,8 +52,15 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 
 	-- Create indicators
 	for i = 1, 9 do
-		--We have to use CompactAuraTemplate to allow for our clicks to be passed through, otherwise our frames won't allow selecting the raid frame behind it
-		frame.ERFIndicators[i] = CreateFrame("Button", nil, frame, "ERFIndicatorTemplate")
+		--I'm not sure if this is ever the case, but to stop us from creating redundant frames we should try to re-capture them when possible
+		--On the global table, our frames our named "CompactRaidFrame#" + "ERFIndicator" + index#, i.e. "CompactRaidFrame1ERFIndicator1"
+		if not _G[frame:GetName().."ERFIndicator"..i] then
+			--We have to use CompactAuraTemplate to allow for our clicks to be passed through, otherwise our frames won't allow selecting the raid frame behind it
+			frame.ERFIndicators[i] = CreateFrame("Button", frame:GetName().."ERFIndicator"..i, frame, "ERFIndicatorTemplate")
+		else
+			frame.ERFIndicators[i] =  _G[frame:GetName().."ERFIndicator"..i]
+			frame.ERFIndicators[i]:SetParent(frame) --if we capture an old indicator frame, we should reattach it to the current unit frame
+		end
 
 		--create local pointer for readability
 		local indicatorFrame = frame.ERFIndicators[i]
