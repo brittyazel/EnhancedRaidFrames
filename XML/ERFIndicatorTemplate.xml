@@ -19,21 +19,30 @@
 
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://github.com/Gethe/wow-ui-source/blob/live/FrameXML/UI.xsd">
 
-    <Button name="ERFIndicatorTemplate" inherits="CompactAuraTemplate" virtual="true">
+    <Button name="ERFIndicatorTemplate" virtual="true">
         <Layers>
+            <Layer level="ARTWORK">
+                <Texture name="$parentIcon" parentKey="Icon" setAllPoints="true"/>
+            </Layer>
             <Layer level="OVERLAY">
-                <FontString parentKey="text" inherits="NumberFontNormalSmall">
+                <FontString parentKey="Text" inherits="NumberFontNormalSmall">
                     <Anchors>
                         <Anchor point="CENTER" x="0" y="0"/>
                     </Anchors>
                 </FontString>
             </Layer>
         </Layers>
-        <Scripts>
-            <OnLoad>
-                self:RegisterForClicks("LeftButtonDown", "RightButtonUp", "MiddleButtonDown");
-            </OnLoad>
-        </Scripts>
+        <Frames>
+            <Cooldown name="$parentCooldown" parentKey="Cooldown" hideCountdownNumbers="true" inherits="CooldownFrameTemplate" reverse="true" hidden="true">
+                <Anchors>
+                    <Anchor point="CENTER">
+                        <Offset>
+                            <AbsDimension x="0" y="-1"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Cooldown>
+        </Frames>
     </Button>
 
 </Ui>

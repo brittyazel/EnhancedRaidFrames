@@ -71,6 +71,7 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		--hook OnEnter and OnLeave for showing and hiding ability tooltips
 		indicatorFrame:SetScript("OnEnter", function() self:Tooltip_OnEnter(indicatorFrame) end)
 		indicatorFrame:SetScript("OnLeave", function() GameTooltip:Hide() end)
+		indicatorFrame:SetMouseClickEnabled(false) --this MUST come after the SetScript lines for OnEnter and OnLeave. SetScript will re-enable mouse clicks when called.
 	end
 
 	--set our initial indicator appearance
@@ -131,21 +132,21 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		--------------------------------------
 
 		--set font size, shape, font, and switch our text object
-		indicatorFrame.text:SetText("") --clear previous text
+		indicatorFrame.Text:SetText("") --clear previous text
 		local font = (media and media:Fetch('font', self.db.profile.indicatorFont)) or STANDARD_TEXT_FONT
-		indicatorFrame.text:SetFont(font, self.db.profile[i].textSize, "OUTLINE")
+		indicatorFrame.Text:SetFont(font, self.db.profile[i].textSize, "OUTLINE")
 
 		--switch the parent for our text frame to keep the text on top of the cooldown animation
 		if not self.db.profile[i].showCountdownSwipe then
-			indicatorFrame.text:SetParent(indicatorFrame)
+			indicatorFrame.Text:SetParent(indicatorFrame)
 		else
-			indicatorFrame.text:SetParent(indicatorFrame.cooldown)
+			indicatorFrame.Text:SetParent(indicatorFrame.Cooldown)
 		end
 
 		--clear any animations
 		ActionButton_HideOverlayGlow(indicatorFrame)
-		CooldownFrame_Clear(indicatorFrame.cooldown)
-		indicatorFrame.icon:SetAlpha(1)
+		CooldownFrame_Clear(indicatorFrame.Cooldown)
+		indicatorFrame.Icon:SetAlpha(1)
 	end
 end
 
@@ -254,11 +255,11 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		--- process icon to show
 		---------------------------------
 		if icon and self.db.profile[i].showIcon then
-			indicatorFrame.icon:SetTexture(icon)
-			indicatorFrame.icon:SetAlpha(self.db.profile[i].indicatorAlpha)
+			indicatorFrame.Icon:SetTexture(icon)
+			indicatorFrame.Icon:SetAlpha(self.db.profile[i].indicatorAlpha)
 		else
 			--set color of custom texture
-			indicatorFrame.icon:SetColorTexture(
+			indicatorFrame.Icon:SetColorTexture(
 					self.db.profile[i].indicatorColor.r,
 					self.db.profile[i].indicatorColor.g,
 					self.db.profile[i].indicatorColor.b,
@@ -267,20 +268,20 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			-- determine if we should change the background color from the default (player set color)
 			if self.db.profile[i].colorIndicatorByDebuff and debuffType then -- Color by debuff type
 				if debuffType == "curse" then
-					indicatorFrame.icon:SetColorTexture(0.64, 0.19, 0.79, 1)
+					indicatorFrame.Icon:SetColorTexture(0.64, 0.19, 0.79, 1)
 				elseif debuffType == "disease" then
-					indicatorFrame.icon:SetColorTexture(0.78, 0.61, 0.43, 1)
+					indicatorFrame.Icon:SetColorTexture(0.78, 0.61, 0.43, 1)
 				elseif debuffType == "magic" then
-					indicatorFrame.icon:SetColorTexture(0, 0.44, 0.87, 1)
+					indicatorFrame.Icon:SetColorTexture(0, 0.44, 0.87, 1)
 				elseif debuffType == "poison" then
-					indicatorFrame.icon:SetColorTexture(0.67, 0.83, 0.45, 1)
+					indicatorFrame.Icon:SetColorTexture(0.67, 0.83, 0.45, 1)
 				end
 			end
 			if self.db.profile[i].colorIndicatorByTime then -- Color by remaining time
 				if remainingTime and self.db.profile[i].colorIndicatorByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_low then
-					indicatorFrame.icon:SetColorTexture(0.77, 0.12, 0.23, 1)
+					indicatorFrame.Icon:SetColorTexture(0.77, 0.12, 0.23, 1)
 				elseif remainingTime and self.db.profile[i].colorIndicatorByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_high then
-					indicatorFrame.icon:SetColorTexture(1, 0.96, 0.41, 1)
+					indicatorFrame.Icon:SetColorTexture(1, 0.96, 0.41, 1)
 				end
 			end
 		end
@@ -308,21 +309,21 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 
 			-- determine the final output string concatenation
 			if remainingTime ~= "" and formattedCount ~= "" then
-				indicatorFrame.text:SetText(formattedCount .. "-" .. formattedTime) --append both values together with a hyphen separating
+				indicatorFrame.Text:SetText(formattedCount .. "-" .. formattedTime) --append both values together with a hyphen separating
 			elseif formattedCount ~= "" then
-				indicatorFrame.text:SetText(formattedCount) --show just the count
+				indicatorFrame.Text:SetText(formattedCount) --show just the count
 			elseif remainingTime ~= "" then
-				indicatorFrame.text:SetText(formattedTime) --show just the time remaining
+				indicatorFrame.Text:SetText(formattedTime) --show just the time remaining
 			end
 		else
-			indicatorFrame.text:SetText("")
+			indicatorFrame.Text:SetText("")
 		end
 
 		---------------------------------
 		--- process text color
 		---------------------------------
 		--set default textColor to user selected choice
-		indicatorFrame.text:SetTextColor(
+		indicatorFrame.Text:SetTextColor(
 				self.db.profile[i].textColor.r,
 				self.db.profile[i].textColor.g,
 				self.db.profile[i].textColor.b,
@@ -330,20 +331,20 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 
 		if self.db.profile[i].colorTextByDebuff and debuffType then -- Color by debuff type
 			if debuffType == "curse" then
-				indicatorFrame.text:SetTextColor(0.64, 0.19, 0.79, 1)
+				indicatorFrame.Text:SetTextColor(0.64, 0.19, 0.79, 1)
 			elseif debuffType == "disease" then
-				indicatorFrame.text:SetTextColor(0.78, 0.61, 0.43, 1)
+				indicatorFrame.Text:SetTextColor(0.78, 0.61, 0.43, 1)
 			elseif debuffType == "magic" then
-				indicatorFrame.text:SetTextColor(0, 0.44, 0.87, 1)
+				indicatorFrame.Text:SetTextColor(0, 0.44, 0.87, 1)
 			elseif debuffType == "poison" then
-				indicatorFrame.text:SetTextColor(0.67, 0.83, 0.45, 1)
+				indicatorFrame.Text:SetTextColor(0.67, 0.83, 0.45, 1)
 			end
 		end
 		if self.db.profile[i].colorTextByTime then -- Color by remaining time
 			if remainingTime and self.db.profile[i].colorTextByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_low then
-				indicatorFrame.text:SetTextColor(0.77, 0.12, 0.23, 1)
+				indicatorFrame.Text:SetTextColor(0.77, 0.12, 0.23, 1)
 			elseif remainingTime and self.db.profile[i].colorTextByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_high then
-				indicatorFrame.text:SetTextColor(1, 0.96, 0.41, 1)
+				indicatorFrame.Text:SetTextColor(1, 0.96, 0.41, 1)
 			end
 		end
 
@@ -351,9 +352,9 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		--- set cooldown animation
 		---------------------------------
 		if self.db.profile[i].showCountdownSwipe and expirationTime and duration then
-			CooldownFrame_Set(indicatorFrame.cooldown, expirationTime - duration, duration, true, true)
+			CooldownFrame_Set(indicatorFrame.Cooldown, expirationTime - duration, duration, true, true)
 		else
-			CooldownFrame_Clear(indicatorFrame.cooldown)
+			CooldownFrame_Clear(indicatorFrame.Cooldown)
 		end
 
 		---------------------------------
@@ -381,17 +382,17 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		end
 
 		if self.db.profile[i].showIcon then
-			indicatorFrame.icon:SetTexture(icon)
-			indicatorFrame.icon:SetAlpha(self.db.profile[i].indicatorAlpha)
-			indicatorFrame.text:SetText("")
+			indicatorFrame.Icon:SetTexture(icon)
+			indicatorFrame.Icon:SetAlpha(self.db.profile[i].indicatorAlpha)
+			indicatorFrame.Text:SetText("")
 		else
 			--set color of custom texture
-			indicatorFrame.icon:SetColorTexture(
+			indicatorFrame.Icon:SetColorTexture(
 					self.db.profile[i].indicatorColor.r,
 					self.db.profile[i].indicatorColor.g,
 					self.db.profile[i].indicatorColor.b,
 					self.db.profile[i].indicatorColor.a)
-			indicatorFrame.text:SetText("")
+			indicatorFrame.Text:SetText("")
 		end
 
 		indicatorFrame:Show() --show the frame
@@ -399,7 +400,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	else
 		indicatorFrame:Hide() --hide the frame
 		--if no aura is found and we're not showing missing, clear animations and hide the frame
-		CooldownFrame_Clear(indicatorFrame.cooldown)
+		CooldownFrame_Clear(indicatorFrame.Cooldown)
 		ActionButton_HideOverlayGlow(indicatorFrame)
 	end
 end
@@ -526,7 +527,7 @@ function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame)
 	local frame = indicatorFrame:GetParent() --this is the parent raid frame that holds all the indicatorFrames
 
 	-- Set the tooltip
-	if indicatorFrame.auraIndex and indicatorFrame.icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
+	if indicatorFrame.auraIndex and indicatorFrame.Icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
 		-- Set the buff/debuff as tooltip and anchor to the cursor
 		GameTooltip:SetOwner(UIParent, self.db.profile[i].tooltipLocation)
 		if indicatorFrame.auraType == "buff" then
