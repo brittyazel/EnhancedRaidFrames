@@ -71,6 +71,8 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		--hook OnEnter and OnLeave for showing and hiding ability tooltips
 		indicatorFrame:SetScript("OnEnter", function() self:Tooltip_OnEnter(indicatorFrame) end)
 		indicatorFrame:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+		--disable the mouse click on our frames to allow those clicks to get passed straight through to the raid frame behind (switch target, right click, etc)
 		indicatorFrame:SetMouseClickEnabled(false) --this MUST come after the SetScript lines for OnEnter and OnLeave. SetScript will re-enable mouse clicks when called.
 	end
 
