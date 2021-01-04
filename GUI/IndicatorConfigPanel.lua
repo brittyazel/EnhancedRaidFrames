@@ -26,13 +26,6 @@ local POSITIONS = { [1] = L["Top left"], [2] = L["Top Center"], [3] = L["Top Rig
 					[4] = L["Middle Left"], [5] = L["Middle Center"], [6] = L["Middle Right"],
 					[7] = L["Bottom Left"], [8] = L["Bottom Center"], [9] = L["Bottom Right"]}
 
-local systemYellowCode = "|cFFffd100<text>|r"
-local yellowCode = "|cFFFFF569<text>|r"
-local redCode = "|cFFC41F3B<text>|r"
-local greenCode = "|cFFA9D271<text>|r"
-local purpleCode = "|cFFA330C9<text>|r"
-local blueCode = "|cFF0070DEMagic|r"
-local brownCode = "|cFFC79C6E<text>|r"
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
@@ -65,7 +58,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 			--------------------------------------------
 			instructions = {
 				type = "description",
-				name = gsub(systemYellowCode,"<text>", v).."\n"..
+				name = self.NORMAL_COLOR:WrapTextInColorCode(v).."\n"..
 						"\n"..
 						L["instructions_desc1"].."\n"..
 						"\n"..
@@ -82,19 +75,19 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						"\n"..
 						L["auras_usage"]..". "..L["Example"]..":\n"..
 						"\n"..
-						"Rejuvenation".."\n"..
-						"PvP".."\n"..
-						"Curse".."\n"..
-						"155777".."\n"..
-						"Magic".."\n"..
+						self.WHITE_COLOR:WrapTextInColorCode("Rejuvenation").."\n"..
+						self.WHITE_COLOR:WrapTextInColorCode("PvP").."\n"..
+						self.WHITE_COLOR:WrapTextInColorCode("Curse").."\n"..
+						self.WHITE_COLOR:WrapTextInColorCode("155777").."\n"..
+						self.WHITE_COLOR:WrapTextInColorCode("Magic").."\n"..
 						"\n"..
 						L["Wildcards"]..":\n"..
-						gsub(greenCode, "<text>", "Poison")..": "..L["poisonWildcard_desc"].."\n"..
-						gsub(purpleCode, "<text>", "Curse")..": "..L["curseWildcard_desc"].."\n"..
-						gsub(brownCode, "<text>", "Disease")..": "..L["diseaseWildcard_desc"].."\n"..
-						gsub(blueCode, "<text>", "Magic")..": "..L["magicWildcard_desc"].."\n"..
-						gsub(redCode, "<text>", "PvP")..": "..L["pvpWildcard_desc"].."\n"..
-						gsub(redCode, "<text>", "ToT")..": "..L["totWildcard_desc"].."\n",
+						self.GREEN_COLOR:WrapTextInColorCode("Poison")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["poisonWildcard_desc"]).."\n"..
+						self.PURPLE_COLOR:WrapTextInColorCode("Curse")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["curseWildcard_desc"]).."\n"..
+						self.BROWN_COLOR:WrapTextInColorCode("Disease")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["diseaseWildcard_desc"]).."\n"..
+						self.BLUE_COLOR:WrapTextInColorCode("Magic")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["magicWildcard_desc"]).."\n"..
+						self.RED_COLOR:WrapTextInColorCode("PvP")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["pvpWildcard_desc"]).."\n"..
+						self.RED_COLOR:WrapTextInColorCode("ToT")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["totWildcard_desc"]).."\n",
 				multiline = 5,
 				get = function() return self.db.profile[i].auras end,
 				set = function(_, value)
@@ -332,10 +325,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						desc = L["colorByDebuff_desc"].."\n"..
 								"("..L["colorOverride_desc"]..")".."\n"..
 								"\n"..
-								gsub(greenCode, "<text>", L["Poison"]).."\n"..
-								gsub(purpleCode, "<text>", L["Curse"]).."\n"..
-								gsub(brownCode, "<text>", L["Disease"]).."\n"..
-								gsub(blueCode, "<text>", L["Magic"]).."\n",
+								self.GREEN_COLOR:WrapTextInColorCode(L["Poison"]).."\n"..
+								self.PURPLE_COLOR:WrapTextInColorCode(L["Curse"]).."\n"..
+								self.BROWN_COLOR:WrapTextInColorCode(L["Disease"]).."\n"..
+								self.BLUE_COLOR:WrapTextInColorCode(L["Magic"]).."\n",
 						get = function()
 							return self.db.profile[i].colorIndicatorByDebuff
 						end,
@@ -355,8 +348,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						desc = L["colorByTime_desc"].."\n"..
 								"("..L["colorOverride_desc"]..")".."\n"..
 								"\n"..
-								gsub(redCode, "<text>", L["Time #1"]).."\n"..
-								gsub(yellowCode, "<text>", L["Time #2"]),
+								self.RED_COLOR:WrapTextInColorCode(L["Time #1"]).."\n"..
+								self.YELLOW_COLOR:WrapTextInColorCode(L["Time #2"]),
 						get = function()
 							return self.db.profile[i].colorIndicatorByTime
 						end,
@@ -499,10 +492,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						desc = L["colorByDebuff_desc"].."\n"..
 								"("..L["colorOverride_desc"]..")".."\n"..
 								"\n"..
-								gsub(greenCode, "<text>", L["Poison"]).."\n"..
-								gsub(purpleCode, "<text>", L["Curse"]).."\n"..
-								gsub(brownCode, "<text>", L["Disease"]).."\n"..
-								gsub(blueCode, "<text>", L["Magic"]).."\n",
+								self.GREEN_COLOR:WrapTextInColorCode(L["Poison"]).."\n"..
+								self.PURPLE_COLOR:WrapTextInColorCode(L["Curse"]).."\n"..
+								self.BROWN_COLOR:WrapTextInColorCode(L["Disease"]).."\n"..
+								self.BLUE_COLOR:WrapTextInColorCode(L["Magic"]).."\n",
 						get = function()
 							return self.db.profile[i].colorTextByDebuff
 						end,
@@ -524,8 +517,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						desc = L["colorByTime_desc"].."\n"..
 								"("..L["colorOverride_desc"]..")".."\n"..
 								"\n"..
-								gsub(redCode, "<text>", "Time #1").."\n"..
-								gsub(yellowCode, "<text>", "Time #2"),
+								self.RED_COLOR:WrapTextInColorCode(L["Time #1"]).."\n"..
+								self.YELLOW_COLOR:WrapTextInColorCode(L["Time #2"]),
 						get = function()
 							return self.db.profile[i].colorTextByTime
 						end,

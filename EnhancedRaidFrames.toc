@@ -20,6 +20,6 @@ RaidIcons.lua
 
 XML\ERFIndicatorTemplate.xml
 
-GeneralConfigPanel.lua
-IndicatorConfigPanel.lua
-IconConfigPanel.lua
+GUI\GeneralConfigPanel.lua
+GUI\IndicatorConfigPanel.lua
+GUI\IconConfigPanel.lua

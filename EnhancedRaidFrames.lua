@@ -32,6 +32,16 @@ end
 
 EnhancedRaidFrames.DATABASE_VERSION = 2
 
+--Declare Color Globals
+EnhancedRaidFrames.NORMAL_COLOR = NORMAL_FONT_COLOR --the default game text color, dull yellow color
+EnhancedRaidFrames.WHITE_COLOR = WHITE_FONT_COLOR --default game white color for text
+EnhancedRaidFrames.RED_COLOR = RED_FONT_COLOR --solid red color
+EnhancedRaidFrames.YELLOW_COLOR = YELLOW_FONT_COLOR --solid yellow color
+EnhancedRaidFrames.GREEN_COLOR = CreateColorFromHexString("FFA9D271") --poison text color
+EnhancedRaidFrames.PURPLE_COLOR = CreateColorFromHexString("FFA330C9") --curse text color
+EnhancedRaidFrames.BROWN_COLOR = CreateColorFromHexString("FFC79C6E") --disease text color
+EnhancedRaidFrames.BLUE_COLOR = CreateColorFromHexString("FF0070DE") --magic text color
+
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
