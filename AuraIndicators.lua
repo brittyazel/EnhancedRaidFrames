@@ -99,8 +99,8 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 
 		--set indicator frame position
 		local PAD = 1
-		local iconVerticalOffset = self.db.profile[i].indicatorVerticalOffset * frame:GetHeight()
-		local iconHorizontalOffset = self.db.profile[i].indicatorHorizontalOffset * frame:GetWidth()
+		local iconVerticalOffset = floor(self.db.profile[i].indicatorVerticalOffset * frame:GetHeight()) --round down
+		local iconHorizontalOffset = floor(self.db.profile[i].indicatorHorizontalOffset * frame:GetWidth()) --round down
 
 		--we probably don't want to overlap the power bar (rage, mana, energy, etc) so we need a compensation factor
 		local powerBarVertOffset
