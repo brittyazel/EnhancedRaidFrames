@@ -104,15 +104,13 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				name = L["General"],
 				order = 30,
 			},
-			indicatorFont = {
-				type = 'select',
-				dialogControl = "LSM30_Font",
-				name = L["Indicator Font"],
-				desc = L["indicatorFont_desc"],
-				values = AceGUIWidgetLSMlists.font,
-				get = function() return self.db.profile.indicatorFont end,
+			powerBarOffset = {
+				type = "toggle",
+				name = L["Power Bar Vertical Offset"],
+				desc = L["powerBarOffset_desc"],
+				get = function() return self.db.profile.powerBarOffset end,
 				set = function(_, value)
-					self.db.profile.indicatorFont = value
+					self.db.profile.powerBarOffset = value
 					self:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
@@ -131,7 +129,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 					self:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
-				order = 33,
+				order = 32,
 			},
 			backgroundAlpha = {
 				type = "range",
@@ -143,6 +141,20 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				get = function() return self.db.profile.backgroundAlpha end,
 				set = function(_, value)
 					self.db.profile.backgroundAlpha = value
+					self:RefreshConfig()
+				end,
+				width = THIRD_WIDTH,
+				order = 33,
+			},
+			indicatorFont = {
+				type = 'select',
+				dialogControl = "LSM30_Font",
+				name = L["Indicator Font"],
+				desc = L["indicatorFont_desc"],
+				values = AceGUIWidgetLSMlists.font,
+				get = function() return self.db.profile.indicatorFont end,
+				set = function(_, value)
+					self.db.profile.indicatorFont = value
 					self:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,

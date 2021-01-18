@@ -35,9 +35,10 @@ function EnhancedRaidFrames:CreateDefaults()
 		showDispellableDebuffs = true,
 
 		--Visual Options
-		indicatorFont = "Arial Narrow",
+		powerBarOffset = true,
 		frameScale = 1,
 		backgroundAlpha = 1,
+		indicatorFont = "Arial Narrow",
 
 		--Out-of-Range Options
 		customRangeCheck = false,

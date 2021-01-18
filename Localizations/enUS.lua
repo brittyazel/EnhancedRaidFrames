@@ -92,14 +92,17 @@ L["showDebuffs_desc"] = "Show the standard raid frame debuff icons"
 L["Stock Dispellable Icons"] = true
 L["showDispellableDebuffs_desc"] = "Show the standard raid frame dispellable icons"
 
-L["Indicator Font"] = true
-L["indicatorFont_desc"] = "The the font used for the indicators"
+L["Power Bar Vertical Offset"] = true
+L["powerBarOffset_desc"] = "Apply a vertical offset to icons and indicators to keep them from overlapping the power bar (mana/rage/energy)"
 
 L["Raidframe Scale"] = true
 L["frameScale_desc"] = "The the scale of the raidframe relative to the normal size"
 
 L["Background Opacity"] = true
 L["backgroundAlpha_desc"] = "The opacity percentage of the raid frame background"
+
+L["Indicator Font"] = true
+L["indicatorFont_desc"] = "The the font used for the indicators"
 
 L["Out-of-Range"] = true
 
