@@ -11,6 +11,8 @@
 Libs\embeds.xml
 Localizations\Localizations.xml
 
+MissingClassicFunctions.lua
+
 EnhancedRaidFrames.lua
 DatabaseDefaults.lua
 UtilitiesAndOverrides.lua
