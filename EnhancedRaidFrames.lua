@@ -35,8 +35,8 @@ EnhancedRaidFrames.DATABASE_VERSION = 2
 --Declare Color Globals
 EnhancedRaidFrames.NORMAL_COLOR = NORMAL_FONT_COLOR or CreateColor(1.0, 0.82, 0.0) --the default game text color, dull yellow color
 EnhancedRaidFrames.WHITE_COLOR = WHITE_FONT_COLOR or CreateColor(1.0, 1.0, 1.0) --default game white color for text
-EnhancedRaidFrames.RED_COLOR = RED_FONT_COLOR or CreateColor(1.0, 0.1, 0.1) --solid red color
-EnhancedRaidFrames.YELLOW_COLOR = YELLOW_FONT_COLOR or CreateColor(1.0, 1.0, 0.0) --solid yellow color
+EnhancedRaidFrames.RED_COLOR = DIM_RED_FONT_COLOR or CreateColor(0.8, 0.1, 0.1) --solid red color
+EnhancedRaidFrames.YELLOW_COLOR = DARKYELLOW_FONT_COLOR or CreateColor(1.0, 0.82, 0.0) --solid yellow color
 EnhancedRaidFrames.GREEN_COLOR = CreateColor(0.6627, 0.8235, 0.4431) --poison text color
 EnhancedRaidFrames.PURPLE_COLOR = CreateColor(0.6392, 0.1882, 0.7882) --curse text color
 EnhancedRaidFrames.BROWN_COLOR = CreateColor(0.7804, 0.6118, 0.4314) --disease text color
