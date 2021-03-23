@@ -1,12 +1,13 @@
 ﻿## Interface: 90005
 ## Title: Enhanced Raid Frames
 ## Notes: Enhances the Blizzard raid frames with configurable Buff/Debuff indicators
-## Author: Soyier
-## X-Credits-Maintainer: Soyier
+## Author: Britt W. Yazel
 ## Version: @project-version@
 ## DefaultState: enabled
 ## SavedVariables: EnhancedRaidFramesDB
+## X-Credits-Maintainer: Britt W. Yazel
 ## X-Email: bwyazel@gmail.com
+## X-License: MIT
 
 Libs\embeds.xml
 Localizations\Localizations.xml

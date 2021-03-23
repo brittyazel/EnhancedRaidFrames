@@ -1,21 +1,6 @@
---Enhanced Raid Frames, a World of Warcraft® user interface addon.
-
---This file is part of Enhanced Raid Frames.
---
---Enhanced Raid Frames is free software: you can redistribute it and/or modify
---it under the terms of the GNU General Public License as published by
---the Free Software Foundation, either version 3 of the License, or
---(at your option) any later version.
---
---Enhanced Raid Frames is distributed in the hope that it will be useful,
---but WITHOUT ANY WARRANTY; without even the implied warranty of
---MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
---GNU General Public License for more details.
---
---You should have received a copy of the GNU General Public License
---along with this add-on.  If not, see <https://www.gnu.org/licenses/>.
---
---Copyright for Enhanced Raid Frames is held by Britt Yazel (aka Soyier), 2017-2020.
+-- Enhanced Raid Frames is a World of Warcraft® user interface addon.
+-- Copyright (c) 2017-2021 Britt W. Yazel
+-- This code is licensed under the MIT license (see LICENSE for details)
 
 local _, addonTable = ... --make use of the default addon namespace
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
@@ -49,16 +34,20 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 	if string.match(frame.unit, "party") or string.match(frame.unit, "raid") then
 		local inRange, checkedRange
 
-		--if we have a custom range set use LibRanchCheck, otherwise use default UnitInRange function
+		--if we have a custom range set use LibRangeCheck, otherwise use default UnitInRange function
 		if self.db.profile.customRangeCheck then
 			local rangeChecker = LibStub("LibRangeCheck-2.0"):GetFriendChecker(self.db.profile.customRange)
-			inRange = rangeChecker(frame.unit)
-			checkedRange = not UnitIsVisible(frame.unit) or not UnitIsDeadOrGhost(frame.unit)
+			if rangeChecker then
+				inRange = rangeChecker(frame.unit)
+				checkedRange = not UnitIsVisible(frame.unit) or not UnitIsDeadOrGhost(frame.unit)
+			else
+				inRange, checkedRange = UnitInRange(frame.unit) --if no rangeChecker can be generated, fallback to UnitInRange
+			end
 		else
 			inRange, checkedRange = UnitInRange(frame.unit)
 		end
 
-		if checkedRange and not inRange then	--If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
+		if checkedRange and not inRange then --If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
 			frame:SetAlpha(self.db.profile.rangeAlpha)
 		else
 			frame:SetAlpha(1)
