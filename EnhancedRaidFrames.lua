@@ -13,6 +13,8 @@ EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix
 
 if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then --boolean check to set a flag if the current session is WoW Classic. Retail == 1, Classic == 2
 	EnhancedRaidFrames.isWoWClassic = true
+elseif WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+	EnhancedRaidFrames.isWoWClassic_TBC = true
 end
 
 EnhancedRaidFrames.DATABASE_VERSION = 2
@@ -96,7 +98,7 @@ function EnhancedRaidFrames:Setup()
 	local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) --create the config panel for profiles
 
 	-- Per spec profiles
-	if not self.isWoWClassic then
+	if not self.isWoWClassic or self.isWoWClassic_TBC then
 		local LibDualSpec = LibStub('LibDualSpec-1.0')
 		LibDualSpec:EnhanceDatabase(self.db, "EnhancedRaidFrames") --enhance the database object with per spec profile features
 		LibDualSpec:EnhanceOptions(profiles, self.db) -- enhance the profiles config panel with per spec profile features
