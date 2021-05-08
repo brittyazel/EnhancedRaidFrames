@@ -3,6 +3,8 @@
 -- This code is licensed under the MIT license (see LICENSE for details)
 
 local addonName, addonTable = ... --make use of the default addon namespace
+
+---@class EnhancedRaidFrames : AceAddon-3.0 @define The main addon object for the Enhanced Raid Frames add-on
 addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0", "AceConsole-3.0")
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
@@ -19,6 +21,7 @@ end
 
 EnhancedRaidFrames.DATABASE_VERSION = 2
 
+
 --Declare Color Globals
 EnhancedRaidFrames.NORMAL_COLOR = NORMAL_FONT_COLOR or CreateColor(1.0, 0.82, 0.0) --the default game text color, dull yellow color
 EnhancedRaidFrames.WHITE_COLOR = WHITE_FONT_COLOR or CreateColor(1.0, 1.0, 1.0) --default game white color for text
@@ -28,7 +31,6 @@ EnhancedRaidFrames.GREEN_COLOR = CreateColor(0.6627, 0.8235, 0.4431) --poison te
 EnhancedRaidFrames.PURPLE_COLOR = CreateColor(0.6392, 0.1882, 0.7882) --curse text color
 EnhancedRaidFrames.BROWN_COLOR = CreateColor(0.7804, 0.6118, 0.4314) --disease text color
 EnhancedRaidFrames.BLUE_COLOR = CreateColor(0.0, 0.4392, 0.8706) --magic text color
-
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
@@ -86,7 +88,7 @@ end
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
--- Create our database, import saved variables, and set up our configuration panels
+--- Create our database, import saved variables, and set up our configuration panels
 function EnhancedRaidFrames:Setup()
 	-- Set up database defaults
 	local defaults = self:CreateDefaults()
@@ -130,7 +132,8 @@ function EnhancedRaidFrames:Setup()
 	self.dialog:AddToBlizOptions("ERF Profiles", L["Profiles"], "Enhanced Raid Frames")
 end
 
--- Update all raid frames
+--- Update all raid frames
+---@param setAppearance boolean
 function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 	--don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown() then
