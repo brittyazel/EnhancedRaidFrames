@@ -1,0 +1,26 @@
+## Interface: 20501
+## Title: Enhanced Raid Frames
+## Notes: Enhances the Blizzard raid frames with configurable Buff/Debuff indicators
+## Author: Britt W. Yazel
+## Version: @project-version@
+## DefaultState: enabled
+## SavedVariables: EnhancedRaidFramesDB
+## X-Credits-Maintainer: Britt W. Yazel
+## X-Email: bwyazel@gmail.com
+## X-License: MIT
+
+Libs\embeds.xml
+Localizations\Localizations.xml
+
+EnhancedRaidFrames.lua
+DatabaseDefaults.lua
+UtilitiesAndOverrides.lua
+
+AuraIndicators.lua
+RaidIcons.lua
+
+XML\ERFIndicatorTemplate.xml
+
+GUI\GeneralConfigPanel.lua
+GUI\IndicatorConfigPanel.lua
+GUI\IconConfigPanel.lua
