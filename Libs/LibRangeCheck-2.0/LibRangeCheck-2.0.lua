@@ -49,6 +49,7 @@ if not lib then
 end
 
 local IsClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
+local IsClassic_BCC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 
 -- << STATIC CONFIG
 
@@ -415,6 +416,7 @@ local math_floor = math.floor
 local UnitIsVisible = UnitIsVisible
 
 -- temporary stuff
+
 
 local pendingItemRequest
 local itemRequestTimeoutAt
@@ -1072,7 +1074,7 @@ function lib:activate()
         self.frame = frame
         frame:RegisterEvent("LEARNED_SPELL_IN_TAB")
         frame:RegisterEvent("CHARACTER_POINTS_CHANGED")
-        if not IsClassic then
+        if not IsClassic and not IsClassic_BCC then
             frame:RegisterEvent("PLAYER_TALENT_UPDATE")
         end
         frame:RegisterEvent("SPELLS_CHANGED")
