@@ -295,11 +295,11 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			end
 
 			-- determine the final output string concatenation
-			if remainingTime ~= "" and formattedCount ~= "" then
+			if formattedTime ~= "" and formattedCount ~= "" then
 				indicatorFrame.Text:SetText(formattedCount .. "-" .. formattedTime) --append both values together with a hyphen separating
 			elseif formattedCount ~= "" then
 				indicatorFrame.Text:SetText(formattedCount) --show just the count
-			elseif remainingTime ~= "" then
+			elseif formattedTime ~= "" then
 				indicatorFrame.Text:SetText(formattedTime) --show just the time remaining
 			end
 		else
