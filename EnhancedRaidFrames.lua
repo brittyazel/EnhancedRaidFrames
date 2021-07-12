@@ -5,9 +5,10 @@
 local addonName, addonTable = ... --make use of the default addon namespace
 
 ---@class EnhancedRaidFrames : AceAddon-3.0 @define The main addon object for the Enhanced Raid Frames add-on
-addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0", "AceConsole-3.0")
+addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0", "AceConsole-3.0", "AceSerializer-3.0")
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
+local LibDeflate = LibStub:GetLibrary("LibDeflate")
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 
 EnhancedRaidFrames.allAuras = " "
@@ -117,11 +118,13 @@ function EnhancedRaidFrames:Setup()
 	local generalOptions = self:CreateGeneralOptions()
 	local indicatorOptions = self:CreateIndicatorOptions()
 	local iconOptions = self:CreateIconOptions()
+	local importExportProfileOptions = self:CreateProfileImportExportOptions()
 
 	self.config = LibStub("AceConfigRegistry-3.0")
 	self.config:RegisterOptionsTable("Enhanced Raid Frames", generalOptions)
 	self.config:RegisterOptionsTable("ERF Indicator Options", indicatorOptions)
 	self.config:RegisterOptionsTable("ERF Icon Options", iconOptions)
+	self.config:RegisterOptionsTable("ERF Import Export Profile Options", importExportProfileOptions)
 	self.config:RegisterOptionsTable("ERF Profiles", profiles)
 
 	-- Add to config panels to in-game interface options
@@ -129,6 +132,7 @@ function EnhancedRaidFrames:Setup()
 	self.dialog:AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
 	self.dialog:AddToBlizOptions("ERF Indicator Options", L["Indicator Options"], "Enhanced Raid Frames")
 	self.dialog:AddToBlizOptions("ERF Icon Options", L["Icon Options"], "Enhanced Raid Frames")
+	self.dialog:AddToBlizOptions("ERF Import Export Profile Options", (L["Profile"].." "..L["Import"].."/"..L["Export"]), "Enhanced Raid Frames")
 	self.dialog:AddToBlizOptions("ERF Profiles", L["Profiles"], "Enhanced Raid Frames")
 end
 
@@ -172,5 +176,51 @@ function EnhancedRaidFrames:RefreshConfig()
 			self.auraStrings[i][j] = auraName
 			j = j + 1
 		end
+	end
+end
+
+
+function EnhancedRaidFrames:GetSerializedAndCompressedProfile()
+	local uncompressed = EnhancedRaidFrames:Serialize(EnhancedRaidFrames.db.profile) --serialize the database into a string value
+	local compressed = LibDeflate:CompressZlib(uncompressed) --compress the data
+	local encoded = LibDeflate:EncodeForPrint(compressed) --encode the data for print for copy+paste
+	return encoded
+end
+
+
+function EnhancedRaidFrames:SetSerializedAndCompressedProfile(input)
+	--check if the input is empty
+	if input == "" then
+		EnhancedRaidFrames:Print(L["No data to import."].." "..L["Aborting."])
+		return
+	end
+
+	--decode and check if decoding worked properly
+	local decoded = LibDeflate:DecodeForPrint(input)
+	if decoded == nil then
+		EnhancedRaidFrames:Print(L["Decoding failed."].." "..L["Aborting."])
+		return
+	end
+
+	--uncompress and check if uncompresion worked properly
+	local uncompressed = LibDeflate:DecompressZlib(decoded)
+	if uncompressed == nil then
+		EnhancedRaidFrames:Print(L["Decompression failed."].." "..L["Aborting."])
+		return
+	end
+
+	--deserialize the data and return it back into a table format
+	local result, newProfile = EnhancedRaidFrames:Deserialize(uncompressed)
+
+	if result == true and newProfile then --if we successfully deserialize, load the new table and reload
+		for k,v in pairs(newProfile) do
+			if type(v) == "table" then
+				EnhancedRaidFrames.db.profile[k] = CopyTable(v)
+			else
+				EnhancedRaidFrames.db.profile[k] = v
+			end
+		end
+	else
+		EnhancedRaidFrames:Print(L["Data import Failed."].." "..L["Aborting."])
 	end
 end
