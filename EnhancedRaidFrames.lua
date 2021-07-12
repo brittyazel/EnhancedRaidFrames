@@ -124,16 +124,16 @@ function EnhancedRaidFrames:Setup()
 	self.config:RegisterOptionsTable("Enhanced Raid Frames", generalOptions)
 	self.config:RegisterOptionsTable("ERF Indicator Options", indicatorOptions)
 	self.config:RegisterOptionsTable("ERF Icon Options", iconOptions)
-	self.config:RegisterOptionsTable("ERF Import Export Profile Options", importExportProfileOptions)
 	self.config:RegisterOptionsTable("ERF Profiles", profiles)
+	self.config:RegisterOptionsTable("ERF Import Export Profile Options", importExportProfileOptions)
 
 	-- Add to config panels to in-game interface options
 	self.dialog = LibStub("AceConfigDialog-3.0")
 	self.dialog:AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
 	self.dialog:AddToBlizOptions("ERF Indicator Options", L["Indicator Options"], "Enhanced Raid Frames")
 	self.dialog:AddToBlizOptions("ERF Icon Options", L["Icon Options"], "Enhanced Raid Frames")
-	self.dialog:AddToBlizOptions("ERF Import Export Profile Options", (L["Profile"].." "..L["Import"].."/"..L["Export"]), "Enhanced Raid Frames")
 	self.dialog:AddToBlizOptions("ERF Profiles", L["Profiles"], "Enhanced Raid Frames")
+	self.dialog:AddToBlizOptions("ERF Import Export Profile Options", (L["Profile"].." "..L["Import"].."/"..L["Export"]), "Enhanced Raid Frames")
 end
 
 --- Update all raid frames

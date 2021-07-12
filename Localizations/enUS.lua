@@ -221,7 +221,7 @@ Below you will find a text representation of your Enhanced Raid Frame profile.
 
 To export this profile, select and copy all of the text below and paste it somewhere safe.
 
-To import a profile, replace all of the text below with the text from a previously exported profile.
+To import a profile, replace all of the text below and press accept.
 
 ]]
 L["ImportExport_WarningDesc"] = [[
