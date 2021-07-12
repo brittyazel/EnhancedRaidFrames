@@ -24,6 +24,8 @@
 	<Include file="LibSharedMedia-3.0\lib.xml"/>
 	<Include file="AceGUI-3.0-SharedMediaWidgets\widget.xml"/>
 
+	<Script file="LibDeflate\LibDeflate.lua"/>
+
 	<Script file="LibDualSpec-1.0\LibDualSpec-1.0.lua"/>
 	<Script file="LibRangeCheck-2.0\LibRangeCheck-2.0.lua"/>
 

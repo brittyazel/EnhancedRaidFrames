@@ -208,3 +208,43 @@ L["indicatorGlow_desc"] = "Display a glow animation effect on the indicator to m
 L["Glow At Countdown Time"] = true
 L["glowRemainingSecs_desc1"] = "The amount of time (in seconds) remaining on the buff or debuff countdown before the glowing starts"
 L["glowRemainingSecs_desc2"] = "'0' means it will always glow"
+
+
+
+L["Profile"] = true
+L["Import"] = true
+L["Export"] = true
+L["Import or Export the current profile:"] = true
+L["ImportExport_Desc"] = [[
+
+Below you will find a text representation of your Enhanced Raid Frame profile.
+
+To export this profile, select and copy all of the text below and paste it somewhere safe.
+
+To import a profile, replace all of the text below with the text from a previously exported profile.
+
+]]
+L["ImportExport_WarningDesc"] = [[
+
+Copying and pasting profile data can be a time consuming experience. It may stall your game for multiple seconds.
+
+WARNING: This will overwrite the current profile, and any changes you have made will be lost.
+]]
+L["ImportWarning"] = "Are you absolutely certain you wish to import this profile? The current profile will be overwritten."
+L["No data to import."] = true
+L["Decoding failed."] = true
+L["Decompression failed."] = true
+L["Data import Failed."] = true
+L["Aborting."] = true
+
+L["Experimental"] = true
+L["Experimental Options"] = true
+L["Experimental_Options_Warning"] = [[
+
+Warning:
+
+Here you will fill find experimental and potentially dangerous options.
+
+Use at your own risk.
+
+]]
