@@ -24,3 +24,4 @@ XML\ERFIndicatorTemplate.xml
 GUI\GeneralConfigPanel.lua
 GUI\IndicatorConfigPanel.lua
 GUI\IconConfigPanel.lua
+GUI\ProfileImportExport.lua
