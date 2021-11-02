@@ -1,4 +1,4 @@
-﻿## Interface: 90100
+﻿## Interface: 90105
 ## Title: Enhanced Raid Frames
 ## Notes: Enhances the Blizzard raid frames with configurable Buff/Debuff indicators
 ## Author: Britt W. Yazel
