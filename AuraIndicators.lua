@@ -241,6 +241,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------------------------------
 		--- process icon to show
 		---------------------------------
+
 		if icon and self.db.profile[i].showIcon then
 			indicatorFrame.Icon:SetTexture(icon)
 			indicatorFrame.Icon:SetAlpha(self.db.profile[i].indicatorAlpha)
@@ -255,20 +256,20 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			-- determine if we should change the background color from the default (player set color)
 			if self.db.profile[i].colorIndicatorByDebuff and debuffType then -- Color by debuff type
 				if debuffType == "poison" then
-					indicatorFrame.Icon:SetColorTexture(unpack(self.GREEN_COLOR))
+					indicatorFrame.Icon:SetColorTexture(self.GREEN_COLOR:GetRGB())
 				elseif debuffType == "curse" then
-					indicatorFrame.Icon:SetColorTexture(unpack(self.PURPLE_COLOR))
+					indicatorFrame.Icon:SetColorTexture(self.PURPLE_COLOR:GetRGB())
 				elseif debuffType == "disease" then
-					indicatorFrame.Icon:SetColorTexture(unpack(self.BROWN_COLOR))
+					indicatorFrame.Icon:SetColorTexture(self.BROWN_COLOR:GetRGB())
 				elseif debuffType == "magic" then
-					indicatorFrame.Icon:SetColorTexture(unpack(self.BLUE_COLOR))
+					indicatorFrame.Icon:SetColorTexture(self.BLUE_COLOR:GetRGB())
 				end
 			end
 			if self.db.profile[i].colorIndicatorByTime then -- Color by remaining time
 				if remainingTime and self.db.profile[i].colorIndicatorByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_low then
-					indicatorFrame.Icon:SetColorTexture(unpack(self.YELLOW_COLOR))
+					indicatorFrame.Icon:SetColorTexture(self.YELLOW_COLOR:GetRGB())
 				elseif remainingTime and self.db.profile[i].colorIndicatorByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_high then
-					indicatorFrame.Icon:SetColorTexture(unpack(self.RED_COLOR))
+					indicatorFrame.Icon:SetColorTexture(self.RED_COLOR:GetRGB())
 				end
 			end
 		end
