@@ -413,6 +413,13 @@ function EnhancedRaidFrames:QueryAuraInfo(auraName, unit)
 		end
 	end
 
+	-- Check if we want to show combat flag
+	if auraName:upper() == "COMBAT" then
+		if UnitAffectingCombat(unit) then
+			return true, "Interface\\Icons\\Ability_Dualwield", 0, 0, 0, "", "player"
+		end
+	end
+
 	-- Check if we want to show ToT flag
 	if auraName:upper() == "TOT" then
 		if UnitIsUnit(unit, "targettarget") then

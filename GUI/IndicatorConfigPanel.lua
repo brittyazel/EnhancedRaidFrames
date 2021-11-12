@@ -72,6 +72,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						self.BROWN_COLOR:WrapTextInColorCode("Disease")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["diseaseWildcard_desc"]).."\n"..
 						self.BLUE_COLOR:WrapTextInColorCode("Magic")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["magicWildcard_desc"]).."\n"..
 						self.RED_COLOR:WrapTextInColorCode("PvP")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["pvpWildcard_desc"]).."\n"..
+						self.RED_COLOR:WrapTextInColorCode("Combat")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["combatWildcard_desc"]).."\n"..
 						self.RED_COLOR:WrapTextInColorCode("ToT")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["totWildcard_desc"]).."\n",
 				multiline = 5,
 				get = function() return self.db.profile[i].auras end,
