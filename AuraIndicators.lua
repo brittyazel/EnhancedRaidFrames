@@ -61,6 +61,9 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		indicatorFrame:SetMouseClickEnabled(false) --this MUST come after the SetScript lines for OnEnter and OnLeave. SetScript will re-enable mouse clicks when called.
 	end
 
+	--override for a change made in 9.2 which broke muscle memory for lots of healers
+	frame:RegisterForClicks("LeftButtonDown", "AnyUp");
+
 	--set our initial indicator appearance
 	self:SetIndicatorAppearance(frame)
 end
