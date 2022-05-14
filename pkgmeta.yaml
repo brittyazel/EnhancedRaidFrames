@@ -1,23 +1,19 @@
 package-as: EnhancedRaidFrames
 
-
-#this will eventually be necessary for curse to automagically pull in all the necessary and up-to-date libraries
-#for wowinterface, I should just upload the versions that curse spits out, which means I need to plug in all of curse's feature sets.
-#externals:
-    #EnhancedRaidFrames/Libs/AceAddon-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
-    #EnhancedRaidFrames/Libs/AceConfig-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0
-    #EnhancedRaidFrames/Libs/AceDB-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
-    #EnhancedRaidFrames/Libs/AceDBOptions-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDBOptions-3.0
-    #EnhancedRaidFrames/Libs/AceEvent-3.0: https://repos.wowace.com/wow/ace3/trunk/AceEvent-3.0
-    #EnhancedRaidFrames/Libs/AceGUI-3.0: https://repos.wowace.com/wow/ace3/trunk/AceGUI-3.0
-    #EnhancedRaidFrames/Libs/AceLocale-3.0: https://repos.wowace.com/wow/ace3/trunk/AceLocale-3.0
-    #EnhancedRaidFrames/Libs/CallbackHandler-1.0: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
-    #EnhancedRaidFrames/Libs/LibStub: https://repos.wowace.com/wow/libstub/trunk
-    #EnhancedRaidFrames/Libs/LibDataBroker-1.1: https://repos.wowace.com/wow/libdatabroker-1-1
-    #EnhancedRaidFrames/Libs/AceLocale-3.0: https://repos.wowace.com/wow/ace3/trunk/AceLocale-3.0
-    #EnhancedRaidFrames/Libs/LibStub: https://repos.wowace.com/wow/libstub/trunk
-
 enable-nolib-creation: no
+enable-toc-creation: yes
+
+embedded-libraries:
+  - Ace3
+  - LibSharedMedia-3.0
+  - AceGUI-3.0-SharedMediaWidgets
+  - LibDualSpec-1.0
+  - LibRangeCheck-2.0
+  - LibClassicDurations
+  - LibDeflate
+
+tools-used:
+      - ViragDevTool
 
 ignore:
   - README.md
