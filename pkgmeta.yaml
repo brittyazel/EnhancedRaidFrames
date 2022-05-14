@@ -12,9 +12,6 @@ embedded-libraries:
   - LibClassicDurations
   - LibDeflate
 
-tools-used:
-      - ViragDevTool
-
 ignore:
   - README.md
   #- EnhancedRaidFrames/Libs/
