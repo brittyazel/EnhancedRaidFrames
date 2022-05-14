@@ -5,10 +5,10 @@ enable-toc-creation: yes
 
 embedded-libraries:
   - Ace3
-  - LibSharedMedia-3.0
-  - AceGUI-3.0-SharedMediaWidgets
-  - LibDualSpec-1.0
-  - LibRangeCheck-2.0
+  - LibSharedMedia-3-0
+  - Ace-GUI-3-0-Shared-Media-Widgets
+  - LibDualSpec-1-0
+  - librangecheck-2-0
   - LibClassicDurations
   - LibDeflate
 
