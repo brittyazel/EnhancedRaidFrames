@@ -80,13 +80,13 @@ function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
 	local index = GetRaidTargetIndex(frame.unit)
 
 	if index and index >= 1 and index <= 8 then
-		--the icons are stored in a single image, and UnitPopupButtons["RAID_TARGET_#"] is a table that contains the information for the texture and coords for each icon sub-texture
-		local iconTable = UnitPopupButtons["RAID_TARGET_"..index]
-		local texture = iconTable.icon
-		local leftTexCoord = iconTable.tCoordLeft
-		local rightTexCoord = iconTable.tCoordRight
-		local topTexCoord = iconTable.tCoordTop
-		local bottomTexCoord = iconTable.tCoordBottom
+		local texture = UnitPopupRaidTarget1ButtonMixin:GetIcon() --this is the full texture file, we need to parse it to get the individual icons
+		local tCoordsTable = _G["UnitPopupRaidTarget"..index.."ButtonMixin"]:GetTextureCoords()
+
+		local leftTexCoord = tCoordsTable.tCoordLeft
+		local rightTexCoord = tCoordsTable.tCoordRight
+		local topTexCoord = tCoordsTable.tCoordTop
+		local bottomTexCoord = tCoordsTable.tCoordBottom
 
 		frame.ERFIcons.texture:SetTexture(texture, nil, nil, "TRILINEAR") --use trilinear filtering to reduce jaggies
 		frame.ERFIcons.texture:SetTexCoord(leftTexCoord, rightTexCoord, topTexCoord, bottomTexCoord) --texture contains all the icons in a single texture, and we need to set coords to crop out the other icons
