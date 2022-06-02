@@ -80,8 +80,18 @@ function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
 	local index = GetRaidTargetIndex(frame.unit)
 
 	if index and index >= 1 and index <= 8 then
-		local texture = UnitPopupRaidTarget1ButtonMixin:GetIcon() --this is the full texture file, we need to parse it to get the individual icons
-		local tCoordsTable = _G["UnitPopupRaidTarget"..index.."ButtonMixin"]:GetTextureCoords()
+
+		local texture
+		local tCoordsTable
+
+		---I don't think classic has adpoted the new mixins yet. This should be removed in the future if it catches up
+		if not self.isWoWClassic and not self.isWoWClassic_TBC then
+			texture = UnitPopupRaidTarget1ButtonMixin:GetIcon() --this is the full texture file, we need to parse it to get the individual icons
+			tCoordsTable = _G["UnitPopupRaidTarget"..index.."ButtonMixin"]:GetTextureCoords()
+		else
+			tCoordsTable = UnitPopupButtons["RAID_TARGET_"..index]
+			texture = tCoordsTable.icon
+		end
 
 		local leftTexCoord = tCoordsTable.tCoordLeft
 		local rightTexCoord = tCoordsTable.tCoordRight
