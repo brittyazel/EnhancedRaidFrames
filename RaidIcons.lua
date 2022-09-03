@@ -85,7 +85,7 @@ function EnhancedRaidFrames:UpdateIcons(frame, setAppearance)
 		local tCoordsTable
 
 		---I don't think classic has adpoted the new mixins yet. This should be removed in the future if it catches up
-		if not self.isWoWClassicEra and not self.isWoWClassic then
+		if not self.isWoWClassicEra then
 			texture = UnitPopupRaidTarget1ButtonMixin:GetIcon() --this is the full texture file, we need to parse it to get the individual icons
 			tCoordsTable = _G["UnitPopupRaidTarget"..index.."ButtonMixin"]:GetTextureCoords()
 		else
