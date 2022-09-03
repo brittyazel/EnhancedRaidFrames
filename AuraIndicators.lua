@@ -447,7 +447,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 	while (true) do
 		local auraName, icon, count, duration, expirationTime, castBy, spellID
 
-		if not self.isWoWClassic then
+		if not self.isWoWClassicEra then
 			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellID = UnitAura(unit, i, "HELPFUL")
 		else
 			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellID = self.UnitAuraWrapper(unit, i, "HELPFUL") --for wow classic. This is the LibClassicDurations wrapper
@@ -480,7 +480,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit)
 	while (true) do
 		local auraName, icon, count, duration, expirationTime, castBy, spellID, debuffType
 
-		if not self.isWoWClassic then
+		if not self.isWoWClassicEra then
 			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellID  = UnitAura(unit, i, "HARMFUL")
 		else
 			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellID  = self.UnitAuraWrapper(unit, i, "HARMFUL") --for wow classic. This is the LibClassicDurations wrapper
