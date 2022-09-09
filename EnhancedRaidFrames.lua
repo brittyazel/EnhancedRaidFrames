@@ -101,7 +101,7 @@ function EnhancedRaidFrames:Setup()
 	local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) --create the config panel for profiles
 
 	-- Per spec profiles
-	if not self.isWoWClassicEra and not self.isWoWClassic then
+	if not self.isWoWClassicEra then
 		local LibDualSpec = LibStub('LibDualSpec-1.0')
 		LibDualSpec:EnhanceDatabase(self.db, "EnhancedRaidFrames") --enhance the database object with per spec profile features
 		LibDualSpec:EnhanceOptions(profiles, self.db) -- enhance the profiles config panel with per spec profile features
@@ -144,13 +144,23 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 		return
 	end
 
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal",
-			function(frame)
-				self:UpdateIndicators(frame, setAppearance)
-				self:UpdateIcons(frame, setAppearance)
-				self:UpdateInRange(frame)
-				self:UpdateBackgroundAlpha(frame)
-			end)
+	if not CompactRaidFrameContainer_ApplyToFrames then --for 10.0 support
+		CompactRaidFrameContainer:ApplyToFrames("normal",
+				function(frame)
+					self:UpdateIndicators(frame, setAppearance)
+					self:UpdateIcons(frame, setAppearance)
+					self:UpdateInRange(frame)
+					self:UpdateBackgroundAlpha(frame)
+				end)
+	else
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal",
+				function(frame)
+					self:UpdateIndicators(frame, setAppearance)
+					self:UpdateIcons(frame, setAppearance)
+					self:UpdateInRange(frame)
+					self:UpdateBackgroundAlpha(frame)
+				end)
+	end
 end
 
 -- Refresh everything that is affected by changes to the configuration
