@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -- Don't load unless we are Retail or Wrath Classic
 if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE and WOW_PROJECT_ID ~= WOW_PROJECT_WRATH_CLASSIC then return end
 
-local MAJOR, MINOR = "LibDualSpec-1.0", 21
+local MAJOR, MINOR = "LibDualSpec-1.0", 22
 assert(LibStub, MAJOR.." requires LibStub")
 local lib, minor = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
@@ -49,7 +49,7 @@ lib.registry = lib.registry or {}
 lib.options = lib.options or {}
 lib.mixin = lib.mixin or {}
 lib.upgrades = lib.upgrades or {}
-lib.currentSpec = lib.currentSpec or 0
+lib.currentSpec = tonumber(lib.currentSpec) or 0
 
 if minor and minor < 15 then
 	lib.talentsLoaded, lib.talentGroup = nil, nil
@@ -85,7 +85,7 @@ if isRetail then
 	end
 end
 
-local GetSpecialization = GetSpecialization or GetActiveTalentGroup
+local GetSpecialization = isRetail and GetSpecialization or GetActiveTalentGroup
 local CanPlayerUseTalentSpecUI = isRetail and C_SpecializationInfo.CanPlayerUseTalentSpecUI or function()
 	return true, HELPFRAME_CHARACTER_BULLET5
 end

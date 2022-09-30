@@ -1,36 +1,12 @@
-tag c35fcb3be5e7f34d259a655908bd91210dbf2c51 v1.21.0
+tag bf6bfbea64cae43d5dca450295f3215d46df38fc v1.22.0
 Author:	Kyle Buller <bullerk@gmail.com>
-Date:	Thu Sep 8 06:10:10 2022 -0500
+Date:	Sat Sep 10 21:43:55 2022 -0500
 
-Tagging as v1.21.0
+Tagging as v1.22.0
 
-commit 9aaf1708ed4aa6217972081d4676e41ff64b64ae
+commit fe72384ee6572db20a9a69afb5fc702049204c89
 Author: Kyle Buller <bullerk@gmail.com>
-Date:   Thu Sep 8 06:07:15 2022 -0500
+Date:   Sat Sep 10 21:04:48 2022 -0500
 
-    Bump minor
-
-commit 94ee41526cd9ca11646dd04f6a68f600b6338682
-Author: Kyle Buller <bullerk@gmail.com>
-Date:   Thu Sep 8 06:05:59 2022 -0500
-
-    Update on PEW to catch forced role changes
-
-commit 9b67aa8fb64ad4af5e149b6197f9771ea7a2dc18
-Author: Kyle Buller <bullerk@gmail.com>
-Date:   Thu Sep 8 04:50:58 2022 -0500
-
-    Add missing locale strings
-
-commit 3339b7732f1f11f9d99150b01131c68355e064fe
-Author: Kyle Buller <bullerk@gmail.com>
-Date:   Thu Sep 8 04:30:31 2022 -0500
-
-    Add support for Wrath Classic
-
-commit 32ddbc1ac9a07bffa0a06366fc9c382b193b4e9d
-Author: Kyle Buller <bullerk@gmail.com>
-Date:   Thu Sep 8 03:11:13 2022 -0500
-
-    Update TOC for 9.2.7
+    Hopeful fix for bad Wrath compat/leaked globals
 
