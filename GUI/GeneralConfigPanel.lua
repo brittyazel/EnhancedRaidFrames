@@ -34,7 +34,13 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = 'execute',
 				name = L["Open the Blizzard Raid Profiles Options"],
 				desc = L["blizzardRaidOptionsButton_desc"],
-				func = function() Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, RAID_FRAMES_LABEL) end,
+				func = function()
+					if Settings then --10.0 introduced a new Settings API
+						Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, RAID_FRAMES_LABEL)
+					else
+						InterfaceOptionsFrame_OpenToCategory("Raid Profiles")
+					end
+				end,
 				width = THIRD_WIDTH * 1.5,
 				order = 4,
 			},
