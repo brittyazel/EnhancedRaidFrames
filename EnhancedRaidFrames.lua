@@ -73,8 +73,7 @@ function EnhancedRaidFrames:OnEnable()
 	self:UpdateNotifier()
 
 	self:RegisterChatCommand("erf",function()
-		InterfaceOptionsFrame_OpenToCategory("Enhanced Raid Frames")
-		InterfaceOptionsFrame_OpenToCategory("Enhanced Raid Frames")
+		Settings.OpenToCategory("Enhanced Raid Frames")
 	end)
 end
 
@@ -140,7 +139,8 @@ end
 ---@param setAppearance boolean
 function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 	--don't do any work if the raid frames aren't shown
-	if not CompactRaidFrameContainer:IsShown() then
+	--10.0 introduced the CompactPartyFrame, we can't assume it exists in classic
+	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
 		return
 	end
 
@@ -169,6 +169,9 @@ function EnhancedRaidFrames:RefreshConfig()
 
 	if not InCombatLockdown() then
 		CompactRaidFrameContainer:SetScale(self.db.profile.frameScale)
+		if CompactPartyFrame then
+			CompactPartyFrame:SetScale(self.db.profile.frameScale)
+		end
 	end
 
 	-- reset aura strings

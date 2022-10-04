@@ -32,9 +32,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			},
 			blizzardRaidOptionsButton = {
 				type = 'execute',
-				name = L["Open the Blizzard Raid Profiles Menu"],
+				name = L["Open the Blizzard Raid Profiles Options"],
 				desc = L["blizzardRaidOptionsButton_desc"],
-				func = function() InterfaceOptionsFrame_OpenToCategory("Raid Profiles") end,
+				func = function() Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, RAID_FRAMES_LABEL) end,
 				width = THIRD_WIDTH * 1.5,
 				order = 4,
 			},
