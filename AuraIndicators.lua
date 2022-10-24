@@ -155,7 +155,8 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 			or string.find(frame.unit, "target")
 			or string.find(frame.unit, "nameplate")
 			or string.find(frame.unit, "pet")
-			or not CompactRaidFrameContainer:IsShown() then
+			--10.0 introduced the CompactPartyFrame, we can't assume it exists in classic
+			or (not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown()) then
 		return
 	end
 
