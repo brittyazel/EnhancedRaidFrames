@@ -134,7 +134,7 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		end
 
 		--clear any animations
-		ActionButton_HideOverlayGlow(indicatorFrame)
+		--ActionButton_HideOverlayGlow(indicatorFrame)
 		CooldownFrame_Clear(indicatorFrame.Cooldown)
 		indicatorFrame.Icon:SetAlpha(1)
 	end
@@ -352,11 +352,11 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------------------------------
 		--- set glow animation
 		---------------------------------
-		if self.db.profile[i].indicatorGlow and (self.db.profile[i].glowRemainingSecs == 0 or self.db.profile[i].glowRemainingSecs >= remainingTime) then
+		--[[if self.db.profile[i].indicatorGlow and (self.db.profile[i].glowRemainingSecs == 0 or self.db.profile[i].glowRemainingSecs >= remainingTime) then
 			ActionButton_ShowOverlayGlow(indicatorFrame)
 		else
 			ActionButton_HideOverlayGlow(indicatorFrame)
-		end
+		end]]
 
 		indicatorFrame:Show() --show the frame
 
@@ -393,7 +393,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		indicatorFrame:Hide() --hide the frame
 		--if no aura is found and we're not showing missing, clear animations and hide the frame
 		CooldownFrame_Clear(indicatorFrame.Cooldown)
-		ActionButton_HideOverlayGlow(indicatorFrame)
+		--ActionButton_HideOverlayGlow(indicatorFrame)
 	end
 end
 

@@ -594,7 +594,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						width = THIRD_WIDTH,
 						order = 2,
 					},
-					indicatorGlow = {
+					--[[indicatorGlow = {
 						type = "toggle",
 						name = L["Indicator Glow Effect"],
 						desc = L["showCountdownSwipe_desc"],
@@ -628,7 +628,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						end,
 						width = THIRD_WIDTH,
 						order = 4,
-					},
+					},]]
 				},
 			},
 		}
