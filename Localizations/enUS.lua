@@ -56,6 +56,9 @@ L["Bottom Left"] = true
 L["Bottom Center"] = true
 L["Bottom Right"] = true
 
+L["Left"] = true
+L["Centered"] = true
+L["Right"] = true
 
 ----------------------------------------------------
 ------------------- General Panel ------------------
@@ -148,6 +151,18 @@ L["Visibility and Behavior"] = true
 L["Mine Only"] = true
 L["mineOnly_desc"] = "Only show buffs and debuffs cast by me"
 
+L["numIcons"] = "Number of Icons"
+L["numIcons_desc"] = "Number of Icons if using \"Display All\""
+
+L["growthDirection"] = "Growth Direction"
+L["growthDirection_desc"] = "Growth Direction of Display All"
+
+L["showGeneralDebuffs"] = "Show General Debuffs"
+L["showGeneralDebuffs_desc"] = "Only show general debuffs, this will make the aura watch list act as a blacklist."
+
+L["disableInRaid"] = "Disable In Raid"
+L["disableInRaid_desc"] = "Disable this entire indicator while in a group larger than 5."
+
 L["Show On Me Only"] = true
 L["meOnly_desc"] = "Only only show this indicator on myself"
 
@@ -183,6 +198,12 @@ L["indicatorColor_desc1"] = "The solid color used for the indicator when not sho
 L["indicatorColor_desc2"] = "unless augmented by other color options"
 
 L["Text"] = true
+
+L["showDuration"] = true
+L["showDuration_desc"] = "Show duration for the auras on this indicator."
+
+L["showStacks"] = true
+L["showStacks_desc"] = "Show stacks for the auras on this indicator."
 
 L["Show Text"] = true
 L["showText_desc"] = "The text to show on the indicator frame"

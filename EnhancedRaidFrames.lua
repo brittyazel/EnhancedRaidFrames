@@ -28,10 +28,14 @@ EnhancedRaidFrames.NORMAL_COLOR = NORMAL_FONT_COLOR or CreateColor(1.0, 0.82, 0.
 EnhancedRaidFrames.WHITE_COLOR = WHITE_FONT_COLOR or CreateColor(1.0, 1.0, 1.0) --default game white color for text
 EnhancedRaidFrames.RED_COLOR = DIM_RED_FONT_COLOR or CreateColor(0.8, 0.1, 0.1) --solid red color
 EnhancedRaidFrames.YELLOW_COLOR = DARKYELLOW_FONT_COLOR or CreateColor(1.0, 0.82, 0.0) --solid yellow color
-EnhancedRaidFrames.GREEN_COLOR = CreateColor(0.6627, 0.8235, 0.4431) --poison text color
-EnhancedRaidFrames.PURPLE_COLOR = CreateColor(0.6392, 0.1882, 0.7882) --curse text color
-EnhancedRaidFrames.BROWN_COLOR = CreateColor(0.7804, 0.6118, 0.4314) --disease text color
-EnhancedRaidFrames.BLUE_COLOR = CreateColor(0.0, 0.4392, 0.8706) --magic text color
+EnhancedRaidFrames.GREEN_COLOR = CreateColor(0.0, 0.6, 0.0) --poison text color
+EnhancedRaidFrames.PURPLE_COLOR = CreateColor(0.6, 0.0, 1.0) --curse text color
+EnhancedRaidFrames.BROWN_COLOR = CreateColor(0.6, 0.4, 0.0) --disease text color
+EnhancedRaidFrames.BLUE_COLOR = CreateColor(0.2, 0.6, 1.0) --magic text color
+EnhancedRaidFrames.DEFAULT_HEALTHBAR_COLOR = CreateColor(0.4, 0.8, 0.0)
+EnhancedRaidFrames.DEFAULT_BACKGROUND_COLOR = CreateColor(0.12, 0.12, 0.12, 0.3)
+EnhancedRaidFrames.DEAD_COLOR = CreateColor(0.1, 0.1, 0.1, 0.85)
+EnhancedRaidFrames.GHOST_COLOR = CreateColor(0.8, 0.8, 0.8, 0.3)
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
@@ -56,6 +60,22 @@ end
 function EnhancedRaidFrames:OnEnable()
 	--start a repeating timer to updated every frame every 0.8sec to make sure the the countdown timer stays accurate
 	self.updateTimer = self:ScheduleRepeatingTimer("UpdateAllFrames", 0.5) --this is so countdown text is smooth
+	self:InitDispels()
+
+	-- Do I really need to create a frame to register to player spec? Feels dumb.
+	local ERF = CreateFrame("Frame", "ERF")
+	ERF:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+	ERF:RegisterEvent("TRAIT_CONFIG_UPDATED")
+	self:HookScript(ERF, "OnEvent", function(...)
+		 local event = select(2, ...)
+		 if event == "TRAIT_CONFIG_UPDATED" then -- Changed talents but not spec
+			 self:InitDispels()
+		 end
+
+		 if event == "PLAYER_SPECIALIZATION_CHANGED" and select(3, ...) == "player" then
+			 self:InitDispels()
+		 end
+  end)
 
 	--hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. The payload of the original function carries the identity of the frame needing updating
 	self:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) self:UpdateIndicators(frame) end)

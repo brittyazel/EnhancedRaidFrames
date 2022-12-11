@@ -7,11 +7,23 @@ local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 
-local POSITIONS = { [1] = L["Top left"], [2] = L["Top Center"], [3] = L["Top Right"],
-					[4] = L["Middle Left"], [5] = L["Middle Center"], [6] = L["Middle Right"],
-					[7] = L["Bottom Left"], [8] = L["Bottom Center"], [9] = L["Bottom Right"]}
+local POSITIONS = {
+	[1] = L["Top left"],
+	[2] = L["Top Center"],
+	[3] = L["Top Right"],
+	[4] = L["Middle Left"],
+	[5] = L["Middle Center"],
+	[6] = L["Middle Right"],
+	[7] = L["Bottom Left"],
+	[8] = L["Bottom Center"],
+	[9] = L["Bottom Right"]
+}
 
-
+local GROWTH_DIRECTIONS = {
+	[1] = L["Left"],
+	[2] = L["Centered"],
+	[3] = L["Right"],
+}
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
@@ -138,6 +150,65 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						end,
 						width = THIRD_WIDTH,
 						order = 4,
+					},
+					indicatorHorizontalOffset = {
+						type = "range",
+						name = L["numIcons"],
+						desc = L["numIcons_desc"],
+						min = 1,
+						max = 4,
+						step = 1,
+						get = function() return self.db.profile[i].numIcons end,
+						set = function(_, value)
+							self.db.profile[i].numIcons = value
+							self:RefreshConfig()
+						end,
+						width = THIRD_WIDTH,
+						order = 6,
+					},
+					growthDirection = {
+						type = "select",
+						name = L["growthDirection"],
+						desc = L["growthDirection_desc"],
+						values = GROWTH_DIRECTIONS,
+						get = function() return self.db.profile[i].growthDirection end,
+						set = function(_, value)
+							self.db.profile[i].growthDirection = value
+							self:RefreshConfig()
+						end,
+						disabled = function () return self.db.profile[i].numIcons <= 1 end,
+						width = THIRD_WIDTH,
+						order = 7,
+					},
+					showGeneralDebuffs = {
+						type = "toggle",
+						name = L["showGeneralDebuffs"],
+						desc = L["showGeneralDebuffs_desc"],
+						descStyle = "inline",
+						get = function()
+							return self.db.profile[i].showGeneralDebuffs
+						end,
+						set = function(_, value)
+							self.db.profile[i].showGeneralDebuffs = value
+							self:RefreshConfig()
+						end,
+						width = THIRD_WIDTH,
+						order = 8,
+					},
+					showGeneralDebuffs = {
+						type = "toggle",
+						name = L["disableInRaid"],
+						desc = L["disableInRaid_desc"],
+						descStyle = "inline",
+						get = function()
+							return self.db.profile[i].disableInRaid
+						end,
+						set = function(_, value)
+							self.db.profile[i].disableInRaid = value
+							self:RefreshConfig()
+						end,
+						width = THIRD_WIDTH,
+						order = 8,
 					},
 					-------------------------------------------------
 					tooltipOptions = {
@@ -405,23 +476,35 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						name = L["General"],
 						order = 1,
 					},
-					showText = {
-						type = "select",
-						name = L["Show Text"],
-						desc = L["showText_desc"],
-						style = "dropdown",
-						values = {["stack"] = L["Stack Size"], ["countdown"] = L["Countdown"],
-								  ["stack+countdown"] = L["Stack Size"].." + "..L["Countdown"], ["none"] = L["None"]},
-						sorting = {[1] = "stack", [2] = "countdown", [3] = "stack+countdown", [4] = "none"},
+					showDuration = {
+						type = "toggle",
+						name = L["showDuration"],
+						desc = L["showDuration_desc"],
+						descStyle = "inline",
 						get = function()
-							return self.db.profile[i].showText
+							return self.db.profile[i].showDuration
 						end,
 						set = function(_, value)
-							self.db.profile[i].showText = value
+							self.db.profile[i].showDuration = value
 							self:RefreshConfig()
 						end,
 						width = THIRD_WIDTH,
 						order = 2,
+					},
+					showStacks = {
+						type = "toggle",
+						name = L["showStacks"],
+						desc = L["showStacks_desc"],
+						descStyle = "inline",
+						get = function()
+							return self.db.profile[i].showStacks
+						end,
+						set = function(_, value)
+							self.db.profile[i].showStacks = value
+							self:RefreshConfig()
+						end,
+						width = THIRD_WIDTH,
+						order = 3,
 					},
 					textSize = {
 						type = "range",
@@ -443,7 +526,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 							end
 						end,
 						width = THIRD_WIDTH,
-						order = 3,
+						order = 4,
 					},
 					-------------------------------------------------
 					colorHeader = {
