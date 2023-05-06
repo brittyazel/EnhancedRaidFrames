@@ -3,10 +3,12 @@
 ## Interface-Wrath: 30401
 ## Title: Enhanced Raid Frames
 ## Notes: Enhances the Blizzard raid frames with configurable Buff/Debuff indicators
+## IconTexture: Interface\Icons\spell_holy_borrowedtime
 ## Author: Britt W. Yazel
 ## Version: @project-version@
 ## DefaultState: enabled
 ## SavedVariables: EnhancedRaidFramesDB
+## SavedVariablesPerCharacter:
 ## X-Credits-Maintainer: Britt W. Yazel
 ## X-Email: bwyazel@gmail.com
 ## X-License: MIT
