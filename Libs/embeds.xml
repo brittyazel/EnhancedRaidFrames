@@ -3,7 +3,7 @@
      This code is licensed under the MIT license (see LICENSE for details) -->
 
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI_shared.xsd">
+https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/FrameXML/UI_shared.xsd">
 
 	<!--Ace3 Libraries-->
 	<Script file="LibStub\LibStub.lua"/>
