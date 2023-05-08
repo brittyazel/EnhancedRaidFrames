@@ -17,4 +17,4 @@ assignees: brittyazel
 *A clear and concise description of any alternative solutions or features you've considered, such as supplementing a different mod that contains the feature in question.*
 
 ## Additional context:
-*Add any other context, screenshots, sketches, etc about the feature request here. A picture is worth 1000 words.*
+*Add any other context, screenshots, sketches, etc. about the feature request here. A picture is worth 1000 words.*
