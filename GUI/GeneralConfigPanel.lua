@@ -173,7 +173,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "select",
 				name = L["Select a Custom Distance"],
 				desc = L["customRangeCheck_desc"],
-				values = { [5] = "Melee", [10] = "10 yards", [20] = "20 yards", [30] = "30 yards", [35] = "35 yards"},
+				values = { [5] = "Melee", [10] = "10 yards", [20] = "20 yards", [30] = "30 yards", [35] = "35 yards", [40] = "40 yards"},
 				get = function() return self.db.profile.customRange end,
 				set = function(_, value)
 					self.db.profile.customRange = value
