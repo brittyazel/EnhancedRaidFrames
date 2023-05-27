@@ -27,7 +27,7 @@ function EnhancedRaidFrames:CreateDefaults()
 
 		--Out-of-Range Options
 		customRangeCheck = false,
-		customRange = 40,
+		customRange = 30,
 		rangeAlpha = 0.55,
 
 		---Raid Icon Settings
