@@ -12,5 +12,10 @@ embedded-libraries:
   - LibClassicDurations
   - LibDeflate
 
+tools-used:
+  - devtool
+  - bugsack
+  - bug-grabber
+
 ignore:
   - README.md
