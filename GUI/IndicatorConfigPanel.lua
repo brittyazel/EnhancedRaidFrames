@@ -98,7 +98,6 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						type = "toggle",
 						name = L["Mine Only"],
 						desc = L["mineOnly_desc"],
-						descStyle = "inline",
 						get = function()
 							return self.db.profile[i].mineOnly
 						end,
@@ -113,7 +112,6 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						type = "toggle",
 						name = L["Show On Me Only"],
 						desc = L["meOnly_desc"],
-						descStyle = "inline",
 						get = function()
 							return self.db.profile[i].meOnly
 						end,
@@ -128,7 +126,6 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						type = "toggle",
 						name = L["Show Only if Missing"],
 						desc = L["missingOnly_desc"],
-						descStyle = "inline",
 						get = function()
 							return self.db.profile[i].missingOnly
 						end,

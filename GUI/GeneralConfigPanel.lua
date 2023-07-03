@@ -54,7 +54,6 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "toggle",
 				name = L["Stock Buff Icons"],
 				desc = L["showBuffs_desc"],
-				descStyle = "inline",
 				get = function() return self.db.profile.showBuffs end,
 				set = function(_, value)
 					self.db.profile.showBuffs = value
@@ -67,7 +66,6 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "toggle",
 				name = L["Stock Debuff Icons"],
 				desc = L["showDebuffs_desc"],
-				descStyle = "inline",
 				get = function() return self.db.profile.showDebuffs end,
 				set = function(_, value)
 					self.db.profile.showDebuffs = value
@@ -80,7 +78,6 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "toggle",
 				name = L["Stock Dispellable Icons"],
 				desc = L["showDispellableDebuffs_desc"],
-				descStyle = "inline",
 				get = function() return self.db.profile.showDispellableDebuffs end,
 				set = function(_, value)
 					self.db.profile.showDispellableDebuffs = value
