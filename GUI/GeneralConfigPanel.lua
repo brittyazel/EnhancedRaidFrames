@@ -160,7 +160,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 			customRangeCheck = {
 				type = "toggle",
 				name = L["Override Default Distance"],
-				desc = L["customRangeCheck_desc"],
+				desc = L["customRange_desc"],
 				get = function() return self.db.profile.customRangeCheck end,
 				set = function(_, value)
 					self.db.profile.customRangeCheck = value
