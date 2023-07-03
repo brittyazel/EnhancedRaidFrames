@@ -597,7 +597,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 					indicatorGlow = {
 						type = "toggle",
 						name = L["Indicator Glow Effect"],
-						desc = L["showCountdownSwipe_desc"],
+						desc = L["indicatorGlow_desc"],
 						get = function()
 							return self.db.profile[i].indicatorGlow
 						end,
