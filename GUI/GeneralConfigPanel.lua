@@ -11,7 +11,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 -------------------------------------------------------------------------
 
 function EnhancedRaidFrames:CreateGeneralOptions()
-	local THIRD_WIDTH = 1.15
+	local THIRD_WIDTH = 1.25
 
 	local generalOptions = {
 		type = "group",

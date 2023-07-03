@@ -16,7 +16,7 @@ local POSITIONS = { [1] = L["Top left"], [2] = L["Top Center"], [3] = L["Top Rig
 -------------------------------------------------------------------------
 
 function EnhancedRaidFrames:CreateIndicatorOptions()
-	local THIRD_WIDTH = 1.05
+	local THIRD_WIDTH = 1.14
 
 	local indicatorOptions = {
 		type = "group",
