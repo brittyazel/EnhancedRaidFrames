@@ -171,8 +171,13 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 		self:SetIndicatorAppearance(frame)
 	end
 
-	-- Update unit auras
-	self:UpdateUnitAuras(frame.unit)
+	if not self.isWoWClassicEra and not self.isWoWClassic then
+		--Force a full update on a steady cadence to increase responsiveness
+		self:UpdateUnitAuras(nil, frame.unit, {isFullUpdate = true})
+	else
+		--Update unit auras, for retail we have a new way of doing it using the UNIT_AURA API
+		self:UpdateUnitAuras_Legacy(frame.unit)
+	end
 
 	-- Loop over all 9 indicators and process them individually
 	for i = 1, 9 do
@@ -188,9 +193,10 @@ end
 function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	local i = indicatorFrame.position
 
-	local foundAura, icon, count, duration, expirationTime, debuffType, castBy, auraIndex, auraType, _
+	local foundAura, icon, count, duration, expirationTime, debuffType, castBy, auraType, auraInstanceID, auraIndex, _
 
-	--reset auraIndex and auraType for tooltip
+	--reset auraInstanceID/auraIndex and auraType for tooltip
+	indicatorFrame.auraInstanceID = nil
 	indicatorFrame.auraIndex = nil
 	indicatorFrame.auraType = nil
 
@@ -206,18 +212,18 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	--- parse each aura and find the information of each ---
 	--------------------------------------------------------
 
-	for _, auraName in pairs(self.auraStrings[i]) do
+	for _, auraIdentifier in pairs(self.auraStrings[i]) do
 		--if there's no auraName (i.e. the user never specified anything to go in this spot), stop here there's no need to keep going
-		if not auraName then
+		if not auraIdentifier then
 			break
 		end
 
 		-- query the available information for a given indicator and aura
-		foundAura, icon, count, duration, expirationTime, debuffType, castBy, auraIndex, auraType = self:QueryAuraInfo(auraName, unit)
+		foundAura, icon, count, duration, expirationTime, debuffType, castBy, auraType, auraInstanceID, auraIndex = self:QueryAuraInfo(auraIdentifier, unit)
 
 		-- add spell icon info to cache in case we need it later on
-		if icon and not self.iconCache[auraName] then
-			EnhancedRaidFrames.iconCache[auraName] = icon
+		if icon and not self.iconCache[auraIdentifier] then
+			EnhancedRaidFrames.iconCache[auraIdentifier] = icon
 		end
 
 		-- when tracking multiple things, this determines "where" we stop in the list
@@ -233,12 +239,14 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	------------------------------------------------------
 
 	-- if we find the spell and we don't only want to show when it is missing
-	if foundAura and UnitIsConnected(unit) and not self.db.profile[i].missingOnly and (not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and castBy == "player")) then
+	if foundAura and UnitIsConnected(unit) and not self.db.profile[i].missingOnly and
+			(not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and castBy == "player")) then
 
 		-- calculate remainingTime and round down, this is how the game seems to do it
 		local remainingTime = floor(expirationTime - GetTime())
 
-		-- set auraIndex and auraType for tooltip
+		-- set auraInstanceID/auraIndex and auraType for tooltip
+		indicatorFrame.auraInstanceID = auraInstanceID
 		indicatorFrame.auraIndex = auraIndex
 		indicatorFrame.auraType = auraType
 
@@ -288,9 +296,9 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			-- determine the formatted time string
 			if remainingTime and (self.db.profile[i].showText == "stack+countdown" or self.db.profile[i].showText == "countdown") then
 				if remainingTime > 60 then
-					formattedTime = string.format("%.0f", remainingTime/60).."m" -- Show minutes without seconds
+					formattedTime = string.format("%.0f", remainingTime/60).."m" --Show minutes without seconds
 				elseif remainingTime >= 0 then
-					formattedTime = string.format("%.0f", remainingTime) -- Show seconds without decimals
+					formattedTime = string.format("%.0f", remainingTime) --Show seconds without decimals
 				end
 			end
 
@@ -398,17 +406,23 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 end
 
 --process the text and icon for an indicator and return these values
---this function returns foundAura, icon, count, duration, expirationTime, debuffType, castBy, auraIndex, auraType
-function EnhancedRaidFrames:QueryAuraInfo(auraName, unit)
+--this function returns foundAura, icon, count, duration, expirationTime, debuffType, castBy, auraType, auraInstanceID, auraIndex
+function EnhancedRaidFrames:QueryAuraInfo(auraIdentifier, unit)
+	if not unitAuras[unit] then
+		return false
+	end
+
 	-- Check if the aura exist on the unit
-	for _,v in pairs(unitAuras[unit]) do --loop through list of auras
-		if (tonumber(auraName) and v.spellID == tonumber(auraName)) or v.auraName == auraName or (v.auraType == "debuff" and v.debuffType == auraName) then
-			return true, v.icon, v.count, v.duration, v.expirationTime, v.debuffType, v.castBy, v.auraIndex, v.auraType
+	for _,auraInstance in pairs(unitAuras[unit]) do --loop through list of auras
+		if (tonumber(auraIdentifier) and auraInstance.spellID == tonumber(auraIdentifier)) or
+				auraInstance.auraName == auraIdentifier or (auraInstance.auraType == "debuff" and auraInstance.debuffType == auraIdentifier) then
+			return true, auraInstance.icon, auraInstance.count, auraInstance.duration, auraInstance.expirationTime,
+			auraInstance.debuffType, auraInstance.castBy, auraInstance.auraType, auraInstance.auraInstanceID, auraInstance.auraIndex
 		end
 	end
 
 	-- Check if we want to show pvp flag
-	if auraName:upper() == "PVP" then
+	if auraIdentifier:upper() == "PVP" then
 		if UnitIsPVP(unit) then
 			local factionGroup = UnitFactionGroup(unit)
 			if factionGroup then
@@ -418,14 +432,14 @@ function EnhancedRaidFrames:QueryAuraInfo(auraName, unit)
 	end
 
 	-- Check if we want to show combat flag
-	if auraName:upper() == "COMBAT" then
+	if auraIdentifier:upper() == "COMBAT" then
 		if UnitAffectingCombat(unit) then
 			return true, "Interface\\Icons\\Ability_Dualwield", 0, 0, 0, "", "player"
 		end
 	end
 
 	-- Check if we want to show ToT flag
-	if auraName:upper() == "TOT" then
+	if auraIdentifier:upper() == "TOT" then
 		if UnitIsUnit(unit, "targettarget") then
 			return true, "Interface\\Icons\\Ability_Hunter_SniperShot", 0, 0, 0, "", "player"
 		end
@@ -439,7 +453,79 @@ end
 ---------- Update Auras for all units ----------
 ------------------------------------------------
 
-function EnhancedRaidFrames:UpdateUnitAuras(unit)
+function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload)
+	-- Only process player, raid, and party units
+	if not string.find(unit, "player") and not string.find(unit, "raid") and not string.find(unit, "party") then
+		return
+	end
+
+	-- Create the main table for the unit
+	if not unitAuras[unit] then
+		unitAuras[unit] = {}
+	end
+
+	local function addToAuraTable(thisUnit, thisAuraData)
+		if not thisAuraData then
+			return
+		end
+
+		local aura = {}
+		aura.auraInstanceID = thisAuraData.auraInstanceID
+		if thisAuraData.isHelpful then
+			aura.auraType = "buff"
+		elseif thisAuraData.isHarmful then
+			aura.auraType = "debuff"
+		end
+		aura.auraName = thisAuraData.name:lower()
+		aura.icon = thisAuraData.icon
+		aura.count = thisAuraData.applications
+		aura.duration = thisAuraData.duration
+		aura.expirationTime = thisAuraData.expirationTime
+		aura.castBy = thisAuraData.sourceUnit
+		aura.spellID = thisAuraData.spellId
+
+		if unitAuras[thisUnit][aura.auraInstanceID] then
+			unitAuras[thisUnit][aura.auraInstanceID] = nil
+		end
+		unitAuras[thisUnit][aura.auraInstanceID] = aura
+	end
+
+	if payload.isFullUpdate then
+		AuraUtil.ForEachAura(unit, "HELPFUL", nil, function(auraData)
+			addToAuraTable(unit, auraData)
+		end, true);
+		AuraUtil.ForEachAura(unit, "HARMFUL", nil, function(auraData)
+			addToAuraTable(unit, auraData)
+		end, true);
+		return
+	end
+
+	if payload.addedAuras then
+		for _, auraData in pairs(payload.addedAuras) do
+			addToAuraTable(unit, auraData)
+		end
+	end
+
+	if payload.updatedAuraInstanceIDs then
+		for _, ID in pairs(payload.updatedAuraInstanceIDs) do
+			if unitAuras[unit][ID] then
+				local auraData = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, ID)
+				addToAuraTable(unit, auraData)
+			end
+		end
+	end
+
+	if payload.removedAuraInstanceIDs then
+		for _, ID in pairs(payload.removedAuraInstanceIDs) do
+			if unitAuras[unit][ID] then
+				unitAuras[unit][ID] = nil
+			end
+		end
+	end
+end
+
+
+function EnhancedRaidFrames:UpdateUnitAuras_Legacy(unit)
 	-- Create or clear out the tables for the unit
 	unitAuras[unit] = {}
 
@@ -526,13 +612,21 @@ function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame)
 	local frame = indicatorFrame:GetParent() --this is the parent raid frame that holds all the indicatorFrames
 
 	-- Set the tooltip
-	if indicatorFrame.auraIndex and indicatorFrame.Icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
+	if (indicatorFrame.auraInstanceID or indicatorFrame.auraIndex) and indicatorFrame.Icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
 		-- Set the buff/debuff as tooltip and anchor to the cursor
 		GameTooltip:SetOwner(UIParent, self.db.profile[i].tooltipLocation)
 		if indicatorFrame.auraType == "buff" then
-			GameTooltip:SetUnitAura(frame.unit, indicatorFrame.auraIndex, "HELPFUL")
-		else
-			GameTooltip:SetUnitAura(frame.unit, indicatorFrame.auraIndex, "HARMFUL")
+			if indicatorFrame.auraInstanceID then
+				GameTooltip:SetUnitBuffByAuraInstanceID(frame.unit, indicatorFrame.auraInstanceID)
+			elseif indicatorFrame.auraIndex then --the legacy way of doing things
+				GameTooltip:SetUnitAura(frame.unit, indicatorFrame.auraIndex, "HELPFUL")
+			end
+		elseif indicatorFrame.auraType == "debuff" then
+			if indicatorFrame.auraInstanceID then
+				GameTooltip:SetUnitDebuffByAuraInstanceID(frame.unit, indicatorFrame.auraInstanceID)
+			elseif indicatorFrame.auraIndex then --the legacy way of doing things
+				GameTooltip:SetUnitAura(frame.unit, indicatorFrame.auraIndex, "HARMFUL")
+			end
 		end
 	else
 		--causes the tooltip to reset to the "default" tooltip which is usually information about the character

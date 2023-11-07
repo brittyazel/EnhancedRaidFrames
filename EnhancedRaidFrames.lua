@@ -66,6 +66,10 @@ function EnhancedRaidFrames:OnEnable()
 	-- Hook raid icon updates
 	self:RegisterBucketEvent({"RAID_TARGET_UPDATE", "RAID_ROSTER_UPDATE"}, 1, "UpdateAllFrames")
 
+	if not self.isWoWClassicEra and not self.isWoWClassic then
+		self:RegisterEvent("UNIT_AURA", "UpdateUnitAuras")
+	end
+
 	-- Make sure any icons already existing are shown
 	self:RefreshConfig()
 
