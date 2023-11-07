@@ -21,6 +21,7 @@ Localizations\Localizations.xml
 EnhancedRaidFrames.lua
 DatabaseDefaults.lua
 UtilitiesAndOverrides.lua
+CollectUnitAuras.lua
 
 AuraIndicators.lua
 RaidIcons.lua

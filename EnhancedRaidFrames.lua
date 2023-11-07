@@ -1,5 +1,5 @@
 -- Enhanced Raid Frames is a World of Warcraft® user interface addon.
--- Copyright (c) 2017-2021 Britt W. Yazel
+-- Copyright (c) 2017-2023 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
 local addonName, addonTable = ... --make use of the default addon namespace
@@ -21,7 +21,6 @@ elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
 end
 
 EnhancedRaidFrames.DATABASE_VERSION = 2
-
 
 --Declare Color Globals
 EnhancedRaidFrames.NORMAL_COLOR = NORMAL_FONT_COLOR or CreateColor(1.0, 0.82, 0.0) --the default game text color, dull yellow color
@@ -66,6 +65,7 @@ function EnhancedRaidFrames:OnEnable()
 	-- Hook raid icon updates
 	self:RegisterBucketEvent({"RAID_TARGET_UPDATE", "RAID_ROSTER_UPDATE"}, 1, "UpdateAllFrames")
 
+	-- Use new UNIT_AURA event in retail that was added in 10.0 for huge performance gains
 	if not self.isWoWClassicEra and not self.isWoWClassic then
 		self:RegisterEvent("UNIT_AURA", "UpdateUnitAuras")
 	end
@@ -77,12 +77,7 @@ function EnhancedRaidFrames:OnEnable()
 	self:UpdateNotifier()
 
 	self:RegisterChatCommand("erf",function()
-		if Settings then --10.0 introduced a new Settings API
-			Settings.OpenToCategory("Enhanced Raid Frames")
-		else
-			InterfaceOptionsFrame_OpenToCategory("Enhanced Raid Frames")
-			InterfaceOptionsFrame_OpenToCategory("Enhanced Raid Frames")
-		end
+		Settings.OpenToCategory("Enhanced Raid Frames")
 	end)
 end
 
@@ -148,7 +143,6 @@ end
 ---@param setAppearance boolean
 function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 	--don't do any work if the raid frames aren't shown
-	--10.0 introduced the CompactPartyFrame, we can't assume it exists in Classic
 	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
 		return
 	end
