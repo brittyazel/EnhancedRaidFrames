@@ -16,20 +16,6 @@ EnhancedRaidFrames.iconCache["magic"] = 135894
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
-function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
-	if not self.db.profile.showBuffs then
-		CompactUnitFrame_HideAllBuffs(frame)
-	end
-
-	if not self.db.profile.showDebuffs then
-		CompactUnitFrame_HideAllDebuffs(frame)
-	end
-
-	if not self.db.profile.showDispellableDebuffs then
-		CompactUnitFrame_HideAllDispelDebuffs(frame)
-	end
-end
-
 -- Create the FontStrings used for indicators
 function EnhancedRaidFrames:CreateIndicators(frame)
 	frame.ERFIndicators = {}
@@ -57,7 +43,8 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		indicatorFrame:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 		--disable the mouse click on our frames to allow those clicks to get passed straight through to the raid frame behind (switch target, right click, etc)
-		indicatorFrame:SetMouseClickEnabled(false) --this MUST come after the SetScript lines for OnEnter and OnLeave. SetScript will re-enable mouse clicks when called.
+		--this MUST come after the SetScript lines for OnEnter and OnLeave. SetScript will re-enable mouse clicks when called.
+		indicatorFrame:SetMouseClickEnabled(false) 
 	end
 
 	--override for a change made in 9.2 which broke muscle memory for lots of healers
@@ -86,8 +73,8 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 
 		--set indicator frame position
 		local PAD = 1
-		local iconVerticalOffset = floor((self.db.profile[i].indicatorVerticalOffset * frame:GetHeight()) + 0.5) --add 0.5 to better approximate a "round" function
-		local iconHorizontalOffset = floor((self.db.profile[i].indicatorHorizontalOffset * frame:GetWidth()) + 0.5) --add 0.5 to better approximate a "round" function
+		local iconVerticalOffset = floor((self.db.profile[i].indicatorVerticalOffset * frame:GetHeight()) + 0.5)
+		local iconHorizontalOffset = floor((self.db.profile[i].indicatorHorizontalOffset * frame:GetWidth()) + 0.5)
 
 		--we probably don't want to overlap the power bar (rage, mana, energy, etc) so we need a compensation factor
 		local powerBarVertOffset
@@ -160,14 +147,15 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 
 	self:SetStockIndicatorVisibility(frame)
 
-	-- Check if the indicator frame exists, else create it
+	-- Create the indicator frame if it doesn't exist, otherwise just update the appearance
 	if not frame.ERFIndicators then
 		self:CreateIndicators(frame)
+	else
+		if setAppearance then
+			self:SetIndicatorAppearance(frame)
+		end
 	end
 
-	if setAppearance then
-		self:SetIndicatorAppearance(frame)
-	end
 
 	-- Loop over all 9 indicators and process them individually
 	for i = 1, 9 do
@@ -233,7 +221,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			(not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and castBy == "player")) then
 
 		-- calculate remainingTime and round down, this is how the game seems to do it
-		local remainingTime = floor((expirationTime - GetTime()) + 0.5) --add 0.5 to better simulate a proper "round" function
+		local remainingTime = floor(expirationTime - GetTime())
 
 		-- set auraInstanceID/auraIndex and auraType for tooltip
 		indicatorFrame.auraInstanceID = auraInstanceID
@@ -449,7 +437,7 @@ function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame, parentFrame)
 	end
 
 	-- Set the tooltip
-	if (indicatorFrame.auraInstanceID or indicatorFrame.auraIndex) and indicatorFrame.auraInstanceID ~= 0 and indicatorFrame.Icon:GetTexture() then -- -1 is the pvp icon, no tooltip for that
+	if (indicatorFrame.auraInstanceID or indicatorFrame.auraIndex) and indicatorFrame.auraInstanceID ~= 0 and indicatorFrame.Icon:GetTexture() then
 		-- Set the buff/debuff as tooltip and anchor to the cursor
 		GameTooltip:SetOwner(UIParent, self.db.profile[i].tooltipLocation)
 		if indicatorFrame.auraType == "buff" then

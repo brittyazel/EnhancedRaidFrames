@@ -2,14 +2,13 @@
 -- Copyright (c) 2017-2023 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
-local addonName, addonTable = ... --make use of the default addon namespace
+local _, addonTable = ... --make use of the default addon namespace
 
 ---@class EnhancedRaidFrames : AceAddon-3.0 @define The main addon object for the Enhanced Raid Frames add-on
-addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", 
+addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0",
 		"AceEvent-3.0", "AceBucket-3.0", "AceConsole-3.0", "AceSerializer-3.0")
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
-local LibDeflate = LibStub:GetLibrary("LibDeflate")
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 
 EnhancedRaidFrames.allAuras = " "
@@ -40,8 +39,22 @@ EnhancedRaidFrames.BLUE_COLOR = CreateColor(0.0, 0.4392, 0.8706) --magic text co
 --- do init tasks here, like loading the Saved Variables
 --- or setting up slash commands.
 function EnhancedRaidFrames:OnInitialize()
-	-- Set up config pane
-	self:Setup()
+	-- Set up database defaults
+	local defaults = self:CreateDefaults()
+
+	-- Create database object
+	self.db = LibStub("AceDB-3.0"):New("EnhancedRaidFramesDB", defaults) --EnhancedRaidFramesDB is our saved variable table
+
+	-- Setup LibDualSpec for per spec profiles
+	-- Not available in Classic Era
+	if not self.isWoWClassicEra then
+		local profileOptionTable = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+		LibStub('LibDualSpec-1.0'):EnhanceDatabase(self.db, "EnhancedRaidFrames") --enhance the database object with per spec profile features
+		LibStub('LibDualSpec-1.0'):EnhanceOptions(profileOptionTable, self.db) -- enhance the profile option table with per spec profile features
+	end
+	
+	-- Setup config panels in the Blizzard interface options
+	self:SetupConfigPanels()
 
 	-- Register callbacks for profile switching
 	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
@@ -57,12 +70,12 @@ function EnhancedRaidFrames:OnEnable()
 	-- Register for the UNIT_AURA event to track auras on all raid frame units
 	if not self.isWoWClassicEra and not self.isWoWClassic then
 		self:RegisterEvent("UNIT_AURA", "UpdateUnitAuras")
+		self:UpdateAllAuras() -- Run a full update of all auras for a starting point
 	else
-		self:RegisterEvent("UNIT_AURA", "UpdateUnitAuras_Legacy")
+		self:RegisterEvent("UNIT_AURA", "UpdateUnitAuras_Classic")
+		self:UpdateAllAuras_Classic() -- Run a full update of all auras for a starting point
 	end
-	-- Run a full aura scan immediately after loading to populate our aura list for all units
-	self:UpdateAllAuras()
-	
+
 	-- Hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. 
 	-- The payload of the original function carries the identity of the frame needing updating.
 	-- Without this, things like the default aura icons will pop in and out.
@@ -70,26 +83,24 @@ function EnhancedRaidFrames:OnEnable()
 
 	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
 	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) self:UpdateInRange(frame) end)
-	
+
 	-- Force a full update of all frames when a raid target icon changes
 	self:RegisterBucketEvent("RAID_TARGET_UPDATE", 1, "UpdateAllFrames")
 
 	-- Force a full update of all frames and auras when the raid roster changes
-	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, function() 
+	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, function()
 		self:UpdateAllFrames()
 		self:UpdateAllAuras()
 	end)
 
-	-- Start a repeating timer to make sure the the countdown timer stays accurate
-	self.updateTimer = self:ScheduleRepeatingTimer("UpdateAllFrames", 0.5)
+	-- Start a repeating timer to make sure the responsiveness feels right
+	self:ScheduleRepeatingTimer("UpdateAllFrames", 0.25)
 
 	-- Populate our starting config values
 	self:RefreshConfig()
-	
+
 	-- Register our slash command to open the config panel
-	self:RegisterChatCommand("erf",function()
-		Settings.OpenToCategory("Enhanced Raid Frames")
-	end)
+	self:RegisterChatCommand("erf", function() Settings.OpenToCategory("Enhanced Raid Frames") end)
 
 	-- Notify to the chat window of any new major updates, if necessary
 	self:UpdateNotifier()
@@ -107,149 +118,57 @@ end
 -------------------------------------------------------------------------
 
 --- Create our database, import saved variables, and set up our configuration panels
-function EnhancedRaidFrames:Setup()
-	-- Set up database defaults
-	local defaults = self:CreateDefaults()
-
-	-- Create database object
-	self.db = LibStub("AceDB-3.0"):New("EnhancedRaidFramesDB", defaults) --EnhancedRaidFramesDB is our saved variable table
-
-	-- Profile handling
-	local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) --create the config panel for profiles
-
-	-- Per spec profiles
-	if not self.isWoWClassicEra then
-		local LibDualSpec = LibStub('LibDualSpec-1.0')
-		LibDualSpec:EnhanceDatabase(self.db, "EnhancedRaidFrames") --enhance the database object with per spec profile features
-		LibDualSpec:EnhanceOptions(profiles, self.db) -- enhance the profiles config panel with per spec profile features
-	end
-
-	-- LibClassicDurations
-	if self.isWoWClassicEra then
-		local LibClassicDurations = LibStub("LibClassicDurations")
-		LibClassicDurations:Register(addonName) -- tell library it's being used and should start working
-		self.UnitAuraWrapper = LibClassicDurations.UnitAuraWrapper
-	end
-
+function EnhancedRaidFrames:SetupConfigPanels()
 	-- Build our config panels
 	local generalOptions = self:CreateGeneralOptions()
 	local indicatorOptions = self:CreateIndicatorOptions()
 	local iconOptions = self:CreateIconOptions()
+	local profileOptionTable = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 	local importExportProfileOptions = self:CreateProfileImportExportOptions()
-
-	self.config = LibStub("AceConfigRegistry-3.0")
-	self.config:RegisterOptionsTable("Enhanced Raid Frames", generalOptions)
-	self.config:RegisterOptionsTable("ERF Indicator Options", indicatorOptions)
-	self.config:RegisterOptionsTable("ERF Icon Options", iconOptions)
-	self.config:RegisterOptionsTable("ERF Profiles", profiles)
-	self.config:RegisterOptionsTable("ERF Import Export Profile Options", importExportProfileOptions)
+	
+	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Enhanced Raid Frames", generalOptions)
+	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("ERF Indicator Options", indicatorOptions)
+	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("ERF Icon Options", iconOptions)
+	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("ERF Profiles", profileOptionTable)
+	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("ERF Import Export Profile Options", importExportProfileOptions)
 
 	-- Add to config panels to in-game interface options
-	self.dialog = LibStub("AceConfigDialog-3.0")
-	self.dialog:AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
-	self.dialog:AddToBlizOptions("ERF Indicator Options", L["Indicator Options"], "Enhanced Raid Frames")
-	self.dialog:AddToBlizOptions("ERF Icon Options", L["Icon Options"], "Enhanced Raid Frames")
-	self.dialog:AddToBlizOptions("ERF Profiles", L["Profiles"], "Enhanced Raid Frames")
-	self.dialog:AddToBlizOptions("ERF Import Export Profile Options", (L["Profile"].." "..L["Import"].."/"..L["Export"]), "Enhanced Raid Frames")
+	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
+	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ERF Indicator Options", L["Indicator Options"], "Enhanced Raid Frames")
+	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ERF Icon Options", L["Icon Options"], "Enhanced Raid Frames")
+	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ERF Profiles", L["Profiles"], "Enhanced Raid Frames")
+	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ERF Import Export Profile Options", (L["Profile"].." "..L["Import"].."/"..L["Export"]), "Enhanced Raid Frames")
 end
 
 --- Update all raid frames
----@param setAppearance boolean
 function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
-	--don't do any work if the raid frames aren't shown
+	-- Don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
 		return
 	end
+	
+	self:UpdateScale()
 
-	--this is the heart and soul of the addon. Everything gets called from here.
+	-- This is the heart and soul of the addon. Everything gets called from here.
 	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
-		CompactRaidFrameContainer:ApplyToFrames("normal",
-				function(frame)
-					self:UpdateIndicators(frame, setAppearance)
-					self:UpdateIcons(frame, setAppearance)
-					self:UpdateInRange(frame)
-					self:UpdateBackgroundAlpha(frame)
-				end)
+		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
+			self:UpdateIndicators(frame, setAppearance)
+			self:UpdateIcons(frame, setAppearance)
+			self:UpdateInRange(frame)
+			self:UpdateBackgroundAlpha(frame)
+		end)
 	else
-		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal",
-				function(frame)
-					self:UpdateIndicators(frame, setAppearance)
-					self:UpdateIcons(frame, setAppearance)
-					self:UpdateInRange(frame)
-					self:UpdateBackgroundAlpha(frame)
-				end)
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
+			self:UpdateIndicators(frame, setAppearance)
+			self:UpdateIcons(frame, setAppearance)
+			self:UpdateInRange(frame)
+			self:UpdateBackgroundAlpha(frame)
+		end)
 	end
 end
 
 -- Refresh everything that is affected by changes to the configuration
 function EnhancedRaidFrames:RefreshConfig()
 	self:UpdateAllFrames(true)
-
-	if not InCombatLockdown() then
-		CompactRaidFrameContainer:SetScale(self.db.profile.frameScale)
-		if CompactPartyFrame then
-			CompactPartyFrame:SetScale(self.db.profile.frameScale)
-		end
-	end
-
-	-- reset aura strings
-	self.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
-
-	for i = 1, 9 do
-		local j = 1
-		for auraName in string.gmatch(self.db.profile[i].auras, "[^\n]+") do -- Grab each line
-			--sanitize strings
-			auraName = auraName:lower() --force lowercase
-			auraName = auraName:gsub("^%s*(.-)%s*$", "%1") --strip any leading or trailing whitespace
-			auraName = auraName:gsub("\"", "") --strip any quotation marks if there are any
-			self.auraStrings[i][j] = auraName
-			j = j + 1
-		end
-	end
-end
-
-
-function EnhancedRaidFrames:GetSerializedAndCompressedProfile()
-	local uncompressed = EnhancedRaidFrames:Serialize(EnhancedRaidFrames.db.profile) --serialize the database into a string value
-	local compressed = LibDeflate:CompressZlib(uncompressed) --compress the data
-	local encoded = LibDeflate:EncodeForPrint(compressed) --encode the data for print for copy+paste
-	return encoded
-end
-
-
-function EnhancedRaidFrames:SetSerializedAndCompressedProfile(input)
-	--check if the input is empty
-	if input == "" then
-		EnhancedRaidFrames:Print(L["No data to import."].." "..L["Aborting."])
-		return
-	end
-
-	--decode and check if decoding worked properly
-	local decoded = LibDeflate:DecodeForPrint(input)
-	if decoded == nil then
-		EnhancedRaidFrames:Print(L["Decoding failed."].." "..L["Aborting."])
-		return
-	end
-
-	--uncompress and check if uncompresion worked properly
-	local uncompressed = LibDeflate:DecompressZlib(decoded)
-	if uncompressed == nil then
-		EnhancedRaidFrames:Print(L["Decompression failed."].." "..L["Aborting."])
-		return
-	end
-
-	--deserialize the data and return it back into a table format
-	local result, newProfile = EnhancedRaidFrames:Deserialize(uncompressed)
-
-	if result == true and newProfile then --if we successfully deserialize, load the new table and reload
-		for k,v in pairs(newProfile) do
-			if type(v) == "table" then
-				EnhancedRaidFrames.db.profile[k] = CopyTable(v)
-			else
-				EnhancedRaidFrames.db.profile[k] = v
-			end
-		end
-	else
-		EnhancedRaidFrames:Print(L["Data import Failed."].." "..L["Aborting."])
-	end
+	self:GenerateAuraStrings()
 end

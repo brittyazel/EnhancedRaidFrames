@@ -2,11 +2,18 @@
 -- Copyright (c) 2017-2023 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
-local _, addonTable = ... --make use of the default addon namespace
+local addonName, addonTable = ... --make use of the default addon namespace
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
 EnhancedRaidFrames.unitAuras = {} -- Matrix to keep a list of all auras on all units
 local unitAuras = EnhancedRaidFrames.unitAuras --local handle for the above table
+
+local UnitAuraWrapper
+-- Setup LibClassicDurations
+if EnhancedRaidFrames.isWoWClassicEra then
+	LibStub("LibClassicDurations"):Register(addonName) -- tell library it's being used and should start working
+	UnitAuraWrapper = LibStub("LibClassicDurations").UnitAuraWrapper -- get the wrapper function
+end
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
@@ -16,17 +23,20 @@ function EnhancedRaidFrames:UpdateAllAuras()
 	table.wipe(unitAuras)
 
 	-- Iterate over all raid frame units and force a full update
-	if not self.isWoWClassicEra and not self.isWoWClassic then
-		CompactRaidFrameContainer:ApplyToFrames("normal",
-				function(frame)
-					self:UpdateUnitAuras("", frame.unit, {isFullUpdate = true})
-				end)
-	else
-		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal",
-				function(frame)
-					self:UpdateUnitAuras_Legacy("", frame.unit)
-				end)
-	end
+	CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
+		self:UpdateUnitAuras("", frame.unit, {isFullUpdate = true})
+	end)
+end
+
+--- This function scans all raid frame units and updates the unitAuras table with all auras on each unit
+function EnhancedRaidFrames:UpdateAllAuras_Classic()
+	-- Clear out the unitAuras table
+	table.wipe(unitAuras)
+
+	-- Iterate over all raid frame units and force a full update
+	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
+		self:UpdateUnitAuras_Classic("", frame.unit)
+	end)
 end
 
 --- This functions is bound to the UNIT_AURA event and is used to track auras on all raid frame units
@@ -42,7 +52,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload)
 	if not unitAuras[unit] then
 		unitAuras[unit] = {}
 	end
-	
+
 	-- If we get a full update signal, wipe the table and rescan all auras for the unit
 	if payload.isFullUpdate then
 		-- Clear out the table
@@ -119,12 +129,12 @@ end
 --- Prior to WoW 10.0, this function was used to track auras on all raid frame units
 --- Unit auras are now tracked using the UNIT_AURA event and APIs in Retail
 --- Unit aura information is stored in the unitAuras table
-function EnhancedRaidFrames:UpdateUnitAuras_Legacy(_, unit)
+function EnhancedRaidFrames:UpdateUnitAuras_Classic(_, unit)
 	-- Only process player, raid, and party units
 	if not string.find(unit, "player") and not string.find(unit, "raid") and not string.find(unit, "party") then
 		return
 	end
-	
+
 	-- Create or clear out the tables for the unit
 	unitAuras[unit] = {}
 
@@ -136,14 +146,15 @@ function EnhancedRaidFrames:UpdateUnitAuras_Legacy(_, unit)
 		if UnitAura then
 			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellID = UnitAura(unit, i, "HELPFUL")
 		else
-			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellID = self.UnitAuraWrapper(unit, i, "HELPFUL") --for wow classic. This is the LibClassicDurations wrapper
+			--For wow classic. This is the LibClassicDurations wrapper
+			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellID = UnitAuraWrapper(unit, i, "HELPFUL")
 		end
 
 		-- break the loop once we have no more auras
 		if not spellID then
 			break
 		end
-		
+
 		local auraTable = {}
 		auraTable.auraType = "buff"
 		auraTable.auraIndex = i
@@ -156,7 +167,6 @@ function EnhancedRaidFrames:UpdateUnitAuras_Legacy(_, unit)
 		auraTable.spellID = spellID
 
 		table.insert(unitAuras[unit], auraTable)
-		
 		i = i + 1
 	end
 
@@ -168,14 +178,15 @@ function EnhancedRaidFrames:UpdateUnitAuras_Legacy(_, unit)
 		if UnitAura then
 			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellID  = UnitAura(unit, i, "HARMFUL")
 		else
-			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellID  = self.UnitAuraWrapper(unit, i, "HARMFUL") --for wow classic. This is the LibClassicDurations wrapper
+			--For wow classic. This is the LibClassicDurations wrapper
+			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellID  = UnitAuraWrapper(unit, i, "HARMFUL")
 		end
 
 		-- break the loop once we have no more auras
-		if not spellID then 
+		if not spellID then
 			break
 		end
-		
+
 		local auraTable = {}
 		auraTable.auraType = "debuff"
 		auraTable.auraIndex = i
@@ -191,7 +202,6 @@ function EnhancedRaidFrames:UpdateUnitAuras_Legacy(_, unit)
 		auraTable.spellID = spellID
 
 		table.insert(unitAuras[unit], auraTable)
-		
 		i = i + 1
 	end
 end

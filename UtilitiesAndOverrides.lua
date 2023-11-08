@@ -5,13 +5,49 @@
 local _, addonTable = ... --make use of the default addon namespace
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
--------------------------------------------------------------------------
--------------------------------------------------------------------------
+local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
+local LibDeflate = LibStub:GetLibrary("LibDeflate")
 
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+-- Prints a message to the chat frame when the database is updated
 function EnhancedRaidFrames:UpdateNotifier()
 	if not self.db.global.DB_VERSION or self.db.global.DB_VERSION < self.DATABASE_VERSION then
-		--self:Print()
+		self:Print("Database Updated to version "..self.DATABASE_VERSION..".")
 		self.db.global.DB_VERSION = self.DATABASE_VERSION
+	end
+end
+
+-- Generates a table of individual, sanitized aura strings from the raw user text input
+function EnhancedRaidFrames:GenerateAuraStrings()
+	-- reset aura strings
+	self.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
+
+	for i = 1, 9 do
+		local j = 1
+		for auraName in string.gmatch(self.db.profile[i].auras, "[^\n]+") do -- Grab each line
+			--sanitize strings
+			auraName = auraName:lower() --force lowercase
+			auraName = auraName:gsub("^%s*(.-)%s*$", "%1") --strip any leading or trailing whitespace
+			auraName = auraName:gsub("\"", "") --strip any quotation marks if there are any
+			self.auraStrings[i][j] = auraName
+			j = j + 1
+		end
+	end
+end
+
+-- Set the visibility on the stock buff/debuff frames
+function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
+	if not self.db.profile.showBuffs then
+		CompactUnitFrame_HideAllBuffs(frame)
+	end
+
+	if not self.db.profile.showDebuffs then
+		CompactUnitFrame_HideAllDebuffs(frame)
+	end
+
+	if not self.db.profile.showDispellableDebuffs then
+		CompactUnitFrame_HideAllDispelDebuffs(frame)
 	end
 end
 
@@ -51,7 +87,64 @@ function EnhancedRaidFrames:UpdateBackgroundAlpha(frame)
 		return
 	end
 
-	if string.match(frame.unit, "party") or string.match(frame.unit, "raid") or string.match(frame.unit, "player") then
+	if string.match(frame.unit, "player") or string.match(frame.unit, "party") or string.match(frame.unit, "raid") then
 		frame.background:SetAlpha(self.db.profile.backgroundAlpha)
+	end
+end
+
+-- Set the scale of the overall raid frame container
+function EnhancedRaidFrames:UpdateScale()
+	if not InCombatLockdown() then
+		CompactRaidFrameContainer:SetScale(self.db.profile.frameScale)
+		if CompactPartyFrame then
+			CompactPartyFrame:SetScale(self.db.profile.frameScale)
+		end
+	end
+end
+
+-- Serialize and compress the profile for copy+paste
+function EnhancedRaidFrames:GetSerializedAndCompressedProfile()
+	local uncompressed = self:Serialize(self.db.profile) --serialize the database into a string value
+	local compressed = LibDeflate:CompressZlib(uncompressed) --compress the data
+	local encoded = LibDeflate:EncodeForPrint(compressed) --encode the data for print for copy+paste
+	return encoded
+end
+
+-- Deserialize and decompress the profile from copy+paste
+function EnhancedRaidFrames:SetSerializedAndCompressedProfile(input)
+	--check if the input is empty
+	if input == "" then
+		self:Print(L["No data to import."].." "..L["Aborting."])
+		return
+	end
+
+	-- Decode and check if decoding worked properly
+	local decoded = LibDeflate:DecodeForPrint(input)
+	if decoded == nil then
+		self:Print(L["Decoding failed."].." "..L["Aborting."])
+		return
+	end
+
+	-- Decompress and verify if decompression worked properly
+	local decompressed = LibDeflate:DecompressZlib(decoded)
+	if decompressed == nil then
+		self:Print(L["Decompression failed."].." "..L["Aborting."])
+		return
+	end
+
+	-- Deserialize the data and return it back into a table format
+	local result, newProfile = self:Deserialize(decompressed)
+
+	-- If we successfully deserialize, load the new table into the database
+	if result == true and newProfile then 
+		for k,v in pairs(newProfile) do
+			if type(v) == "table" then
+				self.db.profile[k] = CopyTable(v)
+			else
+				self.db.profile[k] = v
+			end
+		end
+	else
+		self:Print(L["Data import Failed."].." "..L["Aborting."])
 	end
 end
