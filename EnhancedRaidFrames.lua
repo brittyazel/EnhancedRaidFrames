@@ -70,9 +70,15 @@ function EnhancedRaidFrames:OnEnable()
 
 	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
 	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) self:UpdateInRange(frame) end)
+	
+	-- Force a full update of all frames when a raid target icon changes
+	self:RegisterBucketEvent("RAID_TARGET_UPDATE", 1, "UpdateAllFrames")
 
-	-- Force a full update of all raid frames when a raid icon changes or the raid roster changes
-	self:RegisterBucketEvent({"RAID_TARGET_UPDATE", "RAID_ROSTER_UPDATE"}, 1, "UpdateAllFrames")
+	-- Force a full update of all frames and auras when the raid roster changes
+	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, function() 
+		self:UpdateAllFrames()
+		self:UpdateAllAuras()
+	end)
 
 	-- Start a repeating timer to make sure the the countdown timer stays accurate
 	self.updateTimer = self:ScheduleRepeatingTimer("UpdateAllFrames", 0.5)
