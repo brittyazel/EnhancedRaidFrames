@@ -5,15 +5,29 @@
 local _, addonTable = ... --make use of the default addon namespace
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
--------------------------------------------------------------------------
--------------------------------------------------------------------------
-
 EnhancedRaidFrames.unitAuras = {} -- Matrix to keep a list of all auras on all units
 local unitAuras = EnhancedRaidFrames.unitAuras --local handle for the above table
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
 
-------------------------------------------------
----------- Update Auras for all units ----------
-------------------------------------------------
+--- This function scans all raid frame units and updates the unitAuras table with all auras on each unit
+function EnhancedRaidFrames:UpdateAllAuras()
+	-- Clear out the unitAuras table
+	table.wipe(unitAuras)
+
+	-- Iterate over all raid frame units and force a full update
+	if not self.isWoWClassicEra and not self.isWoWClassic then
+		CompactRaidFrameContainer:ApplyToFrames("normal",
+				function(frame)
+					self:UpdateUnitAuras("", frame.unit, {isFullUpdate = true})
+				end)
+	else
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal",
+				function(frame)
+					self:UpdateUnitAuras_Legacy("", frame.unit)
+				end)
+	end
+end
 
 --- This functions is bound to the UNIT_AURA event and is used to track auras on all raid frame units
 --- It uses the C_UnitAuras API that was added in 10.0
@@ -71,15 +85,51 @@ function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload)
 	end
 end
 
+--function to add or update an aura to the unitAuras table
+function EnhancedRaidFrames.addToAuraTable(unit, auraData)
+	if not auraData then
+		return
+	end
+
+	local aura = {}
+	aura.auraInstanceID = auraData.auraInstanceID
+	if auraData.isHelpful then
+		aura.auraType = "buff"
+	elseif auraData.isHarmful then
+		aura.auraType = "debuff"
+	end
+	aura.auraName = auraData.name:lower()
+	aura.icon = auraData.icon
+	aura.count = auraData.applications
+	aura.duration = auraData.duration
+	aura.expirationTime = auraData.expirationTime
+	aura.castBy = auraData.sourceUnit
+	aura.spellID = auraData.spellId
+
+	-- Update the aura elements if it already exists
+	if unitAuras[unit][aura.auraInstanceID] then
+		for k,v in pairs(aura) do
+			unitAuras[unit][aura.auraInstanceID][k] = v
+		end
+	else
+		unitAuras[unit][aura.auraInstanceID] = aura
+	end
+end
+
 --- Prior to WoW 10.0, this function was used to track auras on all raid frame units
 --- Unit auras are now tracked using the UNIT_AURA event and APIs in Retail
 --- Unit aura information is stored in the unitAuras table
-function EnhancedRaidFrames:UpdateUnitAuras_Legacy(unit)
+function EnhancedRaidFrames:UpdateUnitAuras_Legacy(_, unit)
+	-- Only process player, raid, and party units
+	if not string.find(unit, "player") and not string.find(unit, "raid") and not string.find(unit, "party") then
+		return
+	end
+	
 	-- Create or clear out the tables for the unit
 	unitAuras[unit] = {}
 
 	-- Get all unit buffs
-	local i = 1
+	local i = 1 --aura index counter
 	while (true) do
 		local auraName, icon, count, duration, expirationTime, castBy, spellID
 
@@ -89,30 +139,29 @@ function EnhancedRaidFrames:UpdateUnitAuras_Legacy(unit)
 			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellID = self.UnitAuraWrapper(unit, i, "HELPFUL") --for wow classic. This is the LibClassicDurations wrapper
 		end
 
-		if not spellID then --break the loop once we have no more buffs
+		-- break the loop once we have no more auras
+		if not spellID then
 			break
 		end
+		
+		local auraTable = {}
+		auraTable.auraType = "buff"
+		auraTable.auraIndex = i
+		auraTable.auraName = auraName:lower()
+		auraTable.icon = icon
+		auraTable.count = count
+		auraTable.duration = duration
+		auraTable.expirationTime = expirationTime
+		auraTable.castBy = castBy
+		auraTable.spellID = spellID
 
-		--it's important to use the 4th argument in string.find to turn of pattern matching, otherwise things with parentheses in them will fail to be found
-		if auraName and self.allAuras:find(" "..auraName:lower().." ", nil, true) or self.allAuras:find(" "..spellID.." ", nil, true) then -- Only add the spell if we're watching for it
-			local auraTable = {}
-			auraTable.auraType = "buff"
-			auraTable.auraIndex = i
-			auraTable.auraName = auraName:lower()
-			auraTable.icon = icon
-			auraTable.count = count
-			auraTable.duration = duration
-			auraTable.expirationTime = expirationTime
-			auraTable.castBy = castBy
-			auraTable.spellID = spellID
-
-			table.insert(unitAuras[unit], auraTable)
-		end
+		table.insert(unitAuras[unit], auraTable)
+		
 		i = i + 1
 	end
 
 	-- Get all unit debuffs
-	i = 1
+	i = 1 --aura index counter
 	while (true) do
 		local auraName, icon, count, duration, expirationTime, castBy, spellID, debuffType
 
@@ -122,59 +171,27 @@ function EnhancedRaidFrames:UpdateUnitAuras_Legacy(unit)
 			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellID  = self.UnitAuraWrapper(unit, i, "HARMFUL") --for wow classic. This is the LibClassicDurations wrapper
 		end
 
-		if not spellID then --break the loop once we have no more buffs
+		-- break the loop once we have no more auras
+		if not spellID then 
 			break
 		end
-
-		--it's important to use the 4th argument in string.find to turn off pattern matching, otherwise things with parentheses in them will fail to be found
-		if auraName and self.allAuras:find(" "..auraName:lower().." ", nil, true) or self.allAuras:find(" "..spellID.." ", nil, true) or (debuffType and self.allAuras:find(" "..debuffType:lower().." ", nil, true)) then -- Only add the spell if we're watching for it
-			local auraTable = {}
-			auraTable.auraType = "debuff"
-			auraTable.auraIndex = i
-			auraTable.auraName = auraName:lower()
-			auraTable.icon = icon
-			auraTable.count = count
-			if debuffType then
-				auraTable.debuffType = debuffType:lower()
-			end
-			auraTable.duration = duration
-			auraTable.expirationTime = expirationTime
-			auraTable.castBy = castBy
-			auraTable.spellID = spellID
-
-			table.insert(unitAuras[unit], auraTable)
+		
+		local auraTable = {}
+		auraTable.auraType = "debuff"
+		auraTable.auraIndex = i
+		auraTable.auraName = auraName:lower()
+		auraTable.icon = icon
+		auraTable.count = count
+		if debuffType then
+			auraTable.debuffType = debuffType:lower()
 		end
+		auraTable.duration = duration
+		auraTable.expirationTime = expirationTime
+		auraTable.castBy = castBy
+		auraTable.spellID = spellID
+
+		table.insert(unitAuras[unit], auraTable)
+		
 		i = i + 1
-	end
-end
-
---function to add or update an aura to the unitAuras table
-function EnhancedRaidFrames.addToAuraTable(thisUnit, thisAuraData)
-	if not thisAuraData then
-		return
-	end
-
-	local aura = {}
-	aura.auraInstanceID = thisAuraData.auraInstanceID
-	if thisAuraData.isHelpful then
-		aura.auraType = "buff"
-	elseif thisAuraData.isHarmful then
-		aura.auraType = "debuff"
-	end
-	aura.auraName = thisAuraData.name:lower()
-	aura.icon = thisAuraData.icon
-	aura.count = thisAuraData.applications
-	aura.duration = thisAuraData.duration
-	aura.expirationTime = thisAuraData.expirationTime
-	aura.castBy = thisAuraData.sourceUnit
-	aura.spellID = thisAuraData.spellId
-
-	-- Update the aura elements if it already exists
-	if unitAuras[thisUnit][aura.auraInstanceID] then
-		for k,v in pairs(aura) do
-			unitAuras[thisUnit][aura.auraInstanceID][k] = v
-		end
-	else
-		unitAuras[thisUnit][aura.auraInstanceID] = aura
 	end
 end

@@ -169,13 +169,6 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 		self:SetIndicatorAppearance(frame)
 	end
 
-	-- Force a refresh of our unitAuras table (Classic and Classic Era Only)
-	-- In retail we have a new way of doing it using the UNIT_AURA event and C_UnitAuras API
-	-- This is an inefficient way of triggering a refresh, but it works
-	if self.isWoWClassicEra or self.isWoWClassic then
-		self:UpdateUnitAuras_Legacy(frame.unit)
-	end
-
 	-- Loop over all 9 indicators and process them individually
 	for i = 1, 9 do
 		--create local pointer for readability

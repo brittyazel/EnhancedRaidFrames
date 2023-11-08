@@ -5,7 +5,8 @@
 local addonName, addonTable = ... --make use of the default addon namespace
 
 ---@class EnhancedRaidFrames : AceAddon-3.0 @define The main addon object for the Enhanced Raid Frames add-on
-addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0", "AceConsole-3.0", "AceSerializer-3.0")
+addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0", 
+		"AceEvent-3.0", "AceBucket-3.0", "AceConsole-3.0", "AceSerializer-3.0")
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
 local LibDeflate = LibStub:GetLibrary("LibDeflate")
@@ -14,7 +15,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 EnhancedRaidFrames.allAuras = " "
 EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
 
-if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then --boolean check to set a flag if the current session is WoW Classic. Retail == 1, Classic == 2
+if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 	EnhancedRaidFrames.isWoWClassicEra = true
 elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
 	EnhancedRaidFrames.isWoWClassic = true
@@ -53,32 +54,39 @@ end
 --- Register Events, Hook functions, Create Frames, Get information from
 --- the game that wasn't available in OnInitialize
 function EnhancedRaidFrames:OnEnable()
-	--start a repeating timer to updated every frame every 0.8sec to make sure the the countdown timer stays accurate
-	self.updateTimer = self:ScheduleRepeatingTimer("UpdateAllFrames", 0.5) --this is so countdown text is smooth
-
-	--hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. The payload of the original function carries the identity of the frame needing updating
-	self:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) self:UpdateIndicators(frame) end)
-
-	-- Updates Range Alpha
-	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) self:UpdateInRange(frame) end)
-
-	-- Hook raid icon updates
-	self:RegisterBucketEvent({"RAID_TARGET_UPDATE", "RAID_ROSTER_UPDATE"}, 1, "UpdateAllFrames")
-
-	-- Use new UNIT_AURA event in retail that was added in 10.0 for huge performance gains
+	-- Register for the UNIT_AURA event to track auras on all raid frame units
 	if not self.isWoWClassicEra and not self.isWoWClassic then
 		self:RegisterEvent("UNIT_AURA", "UpdateUnitAuras")
+	else
+		self:RegisterEvent("UNIT_AURA", "UpdateUnitAuras_Legacy")
 	end
+	-- Run a full aura scan immediately after loading to populate our aura list for all units
+	self:UpdateAllAuras()
+	
+	-- Hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. 
+	-- The payload of the original function carries the identity of the frame needing updating.
+	-- Without this, things like the default aura icons will pop in and out.
+	self:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) self:UpdateIndicators(frame) end)
 
-	-- Make sure any icons already existing are shown
+	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
+	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) self:UpdateInRange(frame) end)
+
+	-- Force a full update of all raid frames when a raid icon changes or the raid roster changes
+	self:RegisterBucketEvent({"RAID_TARGET_UPDATE", "RAID_ROSTER_UPDATE"}, 1, "UpdateAllFrames")
+
+	-- Start a repeating timer to make sure the the countdown timer stays accurate
+	self.updateTimer = self:ScheduleRepeatingTimer("UpdateAllFrames", 0.5)
+
+	-- Populate our starting config values
 	self:RefreshConfig()
-
-	-- notify of any new major updates, if necessary
-	self:UpdateNotifier()
-
+	
+	-- Register our slash command to open the config panel
 	self:RegisterChatCommand("erf",function()
 		Settings.OpenToCategory("Enhanced Raid Frames")
 	end)
+
+	-- Notify to the chat window of any new major updates, if necessary
+	self:UpdateNotifier()
 end
 
 --- **OnDisable**, which is only called when your addon is manually being disabled.
@@ -148,7 +156,7 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 	end
 
 	--this is the heart and soul of the addon. Everything gets called from here.
-	if CompactRaidFrameContainer.ApplyToFrames then --10.0 refactored CompactRaidFrameContainer with new functionality
+	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal",
 				function(frame)
 					self:UpdateIndicators(frame, setAppearance)
@@ -179,7 +187,6 @@ function EnhancedRaidFrames:RefreshConfig()
 	end
 
 	-- reset aura strings
-	self.allAuras = " "
 	self.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
 
 	for i = 1, 9 do
@@ -189,7 +196,6 @@ function EnhancedRaidFrames:RefreshConfig()
 			auraName = auraName:lower() --force lowercase
 			auraName = auraName:gsub("^%s*(.-)%s*$", "%1") --strip any leading or trailing whitespace
 			auraName = auraName:gsub("\"", "") --strip any quotation marks if there are any
-			self.allAuras = EnhancedRaidFrames.allAuras.." "..auraName.." " -- Add each watched aura to a string so we later can quickly determine if we need to look for one
 			self.auraStrings[i][j] = auraName
 			j = j + 1
 		end
