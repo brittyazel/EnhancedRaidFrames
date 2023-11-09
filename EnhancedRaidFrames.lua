@@ -94,7 +94,11 @@ function EnhancedRaidFrames:OnEnable()
 	-- Force a full update of all frames and auras when the raid roster changes
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, function()
 		self:UpdateAllFrames()
-		self:UpdateAllAuras()
+		if not self.isWoWClassicEra and not self.isWoWClassic then 
+			self:UpdateAllAuras()
+		else
+			self:UpdateAllAuras_Classic()
+		end
 	end)
 
 	-- Start a repeating timer to make sure the responsiveness feels right
