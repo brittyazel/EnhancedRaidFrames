@@ -44,7 +44,7 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 
 		--disable the mouse click on our frames to allow those clicks to get passed straight through to the raid frame behind (switch target, right click, etc)
 		--this MUST come after the SetScript lines for OnEnter and OnLeave. SetScript will re-enable mouse clicks when called.
-		indicatorFrame:SetMouseClickEnabled(false) 
+		indicatorFrame:SetMouseClickEnabled(false)
 	end
 
 	--set our initial indicator appearance
@@ -139,8 +139,8 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 			or string.find(frame.unit, "nameplate")
 			or string.find(frame.unit, "pet")
 			or (not CompactRaidFrameContainer:IsShown()
-				and CompactPartyFrame and not CompactPartyFrame:IsShown()
-				and CompactArenaFrame and not CompactArenaFrame:IsShown()) then
+			and CompactPartyFrame and not CompactPartyFrame:IsShown()
+			and CompactArenaFrame and not CompactArenaFrame:IsShown()) then
 		return
 	end
 
@@ -157,19 +157,19 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 
 
 	-- Loop over all 9 indicators and process them individually
-	for i = 1, 9 do
-		--create local pointer for readability
-		local indicatorFrame = frame.ERFIndicators[i]
-
-		-- this is the meat of our processing loop
-		self:ProcessIndicator(indicatorFrame, frame.unit)
+	for i, indicator in ipairs(frame.ERFIndicators) do
+		--if we don't have any auraStrings for this indicator, stop here
+		if #self.auraStrings[i] > 0 then
+			-- this is the meat of our processing loop
+			self:ProcessIndicator(indicator, frame.unit)
+		end
 	end
 end
 
 --- Process a single indicator location and apply any necessary visual effects for this moment in time
 function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	local i = indicatorFrame.position
-
+	
 	local auraInstanceID, icon, count, duration, expirationTime, debuffType, castBy, auraType, auraIndex, _
 
 	--reset auraInstanceID/auraIndex and auraType for tooltip
@@ -188,13 +188,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	--------------------------------------------------------
 	--- parse each aura and find the information of each ---
 	--------------------------------------------------------
-
 	for _, auraIdentifier in pairs(self.auraStrings[i]) do
-		--if there's no auraIdentifier (i.e. the user never specified anything to go in this spot), stop here there's no need to keep going
-		if not auraIdentifier then
-			break
-		end
-
 		-- query the available information for a given indicator and aura
 		auraInstanceID, icon, count, duration, expirationTime, debuffType, castBy, auraType, auraIndex = self:QueryUnitAuraInfo(unit, auraIdentifier)
 
@@ -220,7 +214,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			(not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and castBy == "player")) then
 
 		-- calculate remainingTime and round down, this is how the game seems to do it
-		local remainingTime = floor(expirationTime - GetTime())
+		local remainingTime = expirationTime - GetTime()
 
 		-- set auraInstanceID/auraIndex and auraType for tooltip
 		indicatorFrame.auraInstanceID = auraInstanceID
@@ -346,16 +340,16 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		indicatorFrame:Show() --show the frame
 
 	elseif not (auraInstanceID or auraIndex) and self.db.profile[i].missingOnly then --deal with "show only if missing"
-		local auraName = self.auraStrings[i][1] --show the icon for the first auraString position
+		local auraIdentifier = self.auraStrings[i][1] --show the icon for the first auraString position
 
 		--check our iconCache for the auraName. Note the icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons
-		if not self.iconCache[auraName] then
-			_,_,icon = GetSpellInfo(auraName)
+		if not self.iconCache[auraIdentifier] then
+			_,_,icon = GetSpellInfo(auraIdentifier)
 			if not icon then
 				icon = "Interface\\Icons\\INV_Misc_QuestionMark"
 			end
 		else
-			icon = self.iconCache[auraName]
+			icon = self.iconCache[auraIdentifier]
 		end
 
 		if self.db.profile[i].showIcon then
@@ -391,7 +385,7 @@ function EnhancedRaidFrames:QueryUnitAuraInfo(unit, auraIdentifier)
 
 	-- Check if the aura exist on the unit
 	for _,aura in pairs(self.unitAuras[unit]) do --loop through list of auras
-		if (tonumber(auraIdentifier) and aura.spellID == tonumber(auraIdentifier)) or 
+		if (tonumber(auraIdentifier) and aura.spellID == tonumber(auraIdentifier)) or
 				aura.auraName == auraIdentifier or (aura.auraType == "debuff" and aura.debuffType == auraIdentifier) then
 			return aura.auraInstanceID, aura.icon, aura.count, aura.duration, aura.expirationTime, aura.debuffType, aura.castBy, aura.auraType, aura.auraIndex
 		end

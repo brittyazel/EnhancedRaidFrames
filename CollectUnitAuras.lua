@@ -53,8 +53,8 @@ function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload)
 			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
 		return
 	end
-	
-	-- Only process player, raid, and party units
+
+	-- Only process player, raid, party, and arena units
 	if not string.find(unit, "player") and not string.find(unit, "raid") 
 			and not string.find(unit, "party") and not string.find(unit, "arena") then
 		return
@@ -85,12 +85,15 @@ function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload)
 		for _, auraData in pairs(payload.addedAuras) do
 			EnhancedRaidFrames.addToAuraTable(unit, auraData)
 		end
+		-- If we added auras, we need to force a targeted update on the unit to keep good responsiveness
+		self:TargetedFrameUpdate(unit)
 	end
 
 	-- If an aura has been updated, query the updated information and add it to the table
 	if payload.updatedAuraInstanceIDs then
 		for _, auraInstanceID in pairs(payload.updatedAuraInstanceIDs) do
 			unitAuras[unit][auraInstanceID] = nil
+			--it's possible for auraData to return nil if the aura was removed just prior to us querying it
 			local auraData = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
 			EnhancedRaidFrames.addToAuraTable(unit, auraData)
 		end
@@ -108,6 +111,10 @@ end
 
 --function to add or update an aura to the unitAuras table
 function EnhancedRaidFrames.addToAuraTable(unit, auraData)
+	if not auraData then
+		return
+	end
+	
 	local aura = {}
 	aura.auraInstanceID = auraData.auraInstanceID
 	if auraData.isHelpful then
@@ -136,8 +143,8 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(_, unit)
 			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
 		return
 	end
-	
-	-- Only process player, raid, and party units
+
+	-- Only process player, raid, party, and arena units
 	if not string.find(unit, "player") and not string.find(unit, "raid") 
 			and not string.find(unit, "party") and not string.find(unit, "arena") then
 		return
@@ -212,4 +219,7 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(_, unit)
 		table.insert(unitAuras[unit], auraTable)
 		i = i + 1
 	end
+	
+	-- If we added auras, we need to force a targeted update on the unit to keep good responsiveness
+	self:TargetedFrameUpdate(unit)
 end

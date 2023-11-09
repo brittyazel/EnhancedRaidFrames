@@ -173,6 +173,25 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 	end
 end
 
+-- Target an update at a specific frame based on the unit
+-- This is used to increase responsiveness of the UI by triggering an update on a select unit
+function EnhancedRaidFrames:TargetedFrameUpdate(unit)
+	-- This is the heart and soul of the addon. Everything gets called from here.
+	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
+		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
+			if frame.unit and frame.unit == unit then
+				self:UpdateIndicators(frame)
+			end
+		end)
+	else
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
+			if frame.unit and frame.unit == unit then
+				self:UpdateIndicators(frame)
+			end
+		end)
+	end
+end
+
 -- Refresh everything that is affected by changes to the configuration
 function EnhancedRaidFrames:RefreshConfig()
 	self:UpdateAllFrames(true)

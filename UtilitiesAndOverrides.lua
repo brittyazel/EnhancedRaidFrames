@@ -39,6 +39,13 @@ end
 
 -- Set the visibility on the stock buff/debuff frames
 function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
+	-- Don't do any work if the raid frames aren't shown
+	if not CompactRaidFrameContainer:IsShown()
+			and CompactPartyFrame and not CompactPartyFrame:IsShown()
+			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
+		return
+	end
+	
 	if not frame.unit or not frame:IsShown() then
 		return
 	end
@@ -58,43 +65,66 @@ end
 
 -- Hook for the CompactUnitFrame_UpdateInRange function
 function EnhancedRaidFrames:UpdateInRange(frame)
+	-- Don't do any work if the raid frames aren't shown
+	if not CompactRaidFrameContainer:IsShown()
+			and CompactPartyFrame and not CompactPartyFrame:IsShown()
+			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
+		return
+	end
+	
 	if not frame.unit or not frame:IsShown() then
 		return
 	end
 
-	if string.match(frame.unit, "party") or string.match(frame.unit, "raid") then
-		local inRange, checkedRange
-
-		--if we have a custom range set use LibRangeCheck, otherwise use default UnitInRange function
-		if self.db.profile.customRangeCheck then
-			local rangeChecker = LibRangeCheck:GetFriendChecker(self.db.profile.customRange)
-			if rangeChecker then
-				inRange = rangeChecker(frame.unit)
-				checkedRange = not UnitIsVisible(frame.unit) or not UnitIsDeadOrGhost(frame.unit)
-			else
-				inRange, checkedRange = UnitInRange(frame.unit) --if no rangeChecker can be generated, fallback to UnitInRange
-			end
-		else
-			inRange, checkedRange = UnitInRange(frame.unit)
-		end
-
-		if checkedRange and not inRange then --If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
-			frame:SetAlpha(self.db.profile.rangeAlpha)
-		else
-			frame:SetAlpha(1)
-		end
+	-- Only process player, raid, party, and arena units
+	if not string.find(frame.unit, "player") and not string.find(frame.unit, "raid")
+			and not string.find(frame.unit, "party") and not string.find(frame.unit, "arena") then
+		return
 	end
+	
+	local inRange, checkedRange
+
+	--if we have a custom range set use LibRangeCheck, otherwise use default UnitInRange function
+	if self.db.profile.customRangeCheck then
+		local rangeChecker = LibRangeCheck:GetFriendChecker(self.db.profile.customRange)
+		if rangeChecker then
+			inRange = rangeChecker(frame.unit)
+			checkedRange = not UnitIsVisible(frame.unit) or not UnitIsDeadOrGhost(frame.unit)
+		else
+			inRange, checkedRange = UnitInRange(frame.unit) --if no rangeChecker can be generated, fallback to UnitInRange
+		end
+	else
+		inRange, checkedRange = UnitInRange(frame.unit)
+	end
+
+	if checkedRange and not inRange then --If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
+		frame:SetAlpha(self.db.profile.rangeAlpha)
+	else
+		frame:SetAlpha(1)
+	end
+	
 end
 
 -- Set the background alpha amount to allow full transparency if need be
 function EnhancedRaidFrames:UpdateBackgroundAlpha(frame)
+	-- Don't do any work if the raid frames aren't shown
+	if not CompactRaidFrameContainer:IsShown()
+			and CompactPartyFrame and not CompactPartyFrame:IsShown()
+			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
+		return
+	end
+
 	if not frame.unit or not frame:IsShown() then
 		return
 	end
 
-	if string.match(frame.unit, "player") or string.match(frame.unit, "party") or string.match(frame.unit, "raid") then
-		frame.background:SetAlpha(self.db.profile.backgroundAlpha)
+	-- Only process player, raid, party, and arena units
+	if not string.find(frame.unit, "player") and not string.find(frame.unit, "raid")
+			and not string.find(frame.unit, "party") and not string.find(frame.unit, "arena") then
+		return
 	end
+
+	frame.background:SetAlpha(self.db.profile.backgroundAlpha)
 end
 
 -- Set the scale of the overall raid frame container
