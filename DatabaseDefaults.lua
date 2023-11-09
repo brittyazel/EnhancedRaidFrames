@@ -30,18 +30,18 @@ function EnhancedRaidFrames:CreateDefaults()
 		customRange = 30,
 		rangeAlpha = 0.55,
 
-		---Raid Icon Settings
+		---Target Markers Settings
 		--General Options
-		showRaidIcons = true,
-		iconPosition = 5,
+		showTargetMarkers = true,
+		markerPosition = 5,
 
 		--Visual Options
-		iconSize = 20,
-		iconAlpha = 1,
+		markerSize = 20,
+		markerAlpha = 1,
 
 		--Position Options
-		iconVerticalOffset = 0,
-		iconHorizontalOffset = 0,
+		markerVerticalOffset = 0,
+		markerHorizontalOffset = 0,
 	}
 
 	---Indicator Options Settings

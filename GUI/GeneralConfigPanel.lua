@@ -108,9 +108,10 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "range",
 				name = L["Raidframe Scale"],
 				desc = L["frameScale_desc"],
+				isPercent = true,
 				min = 0.5,
 				max = 2,
-				step = 0.1,
+				step = 0.01,
 				get = function() return self.db.profile.frameScale end,
 				set = function(_, value)
 					self.db.profile.frameScale = value
@@ -123,9 +124,10 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "range",
 				name = L["Background Opacity"],
 				desc = L["backgroundAlpha_desc"],
+				isPercent = true,
 				min = 0,
 				max = 1,
-				step = 0.05,
+				step = 0.01,
 				get = function() return self.db.profile.backgroundAlpha end,
 				set = function(_, value)
 					self.db.profile.backgroundAlpha = value
@@ -170,7 +172,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "select",
 				name = L["Select a Custom Distance"],
 				desc = L["customRangeCheck_desc"],
-				values = { [5] = "Melee", [10] = "10 yards", [20] = "20 yards", [25] = "25 yards", [30] = "30 yards", [35] = "35 yards", [40] = "40 yards"},
+				values = { [5] = L["Melee"], [10] = L["10 yards"], [15] = L["15 yards"], [20] = L["20 yards"], [25] = L["25 yards"], [30] = L["30 yards"], [35] = L["35 yards"], [40] = L["40 yards"] },
 				get = function() return self.db.profile.customRange end,
 				set = function(_, value)
 					self.db.profile.customRange = value
@@ -184,9 +186,10 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "range",
 				name = L["Out-of-Range Opacity"],
 				desc = L["rangeAlpha_desc"],
+				isPercent = true,
 				min = 0,
 				max = 1,
-				step = 0.05,
+				step = 0.01,
 				get = function() return self.db.profile.rangeAlpha end,
 				set = function(_, value)
 					self.db.profile.rangeAlpha = value

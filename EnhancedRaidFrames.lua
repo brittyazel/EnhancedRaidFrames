@@ -122,14 +122,14 @@ function EnhancedRaidFrames:SetupConfigPanels()
 	-- Build our config panels
 	AceConfigRegistry:RegisterOptionsTable("Enhanced Raid Frames", self:CreateGeneralOptions())
 	AceConfigRegistry:RegisterOptionsTable("ERF Indicator Options", self:CreateIndicatorOptions())
-	AceConfigRegistry:RegisterOptionsTable("ERF Icon Options",  self:CreateIconOptions())
+	AceConfigRegistry:RegisterOptionsTable("ERF Target Marker Options",  self:CreateIconOptions())
 	AceConfigRegistry:RegisterOptionsTable("ERF Profiles", AceDBOptions:GetOptionsTable(self.db))
 	AceConfigRegistry:RegisterOptionsTable("ERF Import Export Profile Options", self:CreateProfileImportExportOptions())
 
 	-- Add to config panels to in-game interface options
 	AceConfigDialog:AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
 	AceConfigDialog:AddToBlizOptions("ERF Indicator Options", L["Indicator Options"], "Enhanced Raid Frames")
-	AceConfigDialog:AddToBlizOptions("ERF Icon Options", L["Icon Options"], "Enhanced Raid Frames")
+	AceConfigDialog:AddToBlizOptions("ERF Target Marker Options", L["Target Marker Options"], "Enhanced Raid Frames")
 	AceConfigDialog:AddToBlizOptions("ERF Profiles", L["Profiles"], "Enhanced Raid Frames")
 	AceConfigDialog:AddToBlizOptions("ERF Import Export Profile Options", (L["Profile"].." "..L["Import"].."/"..L["Export"]), "Enhanced Raid Frames")
 end
@@ -147,14 +147,14 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:UpdateIndicators(frame, setAppearance)
-			self:UpdateIcons(frame, setAppearance)
+			self:UpdateTargetMarkers(frame, setAppearance)
 			self:UpdateInRange(frame)
 			self:UpdateBackgroundAlpha(frame)
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
 			self:UpdateIndicators(frame, setAppearance)
-			self:UpdateIcons(frame, setAppearance)
+			self:UpdateTargetMarkers(frame, setAppearance)
 			self:UpdateInRange(frame)
 			self:UpdateBackgroundAlpha(frame)
 		end)

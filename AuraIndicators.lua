@@ -73,8 +73,8 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 
 		--set indicator frame position
 		local PAD = 1
-		local iconVerticalOffset = floor((self.db.profile[i].indicatorVerticalOffset * frame:GetHeight()) + 0.5)
-		local iconHorizontalOffset = floor((self.db.profile[i].indicatorHorizontalOffset * frame:GetWidth()) + 0.5)
+		local indicatorVerticalOffset = floor((self.db.profile[i].indicatorVerticalOffset * frame:GetHeight()) + 0.5)
+		local indicatorHorizontalOffset = floor((self.db.profile[i].indicatorHorizontalOffset * frame:GetWidth()) + 0.5)
 
 		--we probably don't want to overlap the power bar (rage, mana, energy, etc) so we need a compensation factor
 		local powerBarVertOffset
@@ -86,23 +86,23 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 
 		indicatorFrame:ClearAllPoints()
 		if i == 1 then
-			indicatorFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD + iconHorizontalOffset, -PAD + iconVerticalOffset)
+			indicatorFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD + indicatorHorizontalOffset, -PAD + indicatorVerticalOffset)
 		elseif i == 2 then
-			indicatorFrame:SetPoint("TOP", frame, "TOP", 0 + iconHorizontalOffset, -PAD + iconVerticalOffset)
+			indicatorFrame:SetPoint("TOP", frame, "TOP", 0 + indicatorHorizontalOffset, -PAD + indicatorVerticalOffset)
 		elseif i == 3 then
-			indicatorFrame:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD + iconHorizontalOffset, -PAD + iconVerticalOffset)
+			indicatorFrame:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD + indicatorHorizontalOffset, -PAD + indicatorVerticalOffset)
 		elseif i == 4 then
-			indicatorFrame:SetPoint("LEFT", frame, "LEFT", PAD + iconHorizontalOffset, 0 + iconVerticalOffset + powerBarVertOffset/2)
+			indicatorFrame:SetPoint("LEFT", frame, "LEFT", PAD + indicatorHorizontalOffset, 0 + indicatorVerticalOffset + powerBarVertOffset/2)
 		elseif i == 5 then
-			indicatorFrame:SetPoint("CENTER", frame, "CENTER", 0 + iconHorizontalOffset, 0 + iconVerticalOffset + powerBarVertOffset/2)
+			indicatorFrame:SetPoint("CENTER", frame, "CENTER", 0 + indicatorHorizontalOffset, 0 + indicatorVerticalOffset + powerBarVertOffset/2)
 		elseif i == 6 then
-			indicatorFrame:SetPoint("RIGHT", frame, "RIGHT", -PAD + iconHorizontalOffset, 0 + iconVerticalOffset + powerBarVertOffset/2)
+			indicatorFrame:SetPoint("RIGHT", frame, "RIGHT", -PAD + indicatorHorizontalOffset, 0 + indicatorVerticalOffset + powerBarVertOffset/2)
 		elseif i == 7 then
-			indicatorFrame:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset)
+			indicatorFrame:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD + indicatorHorizontalOffset, PAD + indicatorVerticalOffset + powerBarVertOffset)
 		elseif i == 8 then
-			indicatorFrame:SetPoint("BOTTOM", frame, "BOTTOM", 0 + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset)
+			indicatorFrame:SetPoint("BOTTOM", frame, "BOTTOM", 0 + indicatorHorizontalOffset, PAD + indicatorVerticalOffset + powerBarVertOffset)
 		elseif i == 9 then
-			indicatorFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD + iconHorizontalOffset, PAD + iconVerticalOffset + powerBarVertOffset)
+			indicatorFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD + indicatorHorizontalOffset, PAD + indicatorVerticalOffset + powerBarVertOffset)
 		end
 
 		--------------------------------------

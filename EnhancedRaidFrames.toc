@@ -24,11 +24,11 @@ UtilitiesAndOverrides.lua
 CollectUnitAuras.lua
 
 AuraIndicators.lua
-RaidIcons.lua
+TargetMarkers.lua
 
 XML\ERFIndicatorTemplate.xml
 
 GUI\GeneralConfigPanel.lua
 GUI\IndicatorConfigPanel.lua
-GUI\IconConfigPanel.lua
+GUI\TargetMarkerConfigPanel.lua
 GUI\ProfileImportExport.lua

@@ -17,14 +17,14 @@ local POSITIONS = { [1] = L["Top left"], [2] = L["Top Center"], [3] = L["Top Rig
 function EnhancedRaidFrames:CreateIconOptions()
 	local THIRD_WIDTH = 1.25
 
-	local iconOptions = {
+	local markerOptions = {
 		type = "group",
 		childGroups = "tree",
-		name = L["Icon Options"],
+		name = L["Target Marker Options"],
 		args  = {
 			instructions = {
 				type = "description",
-				name = L["iconOptions_desc"]..":",
+				name = L["markerOptions_desc"]..":",
 				fontSize = "medium",
 				order = 1,
 			},
@@ -34,47 +34,48 @@ function EnhancedRaidFrames:CreateIconOptions()
 				name = L["General"],
 				order = 2,
 			},
-			showRaidIcons = {
+			showTargetMarkers = {
 				type = "toggle",
-				name = L["Show Raid Icons"],
-				desc = L["showRaidIcons_desc"],
-				get = function() return self.db.profile.showRaidIcons end,
+				name = L["Show Target Markers"],
+				desc = L["showTargetMarkers_desc"],
+				get = function() return self.db.profile.showTargetMarkers end,
 				set = function(_, value)
-					self.db.profile.showRaidIcons = value
+					self.db.profile.showTargetMarkers = value
 					self:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
 				order = 3,
 			},
-			iconSize = {
+			markerSize = {
 				type = 'range',
-				name = L["Icon Size"],
-				desc = L["iconSize_desc"],
+				name = L["Target Marker Size"],
+				desc = L["markerSize_desc"],
 				min = 1,
 				max = 40,
 				step = 1,
-				get = function() return self.db.profile.iconSize end,
+				get = function() return self.db.profile.markerSize end,
 				set = function(_, value)
-					self.db.profile.iconSize = value
+					self.db.profile.markerSize = value
 					self:RefreshConfig()
 				end,
-				disabled = function () return not self.db.profile.showRaidIcons end,
+				disabled = function () return not self.db.profile.showTargetMarkers end,
 				width = THIRD_WIDTH,
 				order = 11,
 			},
-			iconAlpha = {
+			markerAlpha = {
 				type = "range",
-				name = L["Icon Opacity"],
-				desc = L["iconAlpha_desc"],
+				name = L["Target Marker Opacity"],
+				desc = L["markerAlpha_desc"],
+				isPercent = true,
 				min = 0,
 				max = 1,
-				step = 0.05,
-				get = function() return self.db.profile.iconAlpha end,
+				step = 0.01,
+				get = function() return self.db.profile.markerAlpha end,
 				set = function(_, value)
-					self.db.profile.iconAlpha = value
+					self.db.profile.markerAlpha = value
 					self:RefreshConfig()
 				end,
-				disabled = function () return not self.db.profile.showRaidIcons end,
+				disabled = function () return not self.db.profile.showTargetMarkers end,
 				width = THIRD_WIDTH,
 				order = 12,
 			},
@@ -84,54 +85,55 @@ function EnhancedRaidFrames:CreateIconOptions()
 				name = L["Position"],
 				order = 20,
 			},
-			iconPosition = {
+			markerPosition = {
 				type = "select",
-				name = L["Icon Position"],
-				desc = L["iconPosition_desc"],
+				name = L["Marker Position"],
+				desc = L["markerPosition_desc"],
 				values = POSITIONS,
-				get = function() return self.db.profile.iconPosition end,
+				get = function() return self.db.profile.markerPosition end,
 				set = function(_, value)
-					self.db.profile.iconPosition = value
+					self.db.profile.markerPosition = value
 					self:RefreshConfig()
 				end,
-				disabled = function () return not self.db.profile.showRaidIcons end,
+				disabled = function () return not self.db.profile.showTargetMarkers end,
 				width = THIRD_WIDTH,
 				order = 21,
 			},
-			iconVerticalOffset = {
+			markerVerticalOffset = {
 				type = "range",
 				name = L["Vertical Offset"],
 				desc = L["verticalOffset_desc"],
+				isPercent = true,
 				min = -1,
 				max = 1,
 				step = .01,
-				get = function() return self.db.profile.iconVerticalOffset end,
+				get = function() return self.db.profile.markerVerticalOffset end,
 				set = function(_, value)
-					self.db.profile.iconVerticalOffset = value
+					self.db.profile.markerVerticalOffset = value
 					self:RefreshConfig()
 				end,
-				disabled = function () return not self.db.profile.showRaidIcons end,
+				disabled = function () return not self.db.profile.showTargetMarkers end,
 				width = THIRD_WIDTH,
 				order = 22,
 			},
-			iconHorizontalOffset = {
+			markerHorizontalOffset = {
 				type = "range",
 				name = L["Horizontal Offset"],
 				desc = L["horizontalOffset_desc"],
+				isPercent = true,
 				min = -1,
 				max = 1,
 				step = .01,
-				get = function() return self.db.profile.iconHorizontalOffset end,
+				get = function() return self.db.profile.markerHorizontalOffset end,
 				set = function(_, value)
-					self.db.profile.iconHorizontalOffset = value
+					self.db.profile.markerHorizontalOffset = value
 					self:RefreshConfig()
 				end,
-				disabled = function () return not self.db.profile.showRaidIcons end,
+				disabled = function () return not self.db.profile.showTargetMarkers end,
 				width = THIRD_WIDTH,
 				order = 23,
 			},
 		}
 	}
-
-	return iconOptions
+	return markerOptions
 end

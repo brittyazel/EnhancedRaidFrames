@@ -14,7 +14,7 @@ local LibRangeCheck = LibStub("LibRangeCheck-2.0")
 -- Prints a message to the chat frame when the database is updated
 function EnhancedRaidFrames:UpdateNotifier()
 	if not self.db.global.DB_VERSION or self.db.global.DB_VERSION < self.DATABASE_VERSION then
-		self:Print("Database Updated to version "..self.DATABASE_VERSION..".")
+		self:Print(L["The database has been updated."])
 		self.db.global.DB_VERSION = self.DATABASE_VERSION
 	end
 end

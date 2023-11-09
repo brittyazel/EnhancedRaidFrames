@@ -13,14 +13,14 @@ L["General"] = true
 
 L["General Options"] = true
 L["Indicator Options"] = true
-L["Icon Options"] = true
+L["Target Marker Options"] = true
 L["Profiles"] = true
 
 L["Vertical Offset"] = true
-L["verticalOffset_desc"] = "The vertical offset percentage relative to the starting position"
+L["verticalOffset_desc"] = "The vertical offset percentage relative to the starting position and the width of the frame"
 
 L["Horizontal Offset"] = true
-L["horizontalOffset_desc"] = "The horizontal offset percentage relative to the starting position"
+L["horizontalOffset_desc"] = "The horizontal offset percentage relative to the starting position and the height of the frame"
 
 L["Example"] = true
 L["Wildcards"] = true
@@ -33,7 +33,7 @@ L["Color By Remaining Time"] = true
 L["colorByTime_desc"] = "Color is determined based on the remaining time"
 
 L["colorOverride_desc"] = "this will override the normal coloring"
-L["zeroMeansIgnored_desc"] = "'0' means this time is ignored"
+L["zeroMeansIgnored_desc"] = "'0' means this setting is ignored"
 
 L["Time #1"] = true
 L["colorByTime_low_desc"] = "The time (in seconds) for the lower boundary"
@@ -56,12 +56,20 @@ L["Bottom Left"] = true
 L["Bottom Center"] = true
 L["Bottom Right"] = true
 
+L["Melee"] = true
+L["10 yards"] = true
+L["15 yards"] = true
+L["20 yards"] = true
+L["25 yards"] = true 
+L["30 yards"] = true 
+L["35 yards"] = true 
+L["40 yards"] = true
 
 ----------------------------------------------------
 ------------------- General Panel ------------------
 ----------------------------------------------------
 
-L["generalOptions_desc"] = "Below you will find general configuration options. Please expand the 'Enhanced Raid Frames' menu item in the left-hand column to configure aura indicators, raid icons, and more"
+L["generalOptions_desc"] = "Below you will find general configuration options. Please expand the 'Enhanced Raid Frames' menu item in the left-hand column to configure aura indicators, target markers, and more"
 
 L["Open the Blizzard Raid Profiles Options"] = true
 L["blizzardRaidOptionsButton_desc"] = "Launch the built-in raid profiles interface configuration menu"
@@ -100,27 +108,25 @@ L["customRangeCheck_desc"] = "Changes the default 40 yard out-of-range distance 
 L["Out-of-Range Opacity"] = true
 L["rangeAlpha_desc"] = "The opacity percentage of the raid frame when out-of-range"
 
-
 ----------------------------------------------------
---------------------- Icon Panel -------------------
+---------------- Target Marker Panel ---------------
 ----------------------------------------------------
 
-L["iconOptions_desc"] = "Configure how the raid marker icon should appear on the raid frames"
+L["markerOptions_desc"] = "Configure how the target marker icon should appear on the raid frames"
 
-L["Show Raid Icons"] = true
-L["showRaidIcons_desc"] = "Show the raid marker icon on the raid frames"
+L["Show Target Markers"] = true
+L["showTargetMarkers_desc"] = "Show the target marker icon on the raid frames"
 
-L["Icon Size"] = true
-L["iconSize_desc"] = "The size of the raid icon in pixels"
+L["Target Marker Size"] = true
+L["markerSize_desc"] = "The size of the target marker in pixels"
 
-L["Icon Opacity"] = true
-L["iconAlpha_desc"] = "The opacity percentage of the raid icon"
+L["Target Marker Opacity"] = true
+L["markerAlpha_desc"] = "The opacity percentage of the target marker"
 
 L["Position"] = true
 
-L["Icon Position"] = true
-L["iconPosition_desc"] = "Position of the raid icon relative to the frame"
-
+L["Marker Position"] = true
+L["markerPosition_desc"] = "Position of the target marker relative to the frame"
 
 ----------------------------------------------------
 ------------------ Indicator Panel -----------------
@@ -210,7 +216,11 @@ L["Glow At Countdown Time"] = true
 L["glowRemainingSecs_desc1"] = "The amount of time (in seconds) remaining on the buff or debuff countdown before the glowing starts"
 L["glowRemainingSecs_desc2"] = "'0' means it will always glow"
 
+----------------------------------------------------
+-------------------- Utilities ---------------------
+----------------------------------------------------
 
+L["The database has been updated."] = true
 
 L["Profile"] = true
 L["Import"] = true
