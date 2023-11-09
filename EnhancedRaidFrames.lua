@@ -27,7 +27,6 @@ if not EnhancedRaidFrames.isWoWClassicEra then
 	LibDualSpec = LibStub('LibDualSpec-1.0')
 end
 
-EnhancedRaidFrames.allAuras = " "
 EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
 
 EnhancedRaidFrames.DATABASE_VERSION = 2

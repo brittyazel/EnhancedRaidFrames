@@ -155,13 +155,17 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 		end
 	end
 
+	local unitIsConnected = UnitIsConnected(frame.unit)
+	local unitIsDeadOrGhost = UnitIsDeadOrGhost(frame.unit)
 
 	-- Loop over all 9 indicators and process them individually
 	for i, indicator in ipairs(frame.ERFIndicators) do
 		--if we don't have any auraStrings for this indicator, stop here
-		if #self.auraStrings[i] > 0 then
+		if #self.auraStrings[i] > 0 and unitIsConnected and not unitIsDeadOrGhost then
 			-- this is the meat of our processing loop
 			self:ProcessIndicator(indicator, frame.unit)
+		else
+			indicator:Hide() --hide the frame
 		end
 	end
 end
@@ -210,7 +214,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	------------------------------------------------------
 
 	-- if we find the spell and we don't only want to show when it is missing
-	if (auraInstanceID or auraIndex) and UnitIsConnected(unit) and not self.db.profile[i].missingOnly and
+	if (auraInstanceID or auraIndex) and not self.db.profile[i].missingOnly and
 			(not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and castBy == "player")) then
 
 		-- calculate remainingTime and round down, this is how the game seems to do it
@@ -229,15 +233,18 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			indicatorFrame.Icon:SetTexture(icon)
 			indicatorFrame.Icon:SetAlpha(self.db.profile[i].indicatorAlpha)
 		else
-			--set color of custom texture
-			indicatorFrame.Icon:SetColorTexture(
-					self.db.profile[i].indicatorColor.r,
-					self.db.profile[i].indicatorColor.g,
-					self.db.profile[i].indicatorColor.b,
-					self.db.profile[i].indicatorColor.a)
-
-			-- determine if we should change the background color from the default (player set color)
-			if self.db.profile[i].colorIndicatorByDebuff and debuffType then -- Color by debuff type
+			if self.db.profile[i].colorIndicatorByTime then -- Color by remaining time
+				if remainingTime and self.db.profile[i].colorIndicatorByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_low then
+					indicatorFrame.Icon:SetColorTexture(self.RED_COLOR:GetRGB())
+				elseif remainingTime and self.db.profile[i].colorIndicatorByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_high then
+					indicatorFrame.Icon:SetColorTexture(self.YELLOW_COLOR:GetRGB())
+				else
+					--set color of custom texture
+					indicatorFrame.Icon:SetColorTexture(self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g, 
+							self.db.profile[i].indicatorColor.b, self.db.profile[i].indicatorColor.a)
+				end
+				-- determine if we should change the background color from the default (player set color)
+			elseif self.db.profile[i].colorIndicatorByDebuff and debuffType then -- Color by debuff type
 				if debuffType == "poison" then
 					indicatorFrame.Icon:SetColorTexture(self.GREEN_COLOR:GetRGB())
 				elseif debuffType == "curse" then
@@ -247,13 +254,10 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 				elseif debuffType == "magic" then
 					indicatorFrame.Icon:SetColorTexture(self.BLUE_COLOR:GetRGB())
 				end
-			end
-			if self.db.profile[i].colorIndicatorByTime then -- Color by remaining time
-				if remainingTime and self.db.profile[i].colorIndicatorByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_low then
-					indicatorFrame.Icon:SetColorTexture(self.YELLOW_COLOR:GetRGB())
-				elseif remainingTime and self.db.profile[i].colorIndicatorByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_high then
-					indicatorFrame.Icon:SetColorTexture(self.RED_COLOR:GetRGB())
-				end
+			else
+				--set color of custom texture
+				indicatorFrame.Icon:SetColorTexture(self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g, 
+						self.db.profile[i].indicatorColor.b, self.db.profile[i].indicatorColor.a)
 			end
 		end
 
@@ -293,30 +297,30 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------------------------------
 		--- process text color
 		---------------------------------
-		--set default textColor to user selected choice
-		indicatorFrame.Text:SetTextColor(
-				self.db.profile[i].textColor.r,
-				self.db.profile[i].textColor.g,
-				self.db.profile[i].textColor.b,
-				self.db.profile[i].textColor.a)
-
-		if self.db.profile[i].colorTextByDebuff and debuffType then -- Color by debuff type
-			if debuffType == "curse" then
-				indicatorFrame.Text:SetTextColor(0.64, 0.19, 0.79, 1)
-			elseif debuffType == "disease" then
-				indicatorFrame.Text:SetTextColor(0.78, 0.61, 0.43, 1)
-			elseif debuffType == "magic" then
-				indicatorFrame.Text:SetTextColor(0, 0.44, 0.87, 1)
-			elseif debuffType == "poison" then
-				indicatorFrame.Text:SetTextColor(0.67, 0.83, 0.45, 1)
-			end
-		end
 		if self.db.profile[i].colorTextByTime then -- Color by remaining time
 			if remainingTime and self.db.profile[i].colorTextByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_low then
-				indicatorFrame.Text:SetTextColor(0.77, 0.12, 0.23, 1)
+				indicatorFrame.Text:SetTextColor(self.RED_COLOR:GetRGB())
 			elseif remainingTime and self.db.profile[i].colorTextByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_high then
-				indicatorFrame.Text:SetTextColor(1, 0.96, 0.41, 1)
+				indicatorFrame.Text:SetTextColor(self.YELLOW_COLOR:GetRGB())
+			else
+				--set default textColor to user selected choice
+				indicatorFrame.Text:SetTextColor(self.db.profile[i].textColor.r, self.db.profile[i].textColor.g,
+						self.db.profile[i].textColor.b, self.db.profile[i].textColor.a)
 			end
+		elseif self.db.profile[i].colorTextByDebuff and debuffType then -- Color by debuff type
+			if debuffType == "poison" then
+				indicatorFrame.Text:SetTextColor(self.GREEN_COLOR:GetRGB())
+			elseif debuffType == "curse" then
+				indicatorFrame.Text:SetTextColor(self.PURPLE_COLOR:GetRGB())
+			elseif debuffType == "disease" then
+				indicatorFrame.Text:SetTextColor(self.BROWN_COLOR:GetRGB())
+			elseif debuffType == "magic" then
+				indicatorFrame.Text:SetTextColor(self.BLUE_COLOR:GetRGB())
+			end
+		else
+			--set default textColor to user selected choice
+			indicatorFrame.Text:SetTextColor(self.db.profile[i].textColor.r, self.db.profile[i].textColor.g, 
+					self.db.profile[i].textColor.b, self.db.profile[i].textColor.a)
 		end
 
 		---------------------------------
@@ -336,7 +340,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		else
 			ActionButton_HideOverlayGlow(indicatorFrame)
 		end
-
+		
 		indicatorFrame:Show() --show the frame
 
 	elseif not (auraInstanceID or auraIndex) and self.db.profile[i].missingOnly then --deal with "show only if missing"
@@ -345,7 +349,9 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		--check our iconCache for the auraName. Note the icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons
 		if not self.iconCache[auraIdentifier] then
 			_,_,icon = GetSpellInfo(auraIdentifier)
-			if not icon then
+			if icon then
+				self.iconCache[auraIdentifier] = icon --cache our icon
+			else
 				icon = "Interface\\Icons\\INV_Misc_QuestionMark"
 			end
 		else
