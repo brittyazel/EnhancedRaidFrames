@@ -47,9 +47,6 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		indicatorFrame:SetMouseClickEnabled(false) 
 	end
 
-	--override for a change made in 9.2 which broke muscle memory for lots of healers
-	frame:RegisterForClicks("LeftButtonDown", "AnyUp");
-
 	--set our initial indicator appearance
 	self:SetIndicatorAppearance(frame)
 end
@@ -137,7 +134,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 	--Normal raid members have frame.unit that says "Raid1", "Raid5", etc.
 	--We don't want to put icons over these tiny little target and target of target bars
 	--Also, in 8.2.5 blizzard unified the nameplate code with the raid frame code. Don't display icons on nameplates
-	if not frame.unit
+	if not frame.unit or not frame:IsShown()
 			or string.find(frame.unit, "target")
 			or string.find(frame.unit, "nameplate")
 			or string.find(frame.unit, "pet")

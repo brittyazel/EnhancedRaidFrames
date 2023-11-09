@@ -24,7 +24,9 @@ function EnhancedRaidFrames:UpdateAllAuras()
 
 	-- Iterate over all raid frame units and force a full update
 	CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-		self:UpdateUnitAuras("", frame.unit, {isFullUpdate = true})
+		if frame.unit then
+			self:UpdateUnitAuras("", frame.unit, {isFullUpdate = true})
+		end
 	end)
 end
 
@@ -35,7 +37,9 @@ function EnhancedRaidFrames:UpdateAllAuras_Classic()
 
 	-- Iterate over all raid frame units and force a full update
 	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-		self:UpdateUnitAuras_Classic("", frame.unit)
+		if frame.unit then
+			self:UpdateUnitAuras_Classic("", frame.unit)
+		end
 	end)
 end
 
@@ -43,11 +47,17 @@ end
 --- It uses the C_UnitAuras API that was added in 10.0
 --- Unit aura information is stored in the unitAuras table
 function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload)
-	-- Only process player, raid, and party units
-	if not string.find(unit, "player") and not string.find(unit, "raid") and not string.find(unit, "party") then
+	-- Don't do any work if the raid frames aren't shown
+	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
 		return
 	end
-
+	
+	-- Only process player, raid, and party units
+	if not string.find(unit, "player") and not string.find(unit, "raid") 
+			and not string.find(unit, "party") and not string.find(unit, "arena") then
+		return
+	end
+	
 	-- Create the main table for the unit
 	if not unitAuras[unit] then
 		unitAuras[unit] = {}
@@ -130,8 +140,14 @@ end
 --- Unit auras are now tracked using the UNIT_AURA event and APIs in Retail
 --- Unit aura information is stored in the unitAuras table
 function EnhancedRaidFrames:UpdateUnitAuras_Classic(_, unit)
+	-- Don't do any work if the raid frames aren't shown
+	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
+		return
+	end
+	
 	-- Only process player, raid, and party units
-	if not string.find(unit, "player") and not string.find(unit, "raid") and not string.find(unit, "party") then
+	if not string.find(unit, "player") and not string.find(unit, "raid") 
+			and not string.find(unit, "party") and not string.find(unit, "arena") then
 		return
 	end
 

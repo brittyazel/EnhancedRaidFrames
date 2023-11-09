@@ -9,11 +9,11 @@ local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 -------------------------------------------------------------------------
 ---
 function EnhancedRaidFrames:SetTargetMarkerAppearance(frame)
-	if not frame.ERF_targetMarker then
+	if not frame.ERFTargetMarker then
 		return
 	end
 
-	local targetMarker = frame.ERF_targetMarker
+	local targetMarker = frame.ERFTargetMarker
 
 	local PAD = 3
 	local pos = self.db.profile.markerPosition
@@ -61,13 +61,13 @@ end
 
 function EnhancedRaidFrames:UpdateTargetMarkers(frame, setAppearance)
 	-- If the frame doesn't point at anything, no need for an marker
-	if not frame.unit then
+	if not frame.unit or not frame:IsShown() then
 		return
 	end
 
 	-- If our texture doesn't exist, create it
-	if not frame.ERF_targetMarker then
-		frame.ERF_targetMarker = frame:CreateTexture(nil, "OVERLAY")
+	if not frame.ERFTargetMarker then
+		frame.ERFTargetMarker = frame:CreateTexture(nil, "OVERLAY")
 		self:SetTargetMarkerAppearance(frame)
 	else
 		if setAppearance then
@@ -77,7 +77,7 @@ function EnhancedRaidFrames:UpdateTargetMarkers(frame, setAppearance)
 
 	--if they don't have target markers set to show, don't show anything
 	if not self.db.profile.showTargetMarkers then
-		frame.ERF_targetMarker:Hide() -- hide the frame
+		frame.ERFTargetMarker:Hide() -- hide the frame
 		return
 	end
 
@@ -94,11 +94,11 @@ function EnhancedRaidFrames:UpdateTargetMarkers(frame, setAppearance)
 		local topTexCoord = tCoordsTable.tCoordTop
 		local bottomTexCoord = tCoordsTable.tCoordBottom
 
-		frame.ERF_targetMarker:SetTexture(texture, nil, nil, "TRILINEAR") --use trilinear filtering to reduce jaggies
-		frame.ERF_targetMarker:SetTexCoord(leftTexCoord, rightTexCoord, topTexCoord, bottomTexCoord) --texture contains all the icons in a single texture, and we need to set coords to crop out the other icons
-		frame.ERF_targetMarker:Show()
+		frame.ERFTargetMarker:SetTexture(texture, nil, nil, "TRILINEAR") --use trilinear filtering to reduce jaggies
+		frame.ERFTargetMarker:SetTexCoord(leftTexCoord, rightTexCoord, topTexCoord, bottomTexCoord) --texture contains all the icons in a single texture, and we need to set coords to crop out the other icons
+		frame.ERFTargetMarker:Show()
 	else
-		frame.ERF_targetMarker:Hide()
-		frame.ERF_targetMarker:Hide()
+		frame.ERFTargetMarker:Hide()
+		frame.ERFTargetMarker:Hide()
 	end
 end

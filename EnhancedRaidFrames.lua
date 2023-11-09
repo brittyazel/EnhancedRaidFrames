@@ -59,7 +59,7 @@ function EnhancedRaidFrames:OnInitialize()
 		LibDualSpec:EnhanceDatabase(self.db, "EnhancedRaidFrames") --enhance the database object with per spec profile features
 		LibDualSpec:EnhanceOptions(AceDBOptions:GetOptionsTable(self.db), self.db) -- enhance the profile options table with per spec profile features
 	end
-	
+
 	-- Setup config panels in the Blizzard interface options
 	self:SetupConfigPanels()
 
@@ -84,7 +84,7 @@ function EnhancedRaidFrames:OnEnable()
 
 	-- Hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. 
 	-- We use SecureHook() because the default function is protected, and we want to make sure our code runs after the default code.
-	self:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) self:UpdateIndicators(frame) end)
+	self:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) self:SetStockIndicatorVisibility(frame) end)
 
 	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
 	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) self:UpdateInRange(frame) end)
@@ -99,7 +99,7 @@ function EnhancedRaidFrames:OnEnable()
 	end)
 
 	-- Start a repeating timer to make sure the responsiveness feels right
-	self:ScheduleRepeatingTimer("UpdateAllFrames", 0.25)
+	self:ScheduleRepeatingTimer("UpdateAllFrames", 0.5)
 
 	-- Populate our starting config values
 	self:RefreshConfig()
@@ -144,23 +144,29 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
 		return
 	end
-	
-	self:UpdateScale()
+
+	if setAppearance then
+		self:UpdateScale()
+	end
 
 	-- This is the heart and soul of the addon. Everything gets called from here.
 	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			self:UpdateIndicators(frame, setAppearance)
-			self:UpdateTargetMarkers(frame, setAppearance)
-			self:UpdateInRange(frame)
-			self:UpdateBackgroundAlpha(frame)
+			if frame.unit and frame:IsShown() then
+				self:UpdateIndicators(frame, setAppearance)
+				self:UpdateTargetMarkers(frame, setAppearance)
+				self:UpdateInRange(frame)
+				self:UpdateBackgroundAlpha(frame)
+			end
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			self:UpdateIndicators(frame, setAppearance)
-			self:UpdateTargetMarkers(frame, setAppearance)
-			self:UpdateInRange(frame)
-			self:UpdateBackgroundAlpha(frame)
+			if frame.unit and frame:IsShown() then
+				self:UpdateIndicators(frame, setAppearance)
+				self:UpdateTargetMarkers(frame, setAppearance)
+				self:UpdateInRange(frame)
+				self:UpdateBackgroundAlpha(frame)
+			end
 		end)
 	end
 end

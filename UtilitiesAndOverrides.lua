@@ -39,6 +39,10 @@ end
 
 -- Set the visibility on the stock buff/debuff frames
 function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
+	if not frame.unit or not frame:IsShown() then
+		return
+	end
+	
 	if not self.db.profile.showBuffs then
 		CompactUnitFrame_HideAllBuffs(frame)
 	end
@@ -54,7 +58,7 @@ end
 
 -- Hook for the CompactUnitFrame_UpdateInRange function
 function EnhancedRaidFrames:UpdateInRange(frame)
-	if not frame.unit then
+	if not frame.unit or not frame:IsShown() then
 		return
 	end
 
@@ -84,7 +88,7 @@ end
 
 -- Set the background alpha amount to allow full transparency if need be
 function EnhancedRaidFrames:UpdateBackgroundAlpha(frame)
-	if not frame.unit then
+	if not frame.unit or not frame:IsShown() then
 		return
 	end
 
