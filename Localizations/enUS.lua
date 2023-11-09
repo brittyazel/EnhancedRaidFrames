@@ -46,15 +46,15 @@ L["Curse"] = true
 L["Disease"] = true
 L["Magic"] = true
 
-L["Top left"] = true
-L["Top Center"] = true
-L["Top Right"] = true
-L["Middle Left"] = true
-L["Middle Center"] = true
-L["Middle Right"] = true
-L["Bottom Left"] = true
-L["Bottom Center"] = true
-L["Bottom Right"] = true
+L["Top-Left"] = true
+L["Top"] = true
+L["Top-Right"] = true
+L["Left"] = true
+L["Center"] = true
+L["Right"] = true
+L["Bottom-Left"] = true
+L["Bottom"] = true
+L["Bottom-Right"] = true
 
 L["Melee"] = true
 L["10 yards"] = true

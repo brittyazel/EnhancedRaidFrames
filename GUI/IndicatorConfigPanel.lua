@@ -7,9 +7,9 @@ local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 
-local POSITIONS = { [1] = L["Top left"], [2] = L["Top Center"], [3] = L["Top Right"],
-					[4] = L["Middle Left"], [5] = L["Middle Center"], [6] = L["Middle Right"],
-					[7] = L["Bottom Left"], [8] = L["Bottom Center"], [9] = L["Bottom Right"]}
+local POSITIONS = { [1] = L["Top-Left"], [2] = L["Top"], [3] = L["Top-Right"],
+					[4] = L["Left"], [5] = L["Center"], [6] = L["Right"],
+					[7] = L["Bottom-Left"], [8] = L["Bottom"], [9] = L["Bottom-Right"]}
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------

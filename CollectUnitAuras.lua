@@ -12,7 +12,7 @@ local unitAuras = EnhancedRaidFrames.unitAuras --local handle for the above tabl
 if EnhancedRaidFrames.isWoWClassicEra then
 	local LibClassicDurations = LibStub("LibClassicDurations")
 	LibClassicDurations:Register(addonName) -- tell library it's being used and should start working
-	EnhancedRaidFrames.unitAuraWrapper = LibClassicDurations.UnitAuraWrapper -- wrapper function to use in place of UnitAura
+	EnhancedRaidFrames.UnitAuraWrapper = LibClassicDurations.UnitAuraWrapper -- wrapper function to use in place of UnitAura
 end
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------

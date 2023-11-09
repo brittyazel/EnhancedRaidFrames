@@ -9,22 +9,26 @@ addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFr
 		"AceEvent-3.0", "AceBucket-3.0", "AceConsole-3.0", "AceSerializer-3.0")
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
--- Import libraries
-local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
-local LibDualSpec = LibStub('LibDualSpec-1.0')
-local AceDBOptions = LibStub("AceDBOptions-3.0")
-local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
-local AceConfigDialog = LibStub("AceConfigDialog-3.0")
-local AceDB = LibStub("AceDB-3.0")
-
-EnhancedRaidFrames.allAuras = " "
-EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
-
 if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 	EnhancedRaidFrames.isWoWClassicEra = true
 elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
 	EnhancedRaidFrames.isWoWClassic = true
 end
+
+-- Import libraries
+local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
+local AceDBOptions = LibStub("AceDBOptions-3.0")
+local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+local AceDB = LibStub("AceDB-3.0")
+
+local LibDualSpec
+if not EnhancedRaidFrames.isWoWClassicEra then
+	LibDualSpec = LibStub('LibDualSpec-1.0')
+end
+
+EnhancedRaidFrames.allAuras = " "
+EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
 
 EnhancedRaidFrames.DATABASE_VERSION = 2
 
