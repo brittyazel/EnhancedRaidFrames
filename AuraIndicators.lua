@@ -138,7 +138,9 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 			or string.find(frame.unit, "target")
 			or string.find(frame.unit, "nameplate")
 			or string.find(frame.unit, "pet")
-			or (not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown()) then
+			or (not CompactRaidFrameContainer:IsShown()
+				and CompactPartyFrame and not CompactPartyFrame:IsShown()
+				and CompactArenaFrame and not CompactArenaFrame:IsShown()) then
 		return
 	end
 
@@ -198,7 +200,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 
 		-- add spell icon info to cache in case we need it later on
 		if icon and not self.iconCache[auraIdentifier] then
-			EnhancedRaidFrames.iconCache[auraIdentifier] = icon
+			self.iconCache[auraIdentifier] = icon
 		end
 
 		-- when tracking multiple things, this determines "where" we stop in the list

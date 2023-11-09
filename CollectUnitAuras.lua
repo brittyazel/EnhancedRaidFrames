@@ -48,7 +48,9 @@ end
 --- Unit aura information is stored in the unitAuras table
 function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload)
 	-- Don't do any work if the raid frames aren't shown
-	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
+	if not CompactRaidFrameContainer:IsShown()
+			and CompactPartyFrame and not CompactPartyFrame:IsShown()
+			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
 		return
 	end
 	
@@ -88,10 +90,9 @@ function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload)
 	-- If an aura has been updated, query the updated information and add it to the table
 	if payload.updatedAuraInstanceIDs then
 		for _, auraInstanceID in pairs(payload.updatedAuraInstanceIDs) do
-			if unitAuras[unit][auraInstanceID] then
-				local auraData = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
-				EnhancedRaidFrames.addToAuraTable(unit, auraData)
-			end
+			unitAuras[unit][auraInstanceID] = nil
+			local auraData = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
+			EnhancedRaidFrames.addToAuraTable(unit, auraData)
 		end
 	end
 
@@ -107,10 +108,6 @@ end
 
 --function to add or update an aura to the unitAuras table
 function EnhancedRaidFrames.addToAuraTable(unit, auraData)
-	if not auraData then
-		return
-	end
-
 	local aura = {}
 	aura.auraInstanceID = auraData.auraInstanceID
 	if auraData.isHelpful then
@@ -125,15 +122,8 @@ function EnhancedRaidFrames.addToAuraTable(unit, auraData)
 	aura.expirationTime = auraData.expirationTime
 	aura.castBy = auraData.sourceUnit
 	aura.spellID = auraData.spellId
-
-	-- Update the aura elements if it already exists
-	if unitAuras[unit][aura.auraInstanceID] then
-		for k,v in pairs(aura) do
-			unitAuras[unit][aura.auraInstanceID][k] = v
-		end
-	else
-		unitAuras[unit][aura.auraInstanceID] = aura
-	end
+	
+	unitAuras[unit][aura.auraInstanceID] = aura
 end
 
 --- Prior to WoW 10.0, this function was used to track auras on all raid frame units
@@ -141,7 +131,9 @@ end
 --- Unit aura information is stored in the unitAuras table
 function EnhancedRaidFrames:UpdateUnitAuras_Classic(_, unit)
 	-- Don't do any work if the raid frames aren't shown
-	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
+	if not CompactRaidFrameContainer:IsShown()
+			and CompactPartyFrame and not CompactPartyFrame:IsShown()
+			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
 		return
 	end
 	
