@@ -9,7 +9,13 @@ addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFr
 		"AceEvent-3.0", "AceBucket-3.0", "AceConsole-3.0", "AceSerializer-3.0")
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
+-- Import libraries
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
+local LibDualSpec = LibStub('LibDualSpec-1.0')
+local AceDBOptions = LibStub("AceDBOptions-3.0")
+local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+local AceDB = LibStub("AceDB-3.0")
 
 EnhancedRaidFrames.allAuras = " "
 EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
@@ -22,7 +28,7 @@ end
 
 EnhancedRaidFrames.DATABASE_VERSION = 2
 
---Declare Color Globals
+-- Declare Color Global Constants
 EnhancedRaidFrames.NORMAL_COLOR = NORMAL_FONT_COLOR or CreateColor(1.0, 0.82, 0.0) --the default game text color, dull yellow color
 EnhancedRaidFrames.WHITE_COLOR = WHITE_FONT_COLOR or CreateColor(1.0, 1.0, 1.0) --default game white color for text
 EnhancedRaidFrames.RED_COLOR = DIM_RED_FONT_COLOR or CreateColor(0.8, 0.1, 0.1) --solid red color
@@ -36,21 +42,18 @@ EnhancedRaidFrames.BLUE_COLOR = CreateColor(0.0, 0.4392, 0.8706) --magic text co
 -------------------------------------------------------------------------
 
 --- **OnInitialize**, which is called directly after the addon is fully loaded.
---- do init tasks here, like loading the Saved Variables
---- or setting up slash commands.
+--- do init tasks here, like loading the Saved Variables or setting up slash commands.
 function EnhancedRaidFrames:OnInitialize()
 	-- Set up database defaults
 	local defaults = self:CreateDefaults()
 
 	-- Create database object
-	self.db = LibStub("AceDB-3.0"):New("EnhancedRaidFramesDB", defaults) --EnhancedRaidFramesDB is our saved variable table
+	self.db = AceDB:New("EnhancedRaidFramesDB", defaults) --EnhancedRaidFramesDB is our saved variable table
 
-	-- Setup LibDualSpec for per spec profiles
-	-- Not available in Classic Era
-	if not self.isWoWClassicEra then
-		local profileOptionTable = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
-		LibStub('LibDualSpec-1.0'):EnhanceDatabase(self.db, "EnhancedRaidFrames") --enhance the database object with per spec profile features
-		LibStub('LibDualSpec-1.0'):EnhanceOptions(profileOptionTable, self.db) -- enhance the profile option table with per spec profile features
+	-- Enhance database and profile options using LibDualSpec
+	if not self.isWoWClassicEra then -- Not available in Classic Era
+		LibDualSpec:EnhanceDatabase(self.db, "EnhancedRaidFrames") --enhance the database object with per spec profile features
+		LibDualSpec:EnhanceOptions(AceDBOptions:GetOptionsTable(self.db), self.db) -- enhance the profile options table with per spec profile features
 	end
 	
 	-- Setup config panels in the Blizzard interface options
@@ -64,8 +67,7 @@ end
 
 --- **OnEnable** which gets called during the PLAYER_LOGIN event, when most of the data provided by the game is already present.
 --- Do more initialization here, that really enables the use of your addon.
---- Register Events, Hook functions, Create Frames, Get information from
---- the game that wasn't available in OnInitialize
+--- Register Events, Hook functions, Create Frames, Get information from the game that wasn't available in OnInitialize
 function EnhancedRaidFrames:OnEnable()
 	-- Register for the UNIT_AURA event to track auras on all raid frame units
 	if not self.isWoWClassicEra and not self.isWoWClassic then
@@ -77,8 +79,7 @@ function EnhancedRaidFrames:OnEnable()
 	end
 
 	-- Hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. 
-	-- The payload of the original function carries the identity of the frame needing updating.
-	-- Without this, things like the default aura icons will pop in and out.
+	-- We use SecureHook() because the default function is protected, and we want to make sure our code runs after the default code.
 	self:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) self:UpdateIndicators(frame) end)
 
 	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
@@ -108,8 +109,7 @@ end
 
 --- **OnDisable**, which is only called when your addon is manually being disabled.
 --- Unhook, Unregister Events, Hide frames that you created.
---- You would probably only use an OnDisable if you want to
---- build a "standby" mode, or be able to toggle modules on/off.
+--- You would probably only use an OnDisable if you want to build a "standby" mode, or be able to toggle modules on/off.
 function EnhancedRaidFrames:OnDisable()
 	-- empty --
 end
@@ -120,24 +120,18 @@ end
 --- Create our database, import saved variables, and set up our configuration panels
 function EnhancedRaidFrames:SetupConfigPanels()
 	-- Build our config panels
-	local generalOptions = self:CreateGeneralOptions()
-	local indicatorOptions = self:CreateIndicatorOptions()
-	local iconOptions = self:CreateIconOptions()
-	local profileOptionTable = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
-	local importExportProfileOptions = self:CreateProfileImportExportOptions()
-	
-	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Enhanced Raid Frames", generalOptions)
-	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("ERF Indicator Options", indicatorOptions)
-	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("ERF Icon Options", iconOptions)
-	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("ERF Profiles", profileOptionTable)
-	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("ERF Import Export Profile Options", importExportProfileOptions)
+	AceConfigRegistry:RegisterOptionsTable("Enhanced Raid Frames", self:CreateGeneralOptions())
+	AceConfigRegistry:RegisterOptionsTable("ERF Indicator Options", self:CreateIndicatorOptions())
+	AceConfigRegistry:RegisterOptionsTable("ERF Icon Options",  self:CreateIconOptions())
+	AceConfigRegistry:RegisterOptionsTable("ERF Profiles", AceDBOptions:GetOptionsTable(self.db))
+	AceConfigRegistry:RegisterOptionsTable("ERF Import Export Profile Options", self:CreateProfileImportExportOptions())
 
 	-- Add to config panels to in-game interface options
-	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
-	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ERF Indicator Options", L["Indicator Options"], "Enhanced Raid Frames")
-	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ERF Icon Options", L["Icon Options"], "Enhanced Raid Frames")
-	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ERF Profiles", L["Profiles"], "Enhanced Raid Frames")
-	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ERF Import Export Profile Options", (L["Profile"].." "..L["Import"].."/"..L["Export"]), "Enhanced Raid Frames")
+	AceConfigDialog:AddToBlizOptions("Enhanced Raid Frames", "Enhanced Raid Frames")
+	AceConfigDialog:AddToBlizOptions("ERF Indicator Options", L["Indicator Options"], "Enhanced Raid Frames")
+	AceConfigDialog:AddToBlizOptions("ERF Icon Options", L["Icon Options"], "Enhanced Raid Frames")
+	AceConfigDialog:AddToBlizOptions("ERF Profiles", L["Profiles"], "Enhanced Raid Frames")
+	AceConfigDialog:AddToBlizOptions("ERF Import Export Profile Options", (L["Profile"].." "..L["Import"].."/"..L["Export"]), "Enhanced Raid Frames")
 end
 
 --- Update all raid frames

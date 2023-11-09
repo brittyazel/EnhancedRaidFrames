@@ -5,7 +5,7 @@
 local _, addonTable = ...
 local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
-local media = LibStub:GetLibrary("LibSharedMedia-3.0")
+local LibSharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 
 EnhancedRaidFrames.iconCache = {}
 EnhancedRaidFrames.iconCache["poison"] = 132104
@@ -109,7 +109,7 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 
 		--set font size, shape, font, and switch our text object
 		indicatorFrame.Text:SetText("") --clear previous text
-		local font = (media and media:Fetch('font', self.db.profile.indicatorFont)) or STANDARD_TEXT_FONT
+		local font = (LibSharedMedia and LibSharedMedia:Fetch('font', self.db.profile.indicatorFont)) or STANDARD_TEXT_FONT
 		indicatorFrame.Text:SetFont(font, self.db.profile[i].textSize, "OUTLINE")
 
 		--switch the parent for our text frame to keep the text on top of the cooldown animation

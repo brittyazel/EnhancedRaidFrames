@@ -8,11 +8,11 @@ local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 EnhancedRaidFrames.unitAuras = {} -- Matrix to keep a list of all auras on all units
 local unitAuras = EnhancedRaidFrames.unitAuras --local handle for the above table
 
-local UnitAuraWrapper
 -- Setup LibClassicDurations
 if EnhancedRaidFrames.isWoWClassicEra then
-	LibStub("LibClassicDurations"):Register(addonName) -- tell library it's being used and should start working
-	UnitAuraWrapper = LibStub("LibClassicDurations").UnitAuraWrapper -- get the wrapper function
+	local LibClassicDurations = LibStub("LibClassicDurations")
+	LibClassicDurations:Register(addonName) -- tell library it's being used and should start working
+	EnhancedRaidFrames.unitAuraWrapper = LibClassicDurations.UnitAuraWrapper -- wrapper function to use in place of UnitAura
 end
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
@@ -143,11 +143,11 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(_, unit)
 	while (true) do
 		local auraName, icon, count, duration, expirationTime, castBy, spellID
 
-		if UnitAura then
+		if not self.isWoWClassicEra then
 			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellID = UnitAura(unit, i, "HELPFUL")
 		else
 			--For wow classic. This is the LibClassicDurations wrapper
-			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellID = UnitAuraWrapper(unit, i, "HELPFUL")
+			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellID =  self.UnitAuraWrapper(unit, i, "HELPFUL")
 		end
 
 		-- break the loop once we have no more auras
@@ -175,11 +175,11 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(_, unit)
 	while (true) do
 		local auraName, icon, count, duration, expirationTime, castBy, spellID, debuffType
 
-		if UnitAura then
+		if not self.isWoWClassicEra then
 			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellID  = UnitAura(unit, i, "HARMFUL")
 		else
 			--For wow classic. This is the LibClassicDurations wrapper
-			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellID  = UnitAuraWrapper(unit, i, "HARMFUL")
+			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellID  =  self.UnitAuraWrapper(unit, i, "HARMFUL")
 		end
 
 		-- break the loop once we have no more auras

@@ -7,6 +7,7 @@ local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 local LibDeflate = LibStub:GetLibrary("LibDeflate")
+local LibRangeCheck = LibStub("LibRangeCheck-2.0")
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
@@ -62,7 +63,7 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 
 		--if we have a custom range set use LibRangeCheck, otherwise use default UnitInRange function
 		if self.db.profile.customRangeCheck then
-			local rangeChecker = LibStub("LibRangeCheck-2.0"):GetFriendChecker(self.db.profile.customRange)
+			local rangeChecker = LibRangeCheck:GetFriendChecker(self.db.profile.customRange)
 			if rangeChecker then
 				inRange = rangeChecker(frame.unit)
 				checkedRange = not UnitIsVisible(frame.unit) or not UnitIsDeadOrGhost(frame.unit)
