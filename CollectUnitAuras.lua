@@ -24,9 +24,7 @@ function EnhancedRaidFrames:UpdateAllAuras()
 
 	-- Iterate over all raid frame units and force a full update
 	CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-		if frame.unit then
-			self:UpdateUnitAuras("", frame.unit, {isFullUpdate = true})
-		end
+		self:UpdateUnitAuras("", frame.unit, {isFullUpdate = true})
 	end)
 end
 
@@ -37,9 +35,7 @@ function EnhancedRaidFrames:UpdateAllAuras_Classic()
 
 	-- Iterate over all raid frame units and force a full update
 	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-		if frame.unit then
-			self:UpdateUnitAuras_Classic("", frame.unit)
-		end
+		self:UpdateUnitAuras_Classic("", frame.unit)
 	end)
 end
 
@@ -54,15 +50,24 @@ function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload)
 		return
 	end
 
+	if not unit then
+		return
+	end
+
 	-- Only process player, raid, party, and arena units
 	if not string.find(unit, "player") and not string.find(unit, "raid") 
 			and not string.find(unit, "party") and not string.find(unit, "arena") then
 		return
 	end
 	
+	if not UnitExists(unit) then
+		return
+	end
+	
 	-- Create the main table for the unit
 	if not unitAuras[unit] then
 		unitAuras[unit] = {}
+		payload.isFullUpdate = true --force a full update if we don't have a table for the unit yet
 	end
 
 	-- If we get a full update signal, wipe the table and rescan all auras for the unit
@@ -144,9 +149,17 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(_, unit)
 		return
 	end
 
+	if not unit then
+		return
+	end
+
 	-- Only process player, raid, party, and arena units
 	if not string.find(unit, "player") and not string.find(unit, "raid") 
 			and not string.find(unit, "party") and not string.find(unit, "arena") then
+		return
+	end
+
+	if not UnitExists(unit) then
 		return
 	end
 

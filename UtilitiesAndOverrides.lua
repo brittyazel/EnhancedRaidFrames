@@ -39,18 +39,10 @@ end
 
 -- Set the visibility on the stock buff/debuff frames
 function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
-	if not frame then
-		return
-	end
-	
 	-- Don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown()
 			and CompactPartyFrame and not CompactPartyFrame:IsShown()
 			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
-		return
-	end
-	
-	if not frame.unit or not frame:IsShown() then
 		return
 	end
 	
@@ -69,18 +61,14 @@ end
 
 -- Hook for the CompactUnitFrame_UpdateInRange function
 function EnhancedRaidFrames:UpdateInRange(frame)
-	if not frame then 
-		return 
-	end
-	
 	-- Don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown()
 			and CompactPartyFrame and not CompactPartyFrame:IsShown()
 			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
 		return
 	end
-	
-	if not frame.unit or not frame:IsShown() then
+
+	if not frame.unit then
 		return
 	end
 
@@ -90,21 +78,30 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 		return
 	end
 	
+	local effectiveUnit = frame.unit
+	if frame.unit ~= frame.displayedUnit then
+		effectiveUnit = frame.displayedUnit
+	end
+
+	if not UnitExists(effectiveUnit) then
+		return
+	end
+	
 	local inRange, checkedRange
 
 	--if we have a custom range set use LibRangeCheck, otherwise use default UnitInRange function
 	if self.db.profile.customRangeCheck then
 		local rangeChecker = LibRangeCheck:GetFriendChecker(self.db.profile.customRange)
 		if rangeChecker then
-			inRange = rangeChecker(frame.unit)
-			checkedRange = not UnitIsVisible(frame.unit) or not UnitIsDeadOrGhost(frame.unit)
+			inRange = rangeChecker(effectiveUnit)
+			checkedRange = true
 		else
-			inRange, checkedRange = UnitInRange(frame.unit) --if no rangeChecker can be generated, fallback to UnitInRange
+			inRange, checkedRange = UnitInRange(effectiveUnit) --if no rangeChecker can be generated, fallback to UnitInRange
 		end
 	else
-		inRange, checkedRange = UnitInRange(frame.unit)
+		inRange, checkedRange = UnitInRange(effectiveUnit)
 	end
-
+	
 	if checkedRange and not inRange then --If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
 		frame:SetAlpha(self.db.profile.rangeAlpha)
 	else
@@ -122,7 +119,7 @@ function EnhancedRaidFrames:UpdateBackgroundAlpha(frame)
 		return
 	end
 
-	if not frame.unit or not frame:IsShown() then
+	if not frame.unit then
 		return
 	end
 
