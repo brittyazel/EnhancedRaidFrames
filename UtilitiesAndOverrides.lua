@@ -39,6 +39,10 @@ end
 
 -- Set the visibility on the stock buff/debuff frames
 function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
+	if not frame then
+		return
+	end
+	
 	-- Don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown()
 			and CompactPartyFrame and not CompactPartyFrame:IsShown()
@@ -65,6 +69,10 @@ end
 
 -- Hook for the CompactUnitFrame_UpdateInRange function
 function EnhancedRaidFrames:UpdateInRange(frame)
+	if not frame then 
+		return 
+	end
+	
 	-- Don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown()
 			and CompactPartyFrame and not CompactPartyFrame:IsShown()

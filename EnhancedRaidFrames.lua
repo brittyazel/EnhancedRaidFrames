@@ -157,7 +157,7 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 	-- This is the heart and soul of the addon. Everything gets called from here.
 	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			if frame.unit and frame:IsShown() then
+			if frame and frame.unit and frame:IsShown() then
 				self:UpdateIndicators(frame, setAppearance)
 				self:UpdateTargetMarkers(frame, setAppearance)
 				self:UpdateInRange(frame)
@@ -166,7 +166,7 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			if frame.unit and frame:IsShown() then
+			if frame and frame.unit and frame:IsShown() then
 				self:UpdateIndicators(frame, setAppearance)
 				self:UpdateTargetMarkers(frame, setAppearance)
 				self:UpdateInRange(frame)
@@ -182,13 +182,13 @@ function EnhancedRaidFrames:TargetedFrameUpdate(unit)
 	-- This is the heart and soul of the addon. Everything gets called from here.
 	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			if frame.unit and frame.unit == unit then
+			if frame and frame.unit and frame.unit == unit then
 				self:UpdateIndicators(frame)
 			end
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			if frame.unit and frame.unit == unit then
+			if frame and frame.unit and frame.unit == unit then
 				self:UpdateIndicators(frame)
 			end
 		end)
