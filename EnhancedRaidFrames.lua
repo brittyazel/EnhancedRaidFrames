@@ -72,13 +72,14 @@ end
 --- Do more initialization here, that really enables the use of your addon.
 --- Register Events, Hook functions, Create Frames, Get information from the game that wasn't available in OnInitialize
 function EnhancedRaidFrames:OnEnable()
-	-- Register for the UNIT_AURA event to track auras on all raid frame units
-	if not self.isWoWClassicEra and not self.isWoWClassic then
-		self:RegisterEvent("UNIT_AURA", "UpdateUnitAuras")
-		self:UpdateAllAuras() -- Run a full update of all auras for a starting point
+	-- Create our listeners for UNIT_AURA events
+	self:CreateAllListeners()
+
+	-- Run a full update of all auras for a starting point
+	if not self.isWoWClassicEra and not self.isWoWClassic then 
+		self:UpdateAllAuras()
 	else
-		self:RegisterEvent("UNIT_AURA", "UpdateUnitAuras_Classic")
-		self:UpdateAllAuras_Classic() -- Run a full update of all auras for a starting point
+		self:UpdateAllAuras_Classic()
 	end
 
 	-- Hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. 
@@ -93,12 +94,13 @@ function EnhancedRaidFrames:OnEnable()
 
 	-- Force a full update of all frames and auras when the raid roster changes
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, function()
-		self:UpdateAllFrames()
+		self:CreateAllListeners()
 		if not self.isWoWClassicEra and not self.isWoWClassic then 
 			self:UpdateAllAuras()
 		else
 			self:UpdateAllAuras_Classic()
 		end
+		self:UpdateAllFrames()
 	end)
 
 	-- Start a repeating timer to make sure the responsiveness feels right
@@ -167,29 +169,12 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
 			if frame and frame.unit and frame:IsShown() then
-				self:UpdateIndicators(frame, setAppearance)
+				if self:HasTrackedAuras(frame) then --if we don't have any tracked auras, don't bother updating
+					self:UpdateIndicators(frame, setAppearance)
+				end
 				self:UpdateTargetMarkers(frame, setAppearance)
 				self:UpdateInRange(frame)
 				self:UpdateBackgroundAlpha(frame)
-			end
-		end)
-	end
-end
-
--- Target an update at a specific frame based on the unit
--- This is used to increase responsiveness of the UI by triggering an update on a select unit
-function EnhancedRaidFrames:TargetedFrameUpdate(unit)
-	-- This is the heart and soul of the addon. Everything gets called from here.
-	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
-		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			if frame and frame.unit and frame.unit == unit then
-				self:UpdateIndicators(frame)
-			end
-		end)
-	else
-		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			if frame and frame.unit and frame.unit == unit then
-				self:UpdateIndicators(frame)
 			end
 		end)
 	end

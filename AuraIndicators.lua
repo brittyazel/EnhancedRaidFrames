@@ -129,18 +129,7 @@ end
 
 --- Kickstart the indicator processing for all indicators on a given frame
 function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
-	--Check to see if the bar is even targeting a unit, bail if it isn't
-	--also, tanks have two bars below their frame that have a frame.unit that ends in "target" and "targettarget".
-	--Normal raid members have frame.unit that says "Raid1", "Raid5", etc.
-	--We don't want to put icons over these tiny little target and target of target bars
-	--Also, in 8.2.5 blizzard unified the nameplate code with the raid frame code. Don't display icons on nameplates
-	if not frame.unit or not frame:IsShown()
-			or string.find(frame.unit, "target")
-			or string.find(frame.unit, "nameplate")
-			or string.find(frame.unit, "pet")
-			or (not CompactRaidFrameContainer:IsShown()
-			and CompactPartyFrame and not CompactPartyFrame:IsShown()
-			and CompactArenaFrame and not CompactArenaFrame:IsShown()) then
+	if not self.ShouldContinue(frame.unit) then
 		return
 	end
 
@@ -194,7 +183,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	--------------------------------------------------------
 	for _, auraIdentifier in pairs(self.auraStrings[i]) do
 		-- query the available information for a given indicator and aura
-		auraInstanceID, icon, count, duration, expirationTime, debuffType, castBy, auraType, auraIndex = self:QueryUnitAuraInfo(unit, auraIdentifier)
+		auraInstanceID, icon, count, duration, expirationTime, debuffType, castBy, auraType, auraIndex = self:QueryUnitAuraInfo(unit, auraIdentifier, indicatorFrame:GetParent())
 
 		-- add spell icon info to cache in case we need it later on
 		if icon and not self.iconCache[auraIdentifier] then
@@ -384,13 +373,13 @@ end
 
 --process the text and icon for an indicator and return these values
 --this function returns auraInstanceID, icon, count, duration, expirationTime, debuffType, castBy, auraType, auraIndex
-function EnhancedRaidFrames:QueryUnitAuraInfo(unit, auraIdentifier)
-	if not self.unitAuras[unit] then
+function EnhancedRaidFrames:QueryUnitAuraInfo(unit, auraIdentifier, parentFrame)
+	if not parentFrame.ERFAuras then
 		return
 	end
 
 	-- Check if the aura exist on the unit
-	for _,aura in pairs(self.unitAuras[unit]) do --loop through list of auras
+	for _,aura in pairs(parentFrame.ERFAuras) do --loop through list of auras
 		if (tonumber(auraIdentifier) and aura.spellID == tonumber(auraIdentifier)) or
 				aura.auraName == auraIdentifier or (aura.auraType == "debuff" and aura.debuffType == auraIdentifier) then
 			return aura.auraInstanceID, aura.icon, aura.count, aura.duration, aura.expirationTime, aura.debuffType, aura.castBy, aura.auraType, aura.auraIndex
