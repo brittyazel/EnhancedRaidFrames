@@ -19,6 +19,31 @@ function EnhancedRaidFrames:UpdateNotifier()
 	end
 end
 
+function EnhancedRaidFrames.ShouldContinue(unit)
+	-- Don't do any work if the raid frames aren't shown
+	if not CompactRaidFrameContainer:IsShown()
+			and CompactPartyFrame and not CompactPartyFrame:IsShown()
+			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
+		return false
+	end
+
+	if not unit then
+		return false
+	end
+
+	-- Only process player, raid, party, and arena units
+	if not string.find(unit, "player") and not string.find(unit, "raid")
+			and not string.find(unit, "party") and not string.find(unit, "arena") then
+		return false
+	end
+
+	if not UnitExists(unit) then
+		return false
+	end
+	
+	return true
+end
+
 -- Generates a table of individual, sanitized aura strings from the raw user text input
 function EnhancedRaidFrames:GenerateAuraStrings()
 	-- reset aura strings
@@ -61,20 +86,7 @@ end
 
 -- Hook for the CompactUnitFrame_UpdateInRange function
 function EnhancedRaidFrames:UpdateInRange(frame)
-	-- Don't do any work if the raid frames aren't shown
-	if not CompactRaidFrameContainer:IsShown()
-			and CompactPartyFrame and not CompactPartyFrame:IsShown()
-			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
-		return
-	end
-
-	if not frame.unit then
-		return
-	end
-
-	-- Only process player, raid, party, and arena units
-	if not string.find(frame.unit, "player") and not string.find(frame.unit, "raid")
-			and not string.find(frame.unit, "party") and not string.find(frame.unit, "arena") then
+	if not self.ShouldContinue(frame.unit) then
 		return
 	end
 	
@@ -112,20 +124,7 @@ end
 
 -- Set the background alpha amount to allow full transparency if need be
 function EnhancedRaidFrames:UpdateBackgroundAlpha(frame)
-	-- Don't do any work if the raid frames aren't shown
-	if not CompactRaidFrameContainer:IsShown()
-			and CompactPartyFrame and not CompactPartyFrame:IsShown()
-			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
-		return
-	end
-
-	if not frame.unit then
-		return
-	end
-
-	-- Only process player, raid, party, and arena units
-	if not string.find(frame.unit, "player") and not string.find(frame.unit, "raid")
-			and not string.find(frame.unit, "party") and not string.find(frame.unit, "arena") then
+	if not self.ShouldContinue(frame.unit) then
 		return
 	end
 
