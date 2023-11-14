@@ -72,6 +72,9 @@ end
 --- Do more initialization here, that really enables the use of your addon.
 --- Register Events, Hook functions, Create Frames, Get information from the game that wasn't available in OnInitialize
 function EnhancedRaidFrames:OnEnable()
+	-- Populate our starting config values
+	self:RefreshConfig()
+	
 	-- Create our listeners for UNIT_AURA events
 	self:CreateAllListeners()
 
@@ -105,9 +108,6 @@ function EnhancedRaidFrames:OnEnable()
 
 	-- Start a repeating timer to make sure the responsiveness feels right
 	self:ScheduleRepeatingTimer("UpdateAllFrames", 0.5)
-
-	-- Populate our starting config values
-	self:RefreshConfig()
 
 	-- Register our slash command to open the config panel
 	self:RegisterChatCommand("erf", function() Settings.OpenToCategory("Enhanced Raid Frames") end)
@@ -160,7 +160,9 @@ function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
 	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			if frame and frame.unit and frame:IsShown() then
-				self:UpdateIndicators(frame, setAppearance)
+				if self:HasTrackedAuras(frame) then --if we don't have any tracked auras, don't bother updating
+					self:UpdateIndicators(frame, setAppearance)
+				end
 				self:UpdateTargetMarkers(frame, setAppearance)
 				self:UpdateInRange(frame)
 				self:UpdateBackgroundAlpha(frame)
@@ -182,6 +184,6 @@ end
 
 -- Refresh everything that is affected by changes to the configuration
 function EnhancedRaidFrames:RefreshConfig()
-	self:UpdateAllFrames(true)
 	self:GenerateAuraStrings()
+	self:UpdateAllFrames(true)
 end
