@@ -2,13 +2,16 @@
 -- Copyright (c) 2017-2023 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
-local _, addonTable = ... --make use of the default addon namespace
-local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
+-- Create a local handle to our addon table
+---@type EnhancedRaidFrames
+local EnhancedRaidFrames = _G.EnhancedRaidFrames
+
+EnhancedRaidFrames.DATABASE_VERSION = 2
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
--- Create our database defaults table
+--- Create a table containing our default database values
 function EnhancedRaidFrames:CreateDefaults()
 	local defaults = {}
 

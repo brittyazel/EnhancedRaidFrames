@@ -33,7 +33,7 @@ L["Color By Remaining Time"] = true
 L["colorByTime_desc"] = "Color is determined based on the remaining time"
 
 L["colorOverride_desc"] = "this will override the normal coloring"
-L["zeroMeansIgnored_desc"] = "'0' means this setting is ignored"
+L["zeroMeansIgnored_desc"] = "A value of '0' means this setting is ignored"
 
 L["Time #1"] = true
 L["colorByTime_low_desc"] = "The time (in seconds) for the lower boundary"
@@ -135,11 +135,10 @@ L["markerPosition_desc"] = "Position of the target marker relative to the frame"
 L["indicatorOptions_desc"] = "Please select an indicator position from the dropdown menu below"
 
 L["instructions_desc1"] = "The box to the right contains the list of auras to watch at the selected position"
-L["instructions_desc2"] = "Type the names or spell IDs of each aura, each on a separate line"
 
 L["Aura Watch List"] = true
 L["auras_desc"] = "The list of buffs, debuffs, and/or wildcards to watch in this position"
-L["auras_usage"] = "Any valid aura name or spell ID found in the game, spelled correctly, should work"
+L["auras_usage"] = "Enter the names or spell IDs of each aura, each on a separate line"
 
 L["poisonWildcard_desc"] = "any poison debuffs"
 L["curseWildcard_desc"] = "any curse debuffs"
@@ -211,7 +210,7 @@ L["indicatorGlow_desc"] = "Display a glow animation effect on the indicator to m
 
 L["Glow At Countdown Time"] = true
 L["glowRemainingSecs_desc1"] = "The amount of time (in seconds) remaining on the buff or debuff countdown before the glowing starts"
-L["glowRemainingSecs_desc2"] = "'0' means it will always glow"
+L["glowRemainingSecs_desc2"] = "A value of '0' means it will always glow"
 
 ----------------------------------------------------
 -------------------- Utilities ---------------------

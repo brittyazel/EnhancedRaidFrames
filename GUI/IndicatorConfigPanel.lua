@@ -2,18 +2,17 @@
 -- Copyright (c) 2017-2023 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
-local _, addonTable = ...
-local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
+-- Create a local handle to our addon table
+---@type EnhancedRaidFrames
+local EnhancedRaidFrames = _G.EnhancedRaidFrames
 
+-- Import libraries
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 
-local POSITIONS = { [1] = L["Top-Left"], [2] = L["Top"], [3] = L["Top-Right"],
-					[4] = L["Left"], [5] = L["Center"], [6] = L["Right"],
-					[7] = L["Bottom-Left"], [8] = L["Bottom"], [9] = L["Bottom-Right"]}
-
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
+--- Populate our "Indicator" options table for our Blizzard interface options
 function EnhancedRaidFrames:CreateIndicatorOptions()
 	local THIRD_WIDTH = 1.14
 
@@ -32,7 +31,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 	}
 
 	--- Add options for each indicator
-	for i,v in ipairs(POSITIONS) do
+	for i,v in ipairs(self.POSITIONS) do
 		indicatorOptions.args[v] = {}
 		indicatorOptions.args[v].type = "group"
 		indicatorOptions.args[v].childGroups = "tab"
@@ -44,20 +43,19 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 				type = "description",
 				name = self.NORMAL_COLOR:WrapTextInColorCode(v).."\n"..
 						"\n"..
-						L["instructions_desc1"].."\n"..
+						L["instructions_desc1"]..".".."\n"..
 						"\n"..
-						L["instructions_desc2"].."\n",
+						L["auras_usage"]..".".."\n",
 				fontSize = "medium",
-				width = THIRD_WIDTH,
+				width = THIRD_WIDTH * 1.2,
 				order = 1,
 			},
 			auras = {
 				type = "input",
 				name = L["Aura Watch List"],
 				desc = L["auras_desc"],
-				usage = "\n"..
-						"\n"..
-						L["auras_usage"]..". "..L["Example"]..":\n"..
+				usage =L["auras_usage"]..".\n"..
+						L["Example"]..":\n"..
 						"\n"..
 						self.WHITE_COLOR:WrapTextInColorCode("Rejuvenation").."\n"..
 						self.WHITE_COLOR:WrapTextInColorCode("Curse").."\n"..
@@ -69,13 +67,13 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						self.PURPLE_COLOR:WrapTextInColorCode("Curse")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["curseWildcard_desc"]).."\n"..
 						self.BROWN_COLOR:WrapTextInColorCode("Disease")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["diseaseWildcard_desc"]).."\n"..
 						self.BLUE_COLOR:WrapTextInColorCode("Magic")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["magicWildcard_desc"]).."\n",
-				multiline = 5,
+				multiline = 7,
 				get = function() return self.db.profile[i].auras end,
 				set = function(_, value)
 					self.db.profile[i].auras = value
 					self:RefreshConfig()
 				end,
-				width = THIRD_WIDTH*1.7,
+				width = THIRD_WIDTH * 1.75,
 				order = 2,
 			},
 			--------------------------------------------

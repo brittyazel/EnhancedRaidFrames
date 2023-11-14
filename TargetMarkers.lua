@@ -2,12 +2,15 @@
 -- Copyright (c) 2017-2023 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
-local _, addonTable = ...
-local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
+-- Create a local handle to our addon table
+---@type EnhancedRaidFrames
+local EnhancedRaidFrames = _G.EnhancedRaidFrames
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
----
+
+--- Set the appearance for our target marker for a given frame
+---@param frame table @The frame to set the appearance for
 function EnhancedRaidFrames:SetTargetMarkerAppearance(frame)
 	if not frame.ERF_targetMarkerFrame then
 		return
@@ -59,7 +62,10 @@ function EnhancedRaidFrames:SetTargetMarkerAppearance(frame)
 	targetMarker:SetAlpha(self.db.profile.markerAlpha)
 end
 
-function EnhancedRaidFrames:UpdateTargetMarkers(frame, setAppearance)
+--- Update the appearance of our target marker for a given frame
+---@param frame table @The frame to update the appearance for
+---@param setAppearance boolean @Whether or not to set the appearance of the marker
+function EnhancedRaidFrames:UpdateTargetMarker(frame, setAppearance)
 	-- If the frame doesn't point at anything, no need for an marker
 	if not frame.unit or not frame:IsShown() then
 		return
@@ -103,15 +109,16 @@ function EnhancedRaidFrames:UpdateTargetMarkers(frame, setAppearance)
 	end
 end
 
+--- Update the appearance of our target markers for all frames
 function EnhancedRaidFrames:UpdateAllTargetMarkers()
 	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			self:UpdateTargetMarkers(frame)
+			self:UpdateTargetMarker(frame)
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
 			self:UpdateBackgroundAlpha(frame)
-			self:UpdateTargetMarkers(frame)
+			self:UpdateTargetMarker(frame)
 		end)
 	end
 end

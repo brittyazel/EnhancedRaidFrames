@@ -2,18 +2,14 @@
 -- Copyright (c) 2017-2023 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
-local _, addonTable = ... --make use of the default addon namespace
-
----@class EnhancedRaidFrames : AceAddon-3.0 @define The main addon object for the Enhanced Raid Frames add-on
-addonTable.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0",
+--- **EnhancedRaidFrames** is the main addon object for the Enhanced Raid Frames add-on.
+---@class EnhancedRaidFrames : AceAddon-3.0 @The main addon object for the Enhanced Raid Frames add-on
+_G.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0",
 		"AceEvent-3.0", "AceBucket-3.0", "AceConsole-3.0", "AceSerializer-3.0")
-local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 
-if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-	EnhancedRaidFrames.isWoWClassicEra = true
-elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
-	EnhancedRaidFrames.isWoWClassic = true
-end
+-- Create a local handle to our addon table
+---@type EnhancedRaidFrames
+local EnhancedRaidFrames = _G.EnhancedRaidFrames
 
 -- Import libraries
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
@@ -22,30 +18,11 @@ local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceDB = LibStub("AceDB-3.0")
 
-local LibDualSpec
-if not EnhancedRaidFrames.isWoWClassicEra then
-	LibDualSpec = LibStub('LibDualSpec-1.0')
-end
-
-EnhancedRaidFrames.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
-
-EnhancedRaidFrames.DATABASE_VERSION = 2
-
--- Declare Color Global Constants
-EnhancedRaidFrames.NORMAL_COLOR = NORMAL_FONT_COLOR or CreateColor(1.0, 0.82, 0.0) --the default game text color, dull yellow color
-EnhancedRaidFrames.WHITE_COLOR = WHITE_FONT_COLOR or CreateColor(1.0, 1.0, 1.0) --default game white color for text
-EnhancedRaidFrames.RED_COLOR = DIM_RED_FONT_COLOR or CreateColor(0.8, 0.1, 0.1) --solid red color
-EnhancedRaidFrames.YELLOW_COLOR = DARKYELLOW_FONT_COLOR or CreateColor(1.0, 0.82, 0.0) --solid yellow color
-EnhancedRaidFrames.GREEN_COLOR = CreateColor(0.6627, 0.8235, 0.4431) --poison text color
-EnhancedRaidFrames.PURPLE_COLOR = CreateColor(0.6392, 0.1882, 0.7882) --curse text color
-EnhancedRaidFrames.BROWN_COLOR = CreateColor(0.7804, 0.6118, 0.4314) --disease text color
-EnhancedRaidFrames.BLUE_COLOR = CreateColor(0.0, 0.4392, 0.8706) --magic text color
-
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
---- **OnInitialize**, which is called directly after the addon is fully loaded.
---- do init tasks here, like loading the Saved Variables or setting up slash commands.
+--- **OnInitialize** is called directly after the addon is fully loaded.
+--- We do initialization tasks here, such as loading our saved variables or setting up slash commands.
 function EnhancedRaidFrames:OnInitialize()
 	-- Set up database defaults
 	local defaults = self:CreateDefaults()
@@ -55,8 +32,10 @@ function EnhancedRaidFrames:OnInitialize()
 
 	-- Enhance database and profile options using LibDualSpec
 	if not self.isWoWClassicEra then -- Not available in Classic Era
-		LibDualSpec:EnhanceDatabase(self.db, "EnhancedRaidFrames") --enhance the database object with per spec profile features
-		LibDualSpec:EnhanceOptions(AceDBOptions:GetOptionsTable(self.db), self.db) -- enhance the profile options table with per spec profile features
+		--enhance the database object with per spec profile features
+		LibStub('LibDualSpec-1.0'):EnhanceDatabase(self.db, "EnhancedRaidFrames")
+		-- enhance the profile options table with per spec profile features
+		LibStub('LibDualSpec-1.0'):EnhanceOptions(AceDBOptions:GetOptionsTable(self.db), self.db) 
 	end
 
 	-- Setup config panels in the Blizzard interface options
@@ -68,9 +47,9 @@ function EnhancedRaidFrames:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 end
 
---- **OnEnable** which gets called during the PLAYER_LOGIN event, when most of the data provided by the game is already present.
---- Do more initialization here, that really enables the use of your addon.
---- Register Events, Hook functions, Create Frames, Get information from the game that wasn't available in OnInitialize
+--- **OnEnable** is called during the PLAYER_LOGIN event when most of the data provided by the game is already present.
+--- We perform more startup tasks here, such as registering events, hooking functions, creating frames, or getting 
+--- information from the game that wasn't yet available during :OnInitialize()
 function EnhancedRaidFrames:OnEnable()
 	-- Populate our starting config values
 	self:RefreshConfig()
@@ -108,16 +87,15 @@ function EnhancedRaidFrames:OnEnable()
 	self:UpdateNotifier()
 end
 
---- **OnDisable**, which is only called when your addon is manually being disabled.
---- Unhook, Unregister Events, Hide frames that you created.
---- You would probably only use an OnDisable if you want to build a "standby" mode, or be able to toggle modules on/off.
+--- **OnDisable** is called when our addon is manually being disabled during a running session.
+--- We primarily use this to unhook scripts, unregister events, or hide frames that we created.
 function EnhancedRaidFrames:OnDisable()
 	-- empty --
 end
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
----
+
 --- Create our database, import saved variables, and set up our configuration panels
 function EnhancedRaidFrames:SetupConfigPanels()
 	-- Build our config panels
@@ -132,7 +110,8 @@ function EnhancedRaidFrames:SetupConfigPanels()
 	AceConfigDialog:AddToBlizOptions("ERF Indicator Options", L["Indicator Options"], "Enhanced Raid Frames")
 	AceConfigDialog:AddToBlizOptions("ERF Target Marker Options", L["Target Marker Options"], "Enhanced Raid Frames")
 	AceConfigDialog:AddToBlizOptions("ERF Profiles", L["Profiles"], "Enhanced Raid Frames")
-	AceConfigDialog:AddToBlizOptions("ERF Import Export Profile Options", (L["Profile"].." "..L["Import"].."/"..L["Export"]), "Enhanced Raid Frames")
+	AceConfigDialog:AddToBlizOptions("ERF Import Export Profile Options", 
+			(L["Profile"].." "..L["Import"].."/"..L["Export"]), "Enhanced Raid Frames")
 end
 
 --- Refresh everything that is affected by changes to the configuration
@@ -143,13 +122,13 @@ function EnhancedRaidFrames:RefreshConfig()
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:UpdateIndicators(frame, true)
 			self:UpdateBackgroundAlpha(frame)
-			self:UpdateTargetMarkers(frame, true)
+			self:UpdateTargetMarker(frame, true)
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
 			self:UpdateIndicators(frame, true)
 			self:UpdateBackgroundAlpha(frame)
-			self:UpdateTargetMarkers(frame, true)
+			self:UpdateTargetMarker(frame, true)
 		end)
 	end
 end

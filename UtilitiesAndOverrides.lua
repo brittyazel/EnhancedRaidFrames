@@ -2,23 +2,31 @@
 -- Copyright (c) 2017-2023 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
-local _, addonTable = ... --make use of the default addon namespace
-local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
+-- Create a local handle to our addon table
+---@type EnhancedRaidFrames
+local EnhancedRaidFrames = _G.EnhancedRaidFrames
 
+-- Import libraries
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 local LibDeflate = LibStub:GetLibrary("LibDeflate")
 local LibRangeCheck = LibStub("LibRangeCheck-2.0")
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
--- Prints a message to the chat frame when the database is updated
+
+--- Handle the migration of the database from one version to another
 function EnhancedRaidFrames:UpdateNotifier()
 	if not self.db.global.DB_VERSION or self.db.global.DB_VERSION < self.DATABASE_VERSION then
 		self:Print(L["The database has been updated."])
+		-- Update the database version to the current version
+		-- <This is where we would put in any database migration code>
 		self.db.global.DB_VERSION = self.DATABASE_VERSION
 	end
 end
 
+--- Test for whether or not we should continue processing a given unit
+---@param unit string @The unit to test
+---@return boolean @Whether or not we should continue processing the unit
 function EnhancedRaidFrames.ShouldContinue(unit)
 	-- Don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown()
@@ -44,7 +52,8 @@ function EnhancedRaidFrames.ShouldContinue(unit)
 	return true
 end
 
--- Set the visibility on the stock buff/debuff frames
+--- Set the visibility on the stock buff/debuff frames
+---@param frame table @The frame to set the visibility on
 function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
 	-- Don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown()
@@ -66,7 +75,9 @@ function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
 	end
 end
 
--- Hook for the CompactUnitFrame_UpdateInRange function
+--- Updates the frame alpha based on if a unit is in range or not.
+--- This function is secure hooked to the CompactUnitFrame_UpdateInRange function.
+---@param frame table @The frame to update the alpha on
 function EnhancedRaidFrames:UpdateInRange(frame)
 	if not self.ShouldContinue(frame.unit) then
 		return
@@ -104,7 +115,8 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 	
 end
 
--- Set the background alpha amount to allow full transparency if need be
+--- Set the background alpha amount based on a defined value by the user.
+---@param frame table @The frame to set the background alpha on
 function EnhancedRaidFrames:UpdateBackgroundAlpha(frame)
 	if not self.ShouldContinue(frame.unit) then
 		return
@@ -113,7 +125,7 @@ function EnhancedRaidFrames:UpdateBackgroundAlpha(frame)
 	frame.background:SetAlpha(self.db.profile.backgroundAlpha)
 end
 
--- Set the scale of the overall raid frame container
+--- Set the scale of the overall raid frame container.
 function EnhancedRaidFrames:UpdateScale()
 	if not InCombatLockdown() then
 		CompactRaidFrameContainer:SetScale(self.db.profile.frameScale)
@@ -123,7 +135,7 @@ function EnhancedRaidFrames:UpdateScale()
 	end
 end
 
--- Serialize and compress the profile for copy+paste
+--- Serialize and compress the profile for copy+paste.
 function EnhancedRaidFrames:GetSerializedAndCompressedProfile()
 	local uncompressed = self:Serialize(self.db.profile) --serialize the database into a string value
 	local compressed = LibDeflate:CompressZlib(uncompressed) --compress the data
@@ -131,7 +143,7 @@ function EnhancedRaidFrames:GetSerializedAndCompressedProfile()
 	return encoded
 end
 
--- Deserialize and decompress the profile from copy+paste
+--- Deserialize and decompress the profile from copy+paste.
 function EnhancedRaidFrames:SetSerializedAndCompressedProfile(input)
 	--check if the input is empty
 	if input == "" then

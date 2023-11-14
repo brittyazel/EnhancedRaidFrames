@@ -2,9 +2,11 @@
 -- Copyright (c) 2017-2023 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
-local _, addonTable = ...
-local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
+-- Create a local handle to our addon table
+---@type EnhancedRaidFrames
+local EnhancedRaidFrames = _G.EnhancedRaidFrames
 
+-- Import libraries
 local LibSharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 
 EnhancedRaidFrames.iconCache = {}
@@ -16,7 +18,8 @@ EnhancedRaidFrames.iconCache["magic"] = 135894
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
--- Create the FontStrings used for indicators
+--- Creates all of our indicator frames on their respective raid frames
+--- @param frame table @The raid frame to create indicators on
 function EnhancedRaidFrames:CreateIndicators(frame)
 	frame.ERF_indicatorFrames = {}
 
@@ -51,7 +54,8 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 	self:SetIndicatorAppearance(frame)
 end
 
--- Set the appearance of the Indicator
+--- Set the appearance of the Indicator
+--- @param frame table @The raid frame of our indicator
 function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 	-- Check if the frame has an ERFIndicators table or if we have a frame unit, this is just for safety
 	if not frame.ERF_indicatorFrames or not frame.unit then
@@ -128,6 +132,8 @@ end
 ------------------------------------------------
 
 --- Kickstart the indicator processing for all indicators on a given frame
+--- @param frame table @The raid frame of our indicators
+--- @param setAppearance boolean @Indicates if we should trigger reapply appearance settings to the indicators
 function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 	if not self.ShouldContinue(frame.unit) then
 		return
@@ -160,6 +166,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 end
 
 --- Update all aura indicators
+--- @param skipCheck boolean @Indicates if we skip the check for tracked auras
 function EnhancedRaidFrames:UpdateAllIndicators(skipCheck)
 	-- Don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown()
@@ -189,6 +196,8 @@ function EnhancedRaidFrames:UpdateAllIndicators(skipCheck)
 end
 
 --- Process a single indicator location and apply any necessary visual effects for this moment in time
+--- @param indicatorFrame table @The indicator frame to process
+--- @param unit string @The unit to process the indicator for
 function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	local i = indicatorFrame.position
 	local parentFrame = indicatorFrame:GetParent()
@@ -423,6 +432,10 @@ end
 ------------------------------------------------
 ----------------- Tooltip Code -----------------
 ------------------------------------------------
+
+--- Show the tooltip for the indicator
+--- @param indicatorFrame table @The indicator frame to process
+--- @param parentFrame table @The parent frame of the indicator
 function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame, parentFrame)
 	local i = indicatorFrame.position
 
@@ -459,7 +472,7 @@ end
 ------------------- Utilities ------------------
 ------------------------------------------------
 
---- Generates a table of individual, sanitized aura strings from the raw user text input
+--- Generates a table of individual, sanitized aura strings from the raw user text input.
 function EnhancedRaidFrames:GenerateAuraStrings()
 	-- reset aura strings
 	self.allAuras = " " --this is so we can do quick string searches later
@@ -479,8 +492,9 @@ function EnhancedRaidFrames:GenerateAuraStrings()
 	end
 end
 
---- This function does a quick scan of the current auras on the unit and returns true if any of them are set as tracked
--- This is primarily meant to reduce idle CPU usage by not scanning units that don't have any auras we're tracking
+--- Does a quick scan of the current auras on the unit and returns true if any of them are set as tracked.
+--- Its primary use is to reduce idle CPU usage by not scanning units that don't have any auras we're tracking.
+--- @param frame table @The raid frame to check for tracked auras
 function EnhancedRaidFrames:HasTrackedAuras(frame)
 	-- If we don't have an aura table for the unit, return false
 	if not frame.ERF_unitAuras then

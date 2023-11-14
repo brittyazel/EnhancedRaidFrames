@@ -2,14 +2,17 @@
 -- Copyright (c) 2017-2023 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
-local _, addonTable = ...
-local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
+-- Create a local handle to our addon table
+---@type EnhancedRaidFrames
+local EnhancedRaidFrames = _G.EnhancedRaidFrames
 
+-- Import libraries
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
+--- Populate our "Profile Import/Export" options table for our Blizzard interface options
 function EnhancedRaidFrames:CreateProfileImportExportOptions()
 
 	local importexport={

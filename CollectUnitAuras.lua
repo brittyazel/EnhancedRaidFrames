@@ -2,17 +2,22 @@
 -- Copyright (c) 2017-2023 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
-local addonName, addonTable = ... --make use of the default addon namespace
-local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
+-- Create a local handle to our addon table
+---@type EnhancedRaidFrames
+local EnhancedRaidFrames = _G.EnhancedRaidFrames
 
--- Setup LibClassicDurations
+-- Import libraries
 if EnhancedRaidFrames.isWoWClassicEra then
+	-- Setup LibClassicDurations
 	local LibClassicDurations = LibStub("LibClassicDurations")
-	LibClassicDurations:Register(addonName) -- tell library it's being used and should start working
+	LibClassicDurations:Register("Enhanced Raid Frames") -- tell library it's being used and should start working
 	EnhancedRaidFrames.UnitAuraWrapper = LibClassicDurations.UnitAuraWrapper -- wrapper function to use in place of UnitAura
 end
+
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
+
+--- Creates all of our listeners for the UNIT_AURA event attached to their respective raid frames
 function EnhancedRaidFrames:CreateAllListeners()
 	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
@@ -29,6 +34,8 @@ function EnhancedRaidFrames:CreateAllListeners()
 	end
 end
 
+--- Creates a listener for the UNIT_AURA event attached to a specified raid frame
+---@param frame table @The raid frame to create the listener for
 function EnhancedRaidFrames:CreateAuraListener(frame)
 	if not frame.ERF_auraListenerFrame or frame.ERF_auraListenerFrame.unit ~= frame.unit then
 		if not frame.ERF_auraListenerFrame then --only create a new frame if we don't have one yet
@@ -37,12 +44,12 @@ function EnhancedRaidFrames:CreateAuraListener(frame)
 		frame.ERF_auraListenerFrame.unit = frame.unit
 		frame.ERF_auraListenerFrame:RegisterUnitEvent("UNIT_AURA", frame.unit)
 		if not self.isWoWClassicEra and not self.isWoWClassic then
-			frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, event, unit, payload)
-				self:UpdateUnitAuras(event, unit, payload, frame)
+			frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, unit, payload)
+				self:UpdateUnitAuras(unit, payload, frame)
 			end)
 		else
-			frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, event, unit)
-				self:UpdateUnitAuras_Classic(event, unit, frame)
+			frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, unit)
+				self:UpdateUnitAuras_Classic(unit, frame)
 			end)
 		end
 	end
@@ -51,24 +58,27 @@ end
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
---- This function scans all raid frame units and updates the unitAuras table with all auras on each unit
+--- Scans all raid frame units and updates the unitAuras table with all auras on each unit.
 function EnhancedRaidFrames:UpdateAllAuras()
 	-- Iterate over all raid frame units and force a full update
 	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			self:UpdateUnitAuras("", frame.unit, {isFullUpdate = true}, frame)
+			self:UpdateUnitAuras(frame.unit, {isFullUpdate = true}, frame)
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			self:UpdateUnitAuras_Classic("", frame.unit, frame)
+			self:UpdateUnitAuras_Classic(frame.unit, frame)
 		end)
 	end
 end
 
---- This functions is bound to the UNIT_AURA event and is used to track auras on all raid frame units
+--- Called by our UNIT_AURA listeners and is used to store unit aura information for a given unit.
+--- Unit aura information for tracked auras is stored in the ERF_unitAuras table.
 --- It uses the C_UnitAuras API that was added in 10.0
---- Unit aura information is stored in the unitAuras table
-function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload, parentFrame)
+---@param unit string @The unit to update auras for
+---@param payload table @The payload from the UNIT_AURA event
+---@param parentFrame table @The raid frame to update
+function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 	if not self.ShouldContinue(unit) then
 		return
 	end
@@ -128,7 +138,9 @@ function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload, parentFrame)
 	end
 end
 
---function to add or update an aura to the ERFAuras table
+--- Add or update an aura to the ERFAuras table
+---@param parentFrame table @The raid frame that we're updating
+---@param auraData table @Payload from UNIT_AURA event
 function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	if not auraData then
 		return false
@@ -161,10 +173,12 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	return true --return true if we added or updated an aura
 end
 
---- Prior to WoW 10.0, this function was used to track auras on all raid frame units
---- Unit auras are now tracked using the UNIT_AURA event and APIs in Retail
---- Unit aura information is stored in the ERF_unitAuras table
-function EnhancedRaidFrames:UpdateUnitAuras_Classic(_, unit, parentFrame)
+--- Called by our UNIT_AURA listeners and is used to store unit aura information for a given unit.
+--- Unit aura information for tracked auras is stored in the ERF_unitAuras table.
+--- This function is less optimized than :UpdateUnitAuras(), but is still required for Classic and Classic Era.
+---@param unit string @The unit to update auras for
+---@param parentFrame table @The raid frame to update
+function EnhancedRaidFrames:UpdateUnitAuras_Classic(unit, parentFrame)
 	if not self.ShouldContinue(unit) then
 		return
 	end

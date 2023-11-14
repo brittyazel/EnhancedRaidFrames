@@ -2,14 +2,17 @@
 -- Copyright (c) 2017-2023 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
-local _, addonTable = ...
-local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
+-- Create a local handle to our addon table
+---@type EnhancedRaidFrames
+local EnhancedRaidFrames = _G.EnhancedRaidFrames
 
+-- Import libraries
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
+--- Populate our "General" options table for our Blizzard interface options
 function EnhancedRaidFrames:CreateGeneralOptions()
 	local THIRD_WIDTH = 1.25
 
@@ -35,11 +38,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				name = L["Open the Blizzard Raid Profiles Options"],
 				desc = L["blizzardRaidOptionsButton_desc"],
 				func = function()
-					if Settings then --10.0 introduced a new Settings API
-						Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, RAID_FRAMES_LABEL)
-					else
-						InterfaceOptionsFrame_OpenToCategory("Raid Profiles")
-					end
+					Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, RAID_FRAMES_LABEL)
 				end,
 				width = THIRD_WIDTH * 1.5,
 				order = 4,

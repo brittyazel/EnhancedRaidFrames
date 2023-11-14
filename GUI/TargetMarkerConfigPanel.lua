@@ -2,18 +2,16 @@
 -- Copyright (c) 2017-2023 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
-local _, addonTable = ...
-local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
+-- Create a local handle to our addon table
+---@type EnhancedRaidFrames
+local EnhancedRaidFrames = _G.EnhancedRaidFrames
 
+-- Import libraries
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 
-local POSITIONS = { [1] = L["Top-Left"], [2] = L["Top"], [3] = L["Top-Right"],
-					[4] = L["Left"], [5] = L["Center"], [6] = L["Right"],
-					[7] = L["Bottom-Left"], [8] = L["Bottom"], [9] = L["Bottom-Right"]}
-
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
-
+--- Populate our "Target Marker" options table for our Blizzard interface options
 function EnhancedRaidFrames:CreateIconOptions()
 	local THIRD_WIDTH = 1.25
 
@@ -89,7 +87,7 @@ function EnhancedRaidFrames:CreateIconOptions()
 				type = "select",
 				name = L["Marker Position"],
 				desc = L["markerPosition_desc"],
-				values = POSITIONS,
+				values = self.POSITIONS,
 				get = function() return self.db.profile.markerPosition end,
 				set = function(_, value)
 					self.db.profile.markerPosition = value

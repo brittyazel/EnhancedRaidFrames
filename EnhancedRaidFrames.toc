@@ -19,6 +19,7 @@ Libs\embeds.xml
 Localizations\Localizations.xml
 
 EnhancedRaidFrames.lua
+Globals.lua
 DatabaseDefaults.lua
 UtilitiesAndOverrides.lua
 CollectUnitAuras.lua
