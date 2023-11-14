@@ -30,18 +30,18 @@ function EnhancedRaidFrames:CreateAllListeners()
 end
 
 function EnhancedRaidFrames:CreateAuraListener(frame)
-	if not frame.ERFAuraListener or frame.ERFAuraListener.unit ~= frame.unit then
-		if not frame.ERFAuraListener then --only create a new frame if we don't have one yet
-			frame.ERFAuraListener = CreateFrame("Frame")
+	if not frame.ERF_auraListenerFrame or frame.ERF_auraListenerFrame.unit ~= frame.unit then
+		if not frame.ERF_auraListenerFrame then --only create a new frame if we don't have one yet
+			frame.ERF_auraListenerFrame = CreateFrame("Frame")
 		end
-		frame.ERFAuraListener.unit = frame.unit
-		frame.ERFAuraListener:RegisterUnitEvent("UNIT_AURA", frame.unit)
+		frame.ERF_auraListenerFrame.unit = frame.unit
+		frame.ERF_auraListenerFrame:RegisterUnitEvent("UNIT_AURA", frame.unit)
 		if not self.isWoWClassicEra and not self.isWoWClassic then
-			frame.ERFAuraListener:SetScript("OnEvent", function(_, event, unit, payload)
+			frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, event, unit, payload)
 				self:UpdateUnitAuras(event, unit, payload, frame)
 			end)
 		else
-			frame.ERFAuraListener:SetScript("OnEvent", function(_, event, unit)
+			frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, event, unit)
 				self:UpdateUnitAuras_Classic(event, unit, frame)
 			end)
 		end
@@ -50,32 +50,6 @@ end
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
-
---- This function does a quick scan of the current auras on the unit and returns true if any of them are set as tracked
--- This is primarily meant to reduce idle CPU usage by not scanning units that don't have any auras we're tracking
-function EnhancedRaidFrames:HasTrackedAuras(frame)
-	-- First check if we're watching for any special cases on the unit
-	if self.allAuras:find("pvp") or self.allAuras:find("combat") or self.allAuras:find("tot") then
-		return true
-	end
-	
-	-- If we don't have an aura table for the unit, return false
-	if not frame.ERFAuras then
-		return false
-	end
-	
-	-- Check each aura on the unit and return true if we find one we're watching for
-	for _, aura in pairs(frame.ERFAuras) do
-		if self.allAuras:find(aura.auraName:lower()) or 
-				self.allAuras:find(aura.spellID) or 
-				(aura.auraType == "debuff" and self.allAuras:find(aura.debuffType:lower()))
-				then
-			return true
-		end
-	end
-	
-	return false
-end
 
 --- This function scans all raid frame units and updates the unitAuras table with all auras on each unit
 function EnhancedRaidFrames:UpdateAllAuras()
@@ -100,8 +74,8 @@ function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload, parentFrame)
 	end
 	
 	-- Create the main table for the unit
-	if not parentFrame.ERFAuras then
-		parentFrame.ERFAuras = {}
+	if not parentFrame.ERF_unitAuras then
+		parentFrame.ERF_unitAuras = {}
 		payload.isFullUpdate = true --force a full update if we don't have a table for the unit yet
 	end
 	
@@ -110,7 +84,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload, parentFrame)
 	-- If we get a full update signal, reset the table and rescan all auras for the unit
 	if payload.isFullUpdate then
 		-- Clear out the table
-		parentFrame.ERFAuras = {}
+		parentFrame.ERF_unitAuras = {}
 		-- These helper functions will iterate over all buffs and debuffs on the unit
 		-- and call the addToAuraTable() function for each one
 		AuraUtil.ForEachAura(unit, "HELPFUL", nil, function(auraData)
@@ -132,7 +106,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload, parentFrame)
 	-- If an aura has been updated, query the updated information and add it to the table
 	if payload.updatedAuraInstanceIDs then
 		for _, auraInstanceID in pairs(payload.updatedAuraInstanceIDs) do
-			parentFrame.ERFAuras[auraInstanceID] = nil
+			parentFrame.ERF_unitAuras[auraInstanceID] = nil
 			--it's possible for auraData to return nil if the aura was removed just prior to us querying it
 			local auraData = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
 			shouldUpdateFrames = self:addToAuraTable(parentFrame, auraData)
@@ -142,8 +116,8 @@ function EnhancedRaidFrames:UpdateUnitAuras(_, unit, payload, parentFrame)
 	-- If an aura has been removed, remove it from the table
 	if payload.removedAuraInstanceIDs then
 		for _, auraInstanceID in pairs(payload.removedAuraInstanceIDs) do
-			if parentFrame.ERFAuras[auraInstanceID] then
-				parentFrame.ERFAuras[auraInstanceID] = nil
+			if parentFrame.ERF_unitAuras[auraInstanceID] then
+				parentFrame.ERF_unitAuras[auraInstanceID] = nil
 				shouldUpdateFrames = true
 			end
 		end
@@ -163,7 +137,7 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	-- Quickly check if we're watching for this aura, and ignore if we aren't
 	-- It's important to use the 4th argument in string.find to turn off pattern matching, 
 	-- otherwise strings with parentheses in them will fail to be found
-	if not self.allAuras:find(" "..auraData.name:lower().." ", nil, true) and not self.allAuras:find(" "..auraData.spellId.." ", nil, true) then
+	if not self.allAuras:find(" "..auraData.name:lower().." ", nil, true) and not self.allAuras:find(auraData.spellId) then
 		return false
 	end
 
@@ -183,20 +157,20 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	aura.castBy = auraData.sourceUnit
 	aura.spellID = auraData.spellId
 
-	parentFrame.ERFAuras[aura.auraInstanceID] = aura
+	parentFrame.ERF_unitAuras[aura.auraInstanceID] = aura
 	return true --return true if we added or updated an aura
 end
 
 --- Prior to WoW 10.0, this function was used to track auras on all raid frame units
 --- Unit auras are now tracked using the UNIT_AURA event and APIs in Retail
---- Unit aura information is stored in the ERFAuras table
+--- Unit aura information is stored in the ERF_unitAuras table
 function EnhancedRaidFrames:UpdateUnitAuras_Classic(_, unit, parentFrame)
 	if not self.ShouldContinue(unit) then
 		return
 	end
 
 	-- Create or clear out the tables for the unit
-	parentFrame.ERFAuras = {}
+	parentFrame.ERF_unitAuras = {}
 
 	-- Get all unit buffs
 	local i = 1 --aura index counter
@@ -218,7 +192,7 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(_, unit, parentFrame)
 		-- Quickly check if we're watching for this aura, and ignore if we aren't
 		-- It's important to use the 4th argument in string.find to turn off pattern matching, 
 		-- otherwise strings with parentheses in them will fail to be found
-		if auraName and self.allAuras:find(" "..auraName:lower().." ", nil, true) or self.allAuras:find(" "..spellID.." ", nil, true) then
+		if auraName and self.allAuras:find(" "..auraName:lower().." ", nil, true) or self.allAuras:find(spellID) then
 			local auraTable = {}
 			auraTable.auraType = "buff"
 			auraTable.auraIndex = i
@@ -230,7 +204,7 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(_, unit, parentFrame)
 			auraTable.castBy = castBy
 			auraTable.spellID = spellID
 
-			table.insert(parentFrame.ERFAuras, auraTable)
+			table.insert(parentFrame.ERF_unitAuras, auraTable)
 		end
 		i = i + 1
 	end
@@ -255,7 +229,7 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(_, unit, parentFrame)
 		-- Quickly check if we're watching for this aura, and ignore if we aren't
 		-- It's important to use the 4th argument in string.find to turn off pattern matching, 
 		-- otherwise strings with parentheses in them will fail to be found
-		if auraName and self.allAuras:find(" "..auraName:lower().." ", nil, true) or self.allAuras:find(" "..spellID.." ", nil, true) then
+		if auraName and self.allAuras:find(" "..auraName:lower().." ", nil, true) or self.allAuras:find(spellID) then
 			local auraTable = {}
 			auraTable.auraType = "debuff"
 			auraTable.auraIndex = i
@@ -270,7 +244,7 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(_, unit, parentFrame)
 			auraTable.castBy = castBy
 			auraTable.spellID = spellID
 
-			table.insert(parentFrame.ERFAuras, auraTable)
+			table.insert(parentFrame.ERF_unitAuras, auraTable)
 		end
 		i = i + 1
 	end

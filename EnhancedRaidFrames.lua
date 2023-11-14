@@ -85,7 +85,7 @@ function EnhancedRaidFrames:OnEnable()
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, function()
 		self:CreateAllListeners()
 		self:UpdateAllAuras()
-		self:UpdateAllIndicators()
+		self:UpdateAllIndicators(true)
 	end)
 	
 	-- Hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. 

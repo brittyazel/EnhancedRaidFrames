@@ -44,26 +44,6 @@ function EnhancedRaidFrames.ShouldContinue(unit)
 	return true
 end
 
--- Generates a table of individual, sanitized aura strings from the raw user text input
-function EnhancedRaidFrames:GenerateAuraStrings()
-	-- reset aura strings
-	self.allAuras = " " --this is so we can do quick string searches later
-	self.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
-
-	for i = 1, 9 do
-		local j = 1
-		for auraName in string.gmatch(self.db.profile[i].auras, "[^\n]+") do -- Grab each line
-			--sanitize strings
-			auraName = auraName:lower() --force lowercase
-			auraName = auraName:gsub("^%s*(.-)%s*$", "%1") --strip any leading or trailing whitespace
-			auraName = auraName:gsub("\"", "") --strip any quotation marks if there are any
-			self.allAuras = self.allAuras.." "..auraName.." " -- Add each watched aura to a string so we later can quickly determine if we need to look for one
-			self.auraStrings[i][j] = auraName
-			j = j + 1
-		end
-	end
-end
-
 -- Set the visibility on the stock buff/debuff frames
 function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
 	-- Don't do any work if the raid frames aren't shown

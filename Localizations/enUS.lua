@@ -145,9 +145,6 @@ L["poisonWildcard_desc"] = "any poison debuffs"
 L["curseWildcard_desc"] = "any curse debuffs"
 L["diseaseWildcard_desc"] = "any disease debuffs"
 L["magicWildcard_desc"] = "any magic debuffs"
-L["pvpWildcard_desc"] = "if the unit is PvP flagged"
-L["combatWildcard_desc"] = "if the unit is combat flagged"
-L["totWildcard_desc"] = "if the unit is the target of target"
 
 L["Visibility and Behavior"] = true
 

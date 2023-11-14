@@ -9,11 +9,11 @@ local EnhancedRaidFrames = addonTable.EnhancedRaidFrames
 -------------------------------------------------------------------------
 ---
 function EnhancedRaidFrames:SetTargetMarkerAppearance(frame)
-	if not frame.ERFTargetMarker then
+	if not frame.ERF_targetMarkerFrame then
 		return
 	end
 
-	local targetMarker = frame.ERFTargetMarker
+	local targetMarker = frame.ERF_targetMarkerFrame
 
 	local PAD = 3
 	local pos = self.db.profile.markerPosition
@@ -66,8 +66,8 @@ function EnhancedRaidFrames:UpdateTargetMarkers(frame, setAppearance)
 	end
 
 	-- If our texture doesn't exist, create it
-	if not frame.ERFTargetMarker then
-		frame.ERFTargetMarker = frame:CreateTexture(nil, "OVERLAY")
+	if not frame.ERF_targetMarkerFrame then
+		frame.ERF_targetMarkerFrame = frame:CreateTexture(nil, "OVERLAY")
 		self:SetTargetMarkerAppearance(frame)
 	else
 		if setAppearance then
@@ -77,7 +77,7 @@ function EnhancedRaidFrames:UpdateTargetMarkers(frame, setAppearance)
 
 	--if they don't have target markers set to show, don't show anything
 	if not self.db.profile.showTargetMarkers then
-		frame.ERFTargetMarker:Hide() -- hide the frame
+		frame.ERF_targetMarkerFrame:Hide() -- hide the frame
 		return
 	end
 
@@ -94,12 +94,12 @@ function EnhancedRaidFrames:UpdateTargetMarkers(frame, setAppearance)
 		local topTexCoord = tCoordsTable.tCoordTop
 		local bottomTexCoord = tCoordsTable.tCoordBottom
 
-		frame.ERFTargetMarker:SetTexture(texture, nil, nil, "TRILINEAR") --use trilinear filtering to reduce jaggies
-		frame.ERFTargetMarker:SetTexCoord(leftTexCoord, rightTexCoord, topTexCoord, bottomTexCoord) --texture contains all the icons in a single texture, and we need to set coords to crop out the other icons
-		frame.ERFTargetMarker:Show()
+		frame.ERF_targetMarkerFrame:SetTexture(texture, nil, nil, "TRILINEAR") --use trilinear filtering to reduce jaggies
+		frame.ERF_targetMarkerFrame:SetTexCoord(leftTexCoord, rightTexCoord, topTexCoord, bottomTexCoord) --texture contains all the icons in a single texture, and we need to set coords to crop out the other icons
+		frame.ERF_targetMarkerFrame:Show()
 	else
-		frame.ERFTargetMarker:Hide()
-		frame.ERFTargetMarker:Hide()
+		frame.ERF_targetMarkerFrame:Hide()
+		frame.ERF_targetMarkerFrame:Hide()
 	end
 end
 

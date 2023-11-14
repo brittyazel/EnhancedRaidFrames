@@ -26,7 +26,7 @@ CollectUnitAuras.lua
 AuraIndicators.lua
 TargetMarkers.lua
 
-XML\ERFIndicatorTemplate.xml
+XML\IndicatorTemplate.xml
 
 GUI\GeneralConfigPanel.lua
 GUI\IndicatorConfigPanel.lua

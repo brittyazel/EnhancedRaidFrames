@@ -18,22 +18,22 @@ EnhancedRaidFrames.iconCache["magic"] = 135894
 
 -- Create the FontStrings used for indicators
 function EnhancedRaidFrames:CreateIndicators(frame)
-	frame.ERFIndicators = {}
+	frame.ERF_indicatorFrames = {}
 
 	-- Create indicators
 	for i = 1, 9 do
 		--I'm not sure if this is ever the case, but to stop us from creating redundant frames we should try to re-capture them when possible
-		--On the global table, our frames our named "CompactRaidFrame#" + "ERFIndicator" + index#, i.e. "CompactRaidFrame1ERFIndicator1"
-		if not _G[frame:GetName().."ERFIndicator"..i] then
+		--On the global table, our frames our named "CompactRaidFrame#" + "-ERF_indicator-" + index#, i.e. "CompactRaidFrame1-ERF_indicator-1"
+		if not _G[frame:GetName().."ERF_indicator"..i] then
 			--We have to use CompactAuraTemplate to allow for our clicks to be passed through, otherwise our frames won't allow selecting the raid frame behind it
-			frame.ERFIndicators[i] = CreateFrame("Button", frame:GetName().."ERFIndicator"..i, frame, "ERFIndicatorTemplate")
+			frame.ERF_indicatorFrames[i] = CreateFrame("Button", frame:GetName().."-ERF_indicator-"..i, frame, "ERF_indicatorTemplate")
 		else
-			frame.ERFIndicators[i] =  _G[frame:GetName().."ERFIndicator"..i]
-			frame.ERFIndicators[i]:SetParent(frame) --if we capture an old indicator frame, we should reattach it to the current unit frame
+			frame.ERF_indicatorFrames[i] =  _G[frame:GetName().."-ERF_indicator-"..i]
+			frame.ERF_indicatorFrames[i]:SetParent(frame) --if we capture an old indicator frame, we should reattach it to the current unit frame
 		end
 
 		--create local pointer for readability
-		local indicatorFrame = frame.ERFIndicators[i]
+		local indicatorFrame = frame.ERF_indicatorFrames[i]
 
 		--mark the position of this particular frame for use later (i.e. 1->9)
 		indicatorFrame.position = i
@@ -54,13 +54,13 @@ end
 -- Set the appearance of the Indicator
 function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 	-- Check if the frame has an ERFIndicators table or if we have a frame unit, this is just for safety
-	if not frame.ERFIndicators or not frame.unit then
+	if not frame.ERF_indicatorFrames or not frame.unit then
 		return
 	end
 
 	for i = 1, 9 do
 		--create local pointer for readability
-		local indicatorFrame = frame.ERFIndicators[i]
+		local indicatorFrame = frame.ERF_indicatorFrames[i]
 
 		--set icon size
 		indicatorFrame:SetWidth(self.db.profile[i].indicatorSize)
@@ -136,7 +136,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 	self:SetStockIndicatorVisibility(frame)
 
 	-- Create the indicator frame if it doesn't exist, otherwise just update the appearance
-	if not frame.ERFIndicators then
+	if not frame.ERF_indicatorFrames then
 		self:CreateIndicators(frame)
 	else
 		if setAppearance then
@@ -148,7 +148,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 	local unitIsDeadOrGhost = UnitIsDeadOrGhost(frame.unit)
 
 	-- Loop over all 9 indicators and process them individually
-	for i, indicator in ipairs(frame.ERFIndicators) do
+	for i, indicator in ipairs(frame.ERF_indicatorFrames) do
 		--if we don't have any auraStrings for this indicator, stop here
 		if #self.auraStrings[i] > 0 and unitIsConnected and not unitIsDeadOrGhost then
 			-- this is the meat of our processing loop
@@ -160,7 +160,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 end
 
 --- Update all aura indicators
-function EnhancedRaidFrames:UpdateAllIndicators()
+function EnhancedRaidFrames:UpdateAllIndicators(skipCheck)
 	-- Don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown()
 			and CompactPartyFrame and not CompactPartyFrame:IsShown()
@@ -172,7 +172,7 @@ function EnhancedRaidFrames:UpdateAllIndicators()
 	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			if frame and frame.unit then
-				if self:HasTrackedAuras(frame) then --if we don't have any tracked auras, don't bother updating
+				if skipCheck or self:HasTrackedAuras(frame) then --if we don't have any tracked auras, don't bother updating
 					self:UpdateIndicators(frame)
 				end
 			end
@@ -180,7 +180,7 @@ function EnhancedRaidFrames:UpdateAllIndicators()
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
 			if frame and frame.unit then
-				if self:HasTrackedAuras(frame) then --if we don't have any tracked auras, don't bother updating
+				if skipCheck or self:HasTrackedAuras(frame) then --if we don't have any tracked auras, don't bother updating
 					self:UpdateIndicators(frame)
 				end
 			end
@@ -191,7 +191,8 @@ end
 --- Process a single indicator location and apply any necessary visual effects for this moment in time
 function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	local i = indicatorFrame.position
-	
+	local parentFrame = indicatorFrame:GetParent()
+
 	local auraInstanceID, icon, count, duration, expirationTime, debuffType, castBy, auraType, auraIndex, _
 
 	--reset auraInstanceID/auraIndex and auraType for tooltip
@@ -211,9 +212,28 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	--- parse each aura and find the information of each ---
 	--------------------------------------------------------
 	for _, auraIdentifier in pairs(self.auraStrings[i]) do
-		-- query the available information for a given indicator and aura
-		auraInstanceID, icon, count, duration, expirationTime, debuffType, castBy, auraType, auraIndex = self:QueryUnitAuraInfo(unit, auraIdentifier, indicatorFrame:GetParent())
+		--if we don't have any auraStrings for this indicator, stop here
+		if not parentFrame.ERF_unitAuras then
+			return
+		end
 
+		-- Check if the aura exist on the unit and grab the information we need if it does
+		for _,aura in pairs(parentFrame.ERF_unitAuras) do --loop through list of auras
+			if (tonumber(auraIdentifier) and aura.spellID == tonumber(auraIdentifier)) or
+					aura.auraName == auraIdentifier or (aura.auraType == "debuff" and aura.debuffType == auraIdentifier) then
+				auraInstanceID = aura.auraInstanceID or nil
+				auraIndex = aura.auraIndex or nil --legacy
+				icon = aura.icon
+				count = aura.count
+				duration = aura.duration
+				expirationTime = aura.expirationTime
+				castBy = aura.castBy
+				auraType = aura.auraType
+				debuffType = aura.debuffType or nil
+				break --once we find the aura, we can stop searching
+			end
+		end
+		
 		-- add spell icon info to cache in case we need it later on
 		if icon and not self.iconCache[auraIdentifier] then
 			self.iconCache[auraIdentifier] = icon
@@ -258,7 +278,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 					indicatorFrame.Icon:SetColorTexture(self.YELLOW_COLOR:GetRGB())
 				else
 					--set color of custom texture
-					indicatorFrame.Icon:SetColorTexture(self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g, 
+					indicatorFrame.Icon:SetColorTexture(self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g,
 							self.db.profile[i].indicatorColor.b, self.db.profile[i].indicatorColor.a)
 				end
 				-- determine if we should change the background color from the default (player set color)
@@ -274,7 +294,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 				end
 			else
 				--set color of custom texture
-				indicatorFrame.Icon:SetColorTexture(self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g, 
+				indicatorFrame.Icon:SetColorTexture(self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g,
 						self.db.profile[i].indicatorColor.b, self.db.profile[i].indicatorColor.a)
 			end
 		end
@@ -337,7 +357,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			end
 		else
 			--set default textColor to user selected choice
-			indicatorFrame.Text:SetTextColor(self.db.profile[i].textColor.r, self.db.profile[i].textColor.g, 
+			indicatorFrame.Text:SetTextColor(self.db.profile[i].textColor.r, self.db.profile[i].textColor.g,
 					self.db.profile[i].textColor.b, self.db.profile[i].textColor.a)
 		end
 
@@ -358,7 +378,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		else
 			ActionButton_HideOverlayGlow(indicatorFrame)
 		end
-		
+
 		indicatorFrame:Show() --show the frame
 
 	elseif not (auraInstanceID or auraIndex) and self.db.profile[i].missingOnly then --deal with "show only if missing"
@@ -400,49 +420,6 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	end
 end
 
---process the text and icon for an indicator and return these values
---this function returns auraInstanceID, icon, count, duration, expirationTime, debuffType, castBy, auraType, auraIndex
-function EnhancedRaidFrames:QueryUnitAuraInfo(unit, auraIdentifier, parentFrame)
-	if not parentFrame.ERFAuras then
-		return
-	end
-
-	-- Check if the aura exist on the unit
-	for _,aura in pairs(parentFrame.ERFAuras) do --loop through list of auras
-		if (tonumber(auraIdentifier) and aura.spellID == tonumber(auraIdentifier)) or
-				aura.auraName == auraIdentifier or (aura.auraType == "debuff" and aura.debuffType == auraIdentifier) then
-			return aura.auraInstanceID, aura.icon, aura.count, aura.duration, aura.expirationTime, aura.debuffType, aura.castBy, aura.auraType, aura.auraIndex
-		end
-	end
-
-	-- Check if we want to show pvp flag
-	if auraIdentifier:upper() == "PVP" then
-		if UnitIsPVP(unit) then
-			local factionGroup = UnitFactionGroup(unit)
-			if factionGroup then
-				--return auraInstanceID as 0 for special cases
-				return 0, "Interface\\GroupFrame\\UI-Group-PVP-"..factionGroup, 0, 0, 0, "", "player"
-			end
-		end
-	end
-
-	-- Check if we want to show combat flag
-	if auraIdentifier:upper() == "COMBAT" then
-		if UnitAffectingCombat(unit) then
-			--return auraInstanceID as 0 for special cases
-			return 0, "Interface\\Icons\\Ability_Dualwield", 0, 0, 0, "", "player"
-		end
-	end
-
-	-- Check if we want to show ToT flag
-	if auraIdentifier:upper() == "TOT" then
-		if UnitIsUnit(unit, "targettarget") then
-			--return auraInstanceID as 0 for special cases
-			return 0, "Interface\\Icons\\Ability_Hunter_SniperShot", 0, 0, 0, "", "player"
-		end
-	end
-end
-
 ------------------------------------------------
 ----------------- Tooltip Code -----------------
 ------------------------------------------------
@@ -476,4 +453,51 @@ function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame, parentFrame)
 	end
 
 	GameTooltip:Show()
+end
+
+------------------------------------------------
+------------------- Utilities ------------------
+------------------------------------------------
+
+--- Generates a table of individual, sanitized aura strings from the raw user text input
+function EnhancedRaidFrames:GenerateAuraStrings()
+	-- reset aura strings
+	self.allAuras = " " --this is so we can do quick string searches later
+	self.auraStrings = {{}, {}, {}, {}, {}, {}, {}, {}, {}}  -- Matrix to keep all aura strings to watch for
+
+	for i = 1, 9 do
+		local j = 1
+		for auraName in string.gmatch(self.db.profile[i].auras, "[^\n]+") do -- Grab each line
+			--sanitize strings
+			auraName = auraName:lower() --force lowercase
+			auraName = auraName:gsub("^%s*(.-)%s*$", "%1") --strip any leading or trailing whitespace
+			auraName = auraName:gsub("\"", "") --strip any quotation marks if there are any
+			self.allAuras = self.allAuras.." "..auraName.." " -- Add each watched aura to a string so we later can quickly determine if we need to look for one
+			self.auraStrings[i][j] = auraName
+			j = j + 1
+		end
+	end
+end
+
+--- This function does a quick scan of the current auras on the unit and returns true if any of them are set as tracked
+-- This is primarily meant to reduce idle CPU usage by not scanning units that don't have any auras we're tracking
+function EnhancedRaidFrames:HasTrackedAuras(frame)
+	-- If we don't have an aura table for the unit, return false
+	if not frame.ERF_unitAuras then
+		return false
+	end
+
+	-- Check each aura on the unit and return true if we find one we're watching for
+	for _, aura in pairs(frame.ERF_unitAuras) do
+		-- It's important to use the 4th argument in string.find to turn off pattern matching, 
+		-- otherwise strings with parentheses in them will fail to be found
+		if self.allAuras:find(" "..aura.auraName:lower().." ", nil, true) or --check for spell name
+				self.allAuras:find(aura.spellID) or --check for spell ID
+				(aura.auraType == "debuff" and self.allAuras:find(aura.debuffType:lower())) --check for debuff type
+		then
+			return true
+		end
+	end
+
+	return false
 end
