@@ -80,17 +80,15 @@ end
 --- This function scans all raid frame units and updates the unitAuras table with all auras on each unit
 function EnhancedRaidFrames:UpdateAllAuras()
 	-- Iterate over all raid frame units and force a full update
-	CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-		self:UpdateUnitAuras("", frame.unit, {isFullUpdate = true}, frame)
-	end)
-end
-
---- This function scans all raid frame units and updates the unitAuras table with all auras on each unit
-function EnhancedRaidFrames:UpdateAllAuras_Classic()
-	-- Iterate over all raid frame units and force a full update
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-		self:UpdateUnitAuras_Classic("", frame.unit, frame)
-	end)
+	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
+		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
+			self:UpdateUnitAuras("", frame.unit, {isFullUpdate = true}, frame)
+		end)
+	else
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
+			self:UpdateUnitAuras_Classic("", frame.unit, frame)
+		end)
+	end
 end
 
 --- This functions is bound to the UNIT_AURA event and is used to track auras on all raid frame units

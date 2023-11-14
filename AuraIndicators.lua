@@ -159,6 +159,35 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 	end
 end
 
+--- Update all aura indicators
+function EnhancedRaidFrames:UpdateAllIndicators()
+	-- Don't do any work if the raid frames aren't shown
+	if not CompactRaidFrameContainer:IsShown()
+			and CompactPartyFrame and not CompactPartyFrame:IsShown()
+			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
+		return
+	end
+
+	-- This is the heart and soul of the addon. Everything gets called from here.
+	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
+		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
+			if frame and frame.unit then
+				if self:HasTrackedAuras(frame) then --if we don't have any tracked auras, don't bother updating
+					self:UpdateIndicators(frame)
+				end
+			end
+		end)
+	else
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
+			if frame and frame.unit then
+				if self:HasTrackedAuras(frame) then --if we don't have any tracked auras, don't bother updating
+					self:UpdateIndicators(frame)
+				end
+			end
+		end)
+	end
+end
+
 --- Process a single indicator location and apply any necessary visual effects for this moment in time
 function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	local i = indicatorFrame.position

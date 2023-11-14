@@ -102,3 +102,16 @@ function EnhancedRaidFrames:UpdateTargetMarkers(frame, setAppearance)
 		frame.ERFTargetMarker:Hide()
 	end
 end
+
+function EnhancedRaidFrames:UpdateAllTargetMarkers()
+	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
+		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
+			self:UpdateTargetMarkers(frame)
+		end)
+	else
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
+			self:UpdateBackgroundAlpha(frame)
+			self:UpdateTargetMarkers(frame)
+		end)
+	end
+end

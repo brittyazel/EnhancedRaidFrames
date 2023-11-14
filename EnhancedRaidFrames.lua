@@ -79,12 +79,15 @@ function EnhancedRaidFrames:OnEnable()
 	self:CreateAllListeners()
 
 	-- Run a full update of all auras for a starting point
-	if not self.isWoWClassicEra and not self.isWoWClassic then 
-		self:UpdateAllAuras()
-	else
-		self:UpdateAllAuras_Classic()
-	end
+	self:UpdateAllAuras()
 
+	-- Force a full update of all frames and auras when the raid roster changes
+	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, function()
+		self:CreateAllListeners()
+		self:UpdateAllAuras()
+		self:UpdateAllIndicators()
+	end)
+	
 	-- Hook our UpdateIndicators function onto the default CompactUnitFrame_UpdateAuras function. 
 	-- We use SecureHook() because the default function is protected, and we want to make sure our code runs after the default code.
 	self:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) self:SetStockIndicatorVisibility(frame) end)
@@ -93,21 +96,10 @@ function EnhancedRaidFrames:OnEnable()
 	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) self:UpdateInRange(frame) end)
 
 	-- Force a full update of all frames when a raid target icon changes
-	self:RegisterBucketEvent("RAID_TARGET_UPDATE", 1, "UpdateAllFrames")
-
-	-- Force a full update of all frames and auras when the raid roster changes
-	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, function()
-		self:CreateAllListeners()
-		if not self.isWoWClassicEra and not self.isWoWClassic then 
-			self:UpdateAllAuras()
-		else
-			self:UpdateAllAuras_Classic()
-		end
-		self:UpdateAllFrames()
-	end)
+	self:RegisterEvent("RAID_TARGET_UPDATE", "UpdateAllTargetMarkers")
 
 	-- Start a repeating timer to make sure the responsiveness feels right
-	self:ScheduleRepeatingTimer("UpdateAllFrames", 0.5)
+	self:ScheduleRepeatingTimer("UpdateAllIndicators", 0.5)
 
 	-- Register our slash command to open the config panel
 	self:RegisterChatCommand("erf", function() Settings.OpenToCategory("Enhanced Raid Frames") end)
@@ -125,7 +117,7 @@ end
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
-
+---
 --- Create our database, import saved variables, and set up our configuration panels
 function EnhancedRaidFrames:SetupConfigPanels()
 	-- Build our config panels
@@ -143,47 +135,21 @@ function EnhancedRaidFrames:SetupConfigPanels()
 	AceConfigDialog:AddToBlizOptions("ERF Import Export Profile Options", (L["Profile"].." "..L["Import"].."/"..L["Export"]), "Enhanced Raid Frames")
 end
 
---- Update all raid frames
-function EnhancedRaidFrames:UpdateAllFrames(setAppearance)
-	-- Don't do any work if the raid frames aren't shown
-	if not CompactRaidFrameContainer:IsShown() 
-			and CompactPartyFrame and not CompactPartyFrame:IsShown() 
-			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
-		return
-	end
-
-	if setAppearance then
-		self:UpdateScale()
-	end
-
-	-- This is the heart and soul of the addon. Everything gets called from here.
+--- Refresh everything that is affected by changes to the configuration
+function EnhancedRaidFrames:RefreshConfig()
+	self:GenerateAuraStrings()
+	self:UpdateScale()
 	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			if frame and frame.unit and frame:IsShown() then
-				if self:HasTrackedAuras(frame) then --if we don't have any tracked auras, don't bother updating
-					self:UpdateIndicators(frame, setAppearance)
-				end
-				self:UpdateTargetMarkers(frame, setAppearance)
-				self:UpdateInRange(frame)
-				self:UpdateBackgroundAlpha(frame)
-			end
+			self:UpdateIndicators(frame, true)
+			self:UpdateBackgroundAlpha(frame)
+			self:UpdateTargetMarkers(frame, true)
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			if frame and frame.unit and frame:IsShown() then
-				if self:HasTrackedAuras(frame) then --if we don't have any tracked auras, don't bother updating
-					self:UpdateIndicators(frame, setAppearance)
-				end
-				self:UpdateTargetMarkers(frame, setAppearance)
-				self:UpdateInRange(frame)
-				self:UpdateBackgroundAlpha(frame)
-			end
+			self:UpdateIndicators(frame, true)
+			self:UpdateBackgroundAlpha(frame)
+			self:UpdateTargetMarkers(frame, true)
 		end)
 	end
-end
-
--- Refresh everything that is affected by changes to the configuration
-function EnhancedRaidFrames:RefreshConfig()
-	self:GenerateAuraStrings()
-	self:UpdateAllFrames(true)
 end
