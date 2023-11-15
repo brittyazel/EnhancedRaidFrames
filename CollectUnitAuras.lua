@@ -149,7 +149,8 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	-- Quickly check if we're watching for this aura, and ignore if we aren't
 	-- It's important to use the 4th argument in string.find to turn off pattern matching, 
 	-- otherwise strings with parentheses in them will fail to be found
-	if not self.allAuras:find(" "..auraData.name:lower().." ", nil, true) and not self.allAuras:find(auraData.spellId) then
+	if not self.allAuras:find(" "..auraData.name:lower().." ", nil, true) and not self.allAuras:find(auraData.spellId) and 
+			(auraData.isHarmful and not auraData.dispelName or (auraData.dispelName and not self.allAuras:find(auraData.dispelName:lower()))) then
 		return false
 	end
 
@@ -159,7 +160,9 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 		aura.auraType = "buff"
 	elseif auraData.isHarmful then
 		aura.auraType = "debuff"
-		aura.debuffType = auraData.dispelName:lower()
+		if auraData.dispelName then
+			aura.debuffType = auraData.dispelName:lower()
+		end
 	end
 	aura.auraName = auraData.name:lower()
 	aura.icon = auraData.icon
@@ -243,7 +246,9 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(unit, parentFrame)
 		-- Quickly check if we're watching for this aura, and ignore if we aren't
 		-- It's important to use the 4th argument in string.find to turn off pattern matching, 
 		-- otherwise strings with parentheses in them will fail to be found
-		if auraName and self.allAuras:find(" "..auraName:lower().." ", nil, true) or self.allAuras:find(spellID) then
+		if auraName and self.allAuras:find(" "..auraName:lower().." ", nil, true) or self.allAuras:find(spellID) or
+				(debuffType and self.allAuras:find(debuffType:lower())) then -- Only add the spell if we're watching for it
+
 			local auraTable = {}
 			auraTable.auraType = "debuff"
 			auraTable.auraIndex = i

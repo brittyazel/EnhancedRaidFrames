@@ -507,8 +507,7 @@ function EnhancedRaidFrames:HasTrackedAuras(frame)
 		-- otherwise strings with parentheses in them will fail to be found
 		if self.allAuras:find(" "..aura.auraName:lower().." ", nil, true) or --check for spell name
 				self.allAuras:find(aura.spellID) or --check for spell ID
-				(aura.auraType == "debuff" and self.allAuras:find(aura.debuffType:lower())) --check for debuff type
-		then
+				(aura.auraType == "debuff" and aura.debuffType and self.allAuras:find(aura.debuffType:lower())) then --check for debuff type
 			return true
 		end
 	end
