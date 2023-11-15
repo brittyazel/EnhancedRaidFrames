@@ -95,14 +95,12 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 	if payload.isFullUpdate then
 		-- Clear out the table
 		parentFrame.ERF_unitAuras = {}
-		-- These helper functions will iterate over all buffs and debuffs on the unit
-		-- and call the addToAuraTable() function for each one
-		AuraUtil.ForEachAura(unit, "HELPFUL", nil, function(auraData)
-			shouldUpdateFrames = self:addToAuraTable(parentFrame, auraData)
-		end, true);
-		AuraUtil.ForEachAura(unit, "HARMFUL", nil, function(auraData)
-			shouldUpdateFrames = self:addToAuraTable(parentFrame, auraData)
-		end, true);
+		-- Iterate through all buffs and debuffs on the unit
+		for _, filter in pairs({"HELPFUL", "HARMFUL"}) do
+			AuraUtil.ForEachAura(unit, filter, nil, function(auraData)
+				shouldUpdateFrames = self:addToAuraTable(parentFrame, auraData)
+			end, true);
+		end
 		return
 	end
 
@@ -141,6 +139,7 @@ end
 --- Add or update an aura to the ERFAuras table
 ---@param parentFrame table @The raid frame that we're updating
 ---@param auraData table @Payload from UNIT_AURA event
+---@return boolean @True if we added or updated an aura
 function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	if not auraData then
 		return false
@@ -150,29 +149,17 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	-- It's important to use the 4th argument in string.find to turn off pattern matching, 
 	-- otherwise strings with parentheses in them will fail to be found
 	if not self.allAuras:find(" "..auraData.name:lower().." ", nil, true) and not self.allAuras:find(auraData.spellId) and 
+			--check if the aura is a debuff, and if it's a dispellable debuff check if we're tracking the wildcard of that debuff type
 			(auraData.isHarmful and not auraData.dispelName or (auraData.dispelName and not self.allAuras:find(auraData.dispelName:lower()))) then
 		return false
 	end
-
-	local aura = {}
-	aura.auraInstanceID = auraData.auraInstanceID
-	if auraData.isHelpful then
-		aura.auraType = "buff"
-	elseif auraData.isHarmful then
-		aura.auraType = "debuff"
-		if auraData.dispelName then
-			aura.debuffType = auraData.dispelName:lower()
-		end
+	
+	auraData.name = auraData.name:lower()
+	if auraData.dispelName then
+		auraData.dispelName = auraData.dispelName:lower()
 	end
-	aura.auraName = auraData.name:lower()
-	aura.icon = auraData.icon
-	aura.count = auraData.applications
-	aura.duration = auraData.duration
-	aura.expirationTime = auraData.expirationTime
-	aura.castBy = auraData.sourceUnit
-	aura.spellID = auraData.spellId
 
-	parentFrame.ERF_unitAuras[aura.auraInstanceID] = aura
+	parentFrame.ERF_unitAuras[auraData.auraInstanceID] = auraData
 	return true --return true if we added or updated an aura
 end
 
@@ -188,85 +175,64 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(unit, parentFrame)
 
 	-- Create or clear out the tables for the unit
 	parentFrame.ERF_unitAuras = {}
+	
+	-- Iterate through all buffs and debuffs on the unit
+	for _, filter in pairs({"HELPFUL", "HARMFUL"}) do
+		local i = 1 --counting the index of our aura
+		repeat --repeat until we run out of auras
+			local auraData = {}
 
-	-- Get all unit buffs
-	local i = 1 --aura index counter
-	while (true) do
-		local auraName, icon, count, duration, expirationTime, castBy, spellID
-
-		if not self.isWoWClassicEra then
-			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellID = UnitAura(unit, i, "HELPFUL")
-		else
-			--For wow classic. This is the LibClassicDurations wrapper
-			auraName, icon, count, _, duration, expirationTime, castBy, _, _, spellID =  self.UnitAuraWrapper(unit, i, "HELPFUL")
-		end
-
-		-- break the loop once we have no more auras
-		if not spellID then
-			break
-		end
-
-		-- Quickly check if we're watching for this aura, and ignore if we aren't
-		-- It's important to use the 4th argument in string.find to turn off pattern matching, 
-		-- otherwise strings with parentheses in them will fail to be found
-		if auraName and self.allAuras:find(" "..auraName:lower().." ", nil, true) or self.allAuras:find(spellID) then
-			local auraTable = {}
-			auraTable.auraType = "buff"
-			auraTable.auraIndex = i
-			auraTable.auraName = auraName:lower()
-			auraTable.icon = icon
-			auraTable.count = count
-			auraTable.duration = duration
-			auraTable.expirationTime = expirationTime
-			auraTable.castBy = castBy
-			auraTable.spellID = spellID
-
-			table.insert(parentFrame.ERF_unitAuras, auraTable)
-		end
-		i = i + 1
-	end
-
-	-- Get all unit debuffs
-	i = 1 --aura index counter
-	while (true) do
-		local auraName, icon, count, duration, expirationTime, castBy, spellID, debuffType
-
-		if not self.isWoWClassicEra then
-			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellID  = UnitAura(unit, i, "HARMFUL")
-		else
-			--For wow classic. This is the LibClassicDurations wrapper
-			auraName, icon, count, debuffType, duration, expirationTime, castBy, _, _, spellID  =  self.UnitAuraWrapper(unit, i, "HARMFUL")
-		end
-
-		-- break the loop once we have no more auras
-		if not spellID then
-			break
-		end
-
-		-- Quickly check if we're watching for this aura, and ignore if we aren't
-		-- It's important to use the 4th argument in string.find to turn off pattern matching, 
-		-- otherwise strings with parentheses in them will fail to be found
-		if auraName and self.allAuras:find(" "..auraName:lower().." ", nil, true) or self.allAuras:find(spellID) or
-				(debuffType and self.allAuras:find(debuffType:lower())) then -- Only add the spell if we're watching for it
-
-			local auraTable = {}
-			auraTable.auraType = "debuff"
-			auraTable.auraIndex = i
-			auraTable.auraName = auraName:lower()
-			auraTable.icon = icon
-			auraTable.count = count
-			if debuffType then
-				auraTable.debuffType = debuffType:lower()
+			if self.isWoWClassicEra then --For wow classic. This is the LibClassicDurations wrapper
+				auraData.name, auraData.icon, auraData.applications, auraData.dispelName, auraData.duration, 
+				auraData.expirationTime, auraData.sourceUnit, _, _, auraData.spellId =  self.UnitAuraWrapper(unit, i, filter)
+			else
+				auraData.name, auraData.icon, auraData.applications, auraData.dispelName, auraData.duration,
+				auraData.expirationTime, auraData.sourceUnit, _, _, auraData.spellId = UnitAura(unit, i, filter)
 			end
-			auraTable.duration = duration
-			auraTable.expirationTime = expirationTime
-			auraTable.castBy = castBy
-			auraTable.spellID = spellID
 
-			table.insert(parentFrame.ERF_unitAuras, auraTable)
-		end
-		i = i + 1
+			--if we don't have a name, then we've reached the end of the auras
+			if auraData.name then
+				-- Set our isHelpful/isHarmful flags just like in the C_UnitAuras API for compatibility with the rest of the addon
+				if filter == "HELPFUL" then
+					auraData.isHelpful = true
+				else
+					auraData.isHarmful = true
+				end
+	
+				-- Add our auraIndex into the table
+				auraData.auraIndex = i
+			
+				self:addToAuraTable_Classic(parentFrame, auraData, i)
+			end
+			
+			i = i + 1 --increment our counter no matter what
+		until(not auraData.name)
 	end
 	
 	self:UpdateIndicators(parentFrame)
+end
+
+--- Add or update an aura to the ERFAuras table
+---@param parentFrame table @The raid frame that we're updating
+---@param auraData table @Payload from UNIT_AURA event
+function EnhancedRaidFrames:addToAuraTable_Classic(parentFrame, auraData)
+	if not auraData then
+		return
+	end
+	
+	-- Quickly check if we're watching for this aura, and ignore if we aren't
+	-- It's important to use the 4th argument in string.find to turn off pattern matching, 
+	-- otherwise strings with parentheses in them will fail to be found
+	if not self.allAuras:find(" "..auraData.name:lower().." ", nil, true) and not self.allAuras:find(auraData.spellId) and
+			--check if the aura is a debuff, and if it's a dispellable debuff check if we're tracking the wildcard of that debuff type
+			(auraData.isHarmful and not auraData.dispelName or (auraData.dispelName and not self.allAuras:find(auraData.dispelName:lower()))) then
+		return
+	end
+
+	auraData.name = auraData.name:lower()
+	if auraData.dispelName then
+		auraData.dispelName = auraData.dispelName:lower()
+	end
+
+	table.insert(parentFrame.ERF_unitAuras, auraData)
 end
