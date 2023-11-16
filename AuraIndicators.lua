@@ -150,13 +150,10 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 		end
 	end
 
-	local unitIsConnected = UnitIsConnected(frame.unit)
-	local unitIsDeadOrGhost = UnitIsDeadOrGhost(frame.unit)
-
 	-- Loop over all 9 indicators and process them individually
 	for i, indicator in ipairs(frame.ERF_indicatorFrames) do
 		--if we don't have any auraStrings for this indicator, stop here
-		if #self.auraStrings[i] > 0 and unitIsConnected and not unitIsDeadOrGhost then
+		if self.auraStrings[i][1] then --check if we have at least 1 auraString for this location
 			-- this is the meat of our processing loop
 			self:ProcessIndicator(indicator, frame.unit)
 		else

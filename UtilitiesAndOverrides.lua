@@ -31,7 +31,7 @@ function EnhancedRaidFrames.ShouldContinue(unit)
 	-- Don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown()
 			and CompactPartyFrame and not CompactPartyFrame:IsShown()
-			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
+			and CompactFrame and not CompactArenaFrame:IsShown() then
 		return false
 	end
 
