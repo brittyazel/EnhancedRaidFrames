@@ -37,12 +37,24 @@ end
 --- Creates a listener for the UNIT_AURA event attached to a specified raid frame
 ---@param frame table @The raid frame to create the listener for
 function EnhancedRaidFrames:CreateAuraListener(frame)
+	-- Only create a listener if we don't already have one, or the unit assigned to it has changed
 	if not frame.ERF_auraListenerFrame or frame.ERF_auraListenerFrame.unit ~= frame.unit then
-		if not frame.ERF_auraListenerFrame then --only create a new frame if we don't have one yet
-			frame.ERF_auraListenerFrame = CreateFrame("Frame")
+		--only create a new frame if we don't have one yet
+		if not frame.ERF_auraListenerFrame then
+			--I'm not sure if this is ever the case, but to stop us from creating redundant frames we should try to re-capture them when possible
+			--On the global table, our frames our named "CompactRaidFrame#" + "-ERF_auraListenerFrame", i.e. "CompactRaidFrame1-ERF_auraListenerFrame"
+			if not _G[frame:GetName().."-ERF_auraListenerFrame"] then
+				frame.ERF_auraListenerFrame = CreateFrame("Frame", frame:GetName().."-ERF_auraListenerFrame", frame)
+			else
+				frame.ERF_auraListenerFrame =  _G[frame:GetName().."-ERF_auraListenerFrame"]
+				frame.ERF_auraListenerFrame:SetParent(frame) --if we capture an old indicator frame, we should reattach it to the current unit frame
+			end
+			
 		end
+		
 		frame.ERF_auraListenerFrame.unit = frame.unit
 		frame.ERF_auraListenerFrame:RegisterUnitEvent("UNIT_AURA", frame.unit)
+		
 		if not self.isWoWClassicEra and not self.isWoWClassic then
 			frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, unit, payload)
 				self:UpdateUnitAuras(unit, payload, frame)
@@ -148,19 +160,19 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	-- Quickly check if we're watching for this aura, and ignore if we aren't
 	-- It's important to use the 4th argument in string.find to turn off pattern matching, 
 	-- otherwise strings with parentheses in them will fail to be found
-	if not self.allAuras:find(" "..auraData.name:lower().." ", nil, true) and not self.allAuras:find(auraData.spellId) and 
+	if self.allAuras:find(" "..auraData.name:lower().." ", nil, true) or self.allAuras:find(auraData.spellId) or 
 			--check if the aura is a debuff, and if it's a dispellable debuff check if we're tracking the wildcard of that debuff type
-			(auraData.isHarmful and not auraData.dispelName or (auraData.dispelName and not self.allAuras:find(auraData.dispelName:lower()))) then
-		return false
+			(auraData.isHarmful and auraData.dispelName and self.allAuras:find(auraData.dispelName:lower())) then
+		
+		auraData.name = auraData.name:lower()
+		if auraData.dispelName then
+			auraData.dispelName = auraData.dispelName:lower()
+		end
+		
+		parentFrame.ERF_unitAuras[auraData.auraInstanceID] = auraData
+		return true --return true if we added or updated an aura
 	end
-	
-	auraData.name = auraData.name:lower()
-	if auraData.dispelName then
-		auraData.dispelName = auraData.dispelName:lower()
-	end
-
-	parentFrame.ERF_unitAuras[auraData.auraInstanceID] = auraData
-	return true --return true if we added or updated an aura
+	return false 
 end
 
 --- Called by our UNIT_AURA listeners and is used to store unit aura information for a given unit.
@@ -219,20 +231,21 @@ function EnhancedRaidFrames:addToAuraTable_Classic(parentFrame, auraData)
 	if not auraData then
 		return
 	end
-	
+
 	-- Quickly check if we're watching for this aura, and ignore if we aren't
 	-- It's important to use the 4th argument in string.find to turn off pattern matching, 
 	-- otherwise strings with parentheses in them will fail to be found
-	if not self.allAuras:find(" "..auraData.name:lower().." ", nil, true) and not self.allAuras:find(auraData.spellId) and
+	if self.allAuras:find(" "..auraData.name:lower().." ", nil, true) or self.allAuras:find(auraData.spellId) or
 			--check if the aura is a debuff, and if it's a dispellable debuff check if we're tracking the wildcard of that debuff type
-			(auraData.isHarmful and not auraData.dispelName or (auraData.dispelName and not self.allAuras:find(auraData.dispelName:lower()))) then
-		return
-	end
+			(auraData.isHarmful and auraData.dispelName and self.allAuras:find(auraData.dispelName:lower())) then
+		
+		auraData.name = auraData.name:lower()
+		if auraData.dispelName then
+			auraData.dispelName = auraData.dispelName:lower()
+		end
 
-	auraData.name = auraData.name:lower()
-	if auraData.dispelName then
-		auraData.dispelName = auraData.dispelName:lower()
+		table.insert(parentFrame.ERF_unitAuras, auraData)
+		return --return true if we added or updated an aura
 	end
-
-	table.insert(parentFrame.ERF_unitAuras, auraData)
+	return
 end

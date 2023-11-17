@@ -27,7 +27,7 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 	for i = 1, 9 do
 		--I'm not sure if this is ever the case, but to stop us from creating redundant frames we should try to re-capture them when possible
 		--On the global table, our frames our named "CompactRaidFrame#" + "-ERF_indicator-" + index#, i.e. "CompactRaidFrame1-ERF_indicator-1"
-		if not _G[frame:GetName().."ERF_indicator"..i] then
+		if not _G[frame:GetName().."-ERF_indicator-"..i] then
 			--We have to use CompactAuraTemplate to allow for our clicks to be passed through, otherwise our frames won't allow selecting the raid frame behind it
 			frame.ERF_indicatorFrames[i] = CreateFrame("Button", frame:GetName().."-ERF_indicator-"..i, frame, "ERF_indicatorTemplate")
 		else
@@ -163,12 +163,9 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 end
 
 --- Update all aura indicators
---- @param skipCheck boolean @Indicates if we skip the check for tracked auras
-function EnhancedRaidFrames:UpdateAllIndicators(skipCheck)
+function EnhancedRaidFrames:UpdateAllIndicators()
 	-- Don't do any work if the raid frames aren't shown
-	if not CompactRaidFrameContainer:IsShown()
-			and CompactPartyFrame and not CompactPartyFrame:IsShown()
-			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
+	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
 		return
 	end
 
@@ -176,17 +173,13 @@ function EnhancedRaidFrames:UpdateAllIndicators(skipCheck)
 	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			if frame and frame.unit then
-				if skipCheck or self:HasTrackedAuras(frame) then --if we don't have any tracked auras, don't bother updating
-					self:UpdateIndicators(frame)
-				end
+				self:UpdateIndicators(frame)
 			end
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
 			if frame and frame.unit then
-				if skipCheck or self:HasTrackedAuras(frame) then --if we don't have any tracked auras, don't bother updating
-					self:UpdateIndicators(frame)
-				end
+				self:UpdateIndicators(frame)
 			end
 		end)
 	end
@@ -198,19 +191,14 @@ end
 function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	local i = indicatorFrame.position
 	local parentFrame = indicatorFrame:GetParent()
-
-	local auraInstanceID, icon, applications, duration, expirationTime, dispelName, sourceUnit, isHelpful, isHarmful, auraIndex, _
-
-	--reset auraInstanceID/auraIndex and isHelpful/isHarmful flags for tooltip
-	indicatorFrame.auraInstanceID = nil
-	indicatorFrame.auraIndex = nil --legacy
-	indicatorFrame.isHelpful = nil
-	indicatorFrame.isHarmful = nil
-
+	
+	--holds the information of the aura we're looking for once it is found
+	local thisAura = {}
+	indicatorFrame.thisAura = {} --for easy access from our tooltip code
+	
 	-- if we only are to show the indicator on me, then don't bother if I'm not the unit
 	if self.db.profile[i].meOnly then
-		local unitName, unitRealm = UnitName(unit)
-		if unitName ~= UnitName("player") or unitRealm ~= nil then
+		if unit ~= "player" then
 			return
 		end
 	end
@@ -226,33 +214,23 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 
 		-- Check if the aura exist on the unit and grab the information we need if it does
 		for _,aura in pairs(parentFrame.ERF_unitAuras) do --loop through list of auras
-			if (tonumber(auraIdentifier) and aura.spellId == tonumber(auraIdentifier)) or
-					aura.name == auraIdentifier or (aura.isHarmful and aura.dispelName == auraIdentifier) then
-				auraInstanceID = aura.auraInstanceID or nil
-				auraIndex = aura.auraIndex or nil --legacy
-				icon = aura.icon
-				applications = aura.applications
-				duration = aura.duration
-				expirationTime = aura.expirationTime
-				sourceUnit = aura.sourceUnit
-				isHelpful = aura.isHelpful
-				isHarmful = aura.isHarmful
-				if aura.dispelName then
-					dispelName = aura.dispelName
-				end
+			if aura.name == auraIdentifier or (tonumber(auraIdentifier) and aura.spellId == tonumber(auraIdentifier)) or
+					(aura.isHarmful and aura.dispelName == auraIdentifier) then
+				thisAura = aura
+				indicatorFrame.thisAura = aura
 				break --once we find the aura, we can stop searching
 			end
 		end
 		
 		-- add spell icon info to cache in case we need it later on
-		if icon and not self.iconCache[auraIdentifier] then
-			self.iconCache[auraIdentifier] = icon
+		if thisAura.icon and not self.iconCache[auraIdentifier] then
+			self.iconCache[auraIdentifier] = thisAura.icon
 		end
 
 		-- when tracking multiple things, this determines "where" we stop in the list
 		-- if we find the aura, we can stop querying down the list
 		-- we want to stop only when sourceUnit == "player" if we are tracking "mine only"
-		if (auraInstanceID or auraIndex) and (not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and sourceUnit == "player")) then
+		if (thisAura.auraInstanceID or thisAura.auraIndex) and (not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and thisAura.sourceUnit == "player")) then
 			break
 		end
 	end
@@ -262,24 +240,18 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	------------------------------------------------------
 
 	-- if we find the spell and we don't only want to show when it is missing
-	if (auraInstanceID or auraIndex) and not self.db.profile[i].missingOnly and
-			(not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and sourceUnit == "player")) then
+	if (thisAura.auraInstanceID or thisAura.auraIndex) and not self.db.profile[i].missingOnly and
+			(not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and thisAura.sourceUnit == "player")) then
 
 		-- calculate remainingTime and round down, this is how the game seems to do it
-		local remainingTime = expirationTime - GetTime()
-
-		-- set auraInstanceID/auraIndex and isHelpful/isHarmful flags for tooltip
-		indicatorFrame.auraInstanceID = auraInstanceID
-		indicatorFrame.auraIndex = auraIndex --legacy
-		indicatorFrame.isHelpful = isHelpful
-		indicatorFrame.isHarmful = isHarmful
+		local remainingTime = thisAura.expirationTime - GetTime()
 
 		---------------------------------
 		--- process icon to show
 		---------------------------------
 
-		if icon and self.db.profile[i].showIcon then
-			indicatorFrame.Icon:SetTexture(icon)
+		if thisAura.icon and self.db.profile[i].showIcon then
+			indicatorFrame.Icon:SetTexture(thisAura.icon)
 			indicatorFrame.Icon:SetAlpha(self.db.profile[i].indicatorAlpha)
 		else
 			if self.db.profile[i].colorIndicatorByTime then -- Color by remaining time
@@ -293,14 +265,14 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 							self.db.profile[i].indicatorColor.b, self.db.profile[i].indicatorColor.a)
 				end
 				-- determine if we should change the background color from the default (player set color)
-			elseif self.db.profile[i].colorIndicatorByDebuff and dispelName then -- Color by debuff type
-				if dispelName == "poison" then
+			elseif self.db.profile[i].colorIndicatorByDebuff and thisAura.dispelName then -- Color by debuff type
+				if thisAura.dispelName == "poison" then
 					indicatorFrame.Icon:SetColorTexture(self.GREEN_COLOR:GetRGB())
-				elseif dispelName == "curse" then
+				elseif thisAura.dispelName == "curse" then
 					indicatorFrame.Icon:SetColorTexture(self.PURPLE_COLOR:GetRGB())
-				elseif dispelName == "disease" then
+				elseif thisAura.dispelName == "disease" then
 					indicatorFrame.Icon:SetColorTexture(self.BROWN_COLOR:GetRGB())
-				elseif dispelName == "magic" then
+				elseif thisAura.dispelName == "magic" then
 					indicatorFrame.Icon:SetColorTexture(self.BLUE_COLOR:GetRGB())
 				end
 			else
@@ -327,8 +299,8 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			end
 
 			-- determine the formatted stack string
-			if applications and applications > 0 and (self.db.profile[i].showText == "stack+countdown" or self.db.profile[i].showText == "stack") then
-				formattedCount = applications
+			if thisAura.applications and thisAura.applications > 0 and (self.db.profile[i].showText == "stack+countdown" or self.db.profile[i].showText == "stack") then
+				formattedCount = thisAura.applications
 			end
 
 			-- determine the final output string concatenation
@@ -356,27 +328,27 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 				indicatorFrame.Text:SetTextColor(self.db.profile[i].textColor.r, self.db.profile[i].textColor.g,
 						self.db.profile[i].textColor.b, self.db.profile[i].textColor.a)
 			end
-		elseif self.db.profile[i].colorTextByDebuff and dispelName then -- Color by debuff type
-			if dispelName == "poison" then
+		elseif self.db.profile[i].colorTextByDebuff and thisAura.dispelName then -- Color by debuff type
+			if thisAura.dispelName == "poison" then
 				indicatorFrame.Text:SetTextColor(self.GREEN_COLOR:GetRGB())
-			elseif dispelName == "curse" then
+			elseif thisAura.dispelName == "curse" then
 				indicatorFrame.Text:SetTextColor(self.PURPLE_COLOR:GetRGB())
-			elseif dispelName == "disease" then
+			elseif thisAura.dispelName == "disease" then
 				indicatorFrame.Text:SetTextColor(self.BROWN_COLOR:GetRGB())
-			elseif dispelName == "magic" then
+			elseif thisAura.dispelName == "magic" then
 				indicatorFrame.Text:SetTextColor(self.BLUE_COLOR:GetRGB())
 			end
 		else
 			--set default textColor to user selected choice
-			indicatorFrame.Text:SetTextColor(self.db.profile[i].textColor.r, self.db.profile[i].textColor.g,
+			indicatorFrame.Text:SetTextColor(self.db.profile[i].textColor.r, self.db.profile[i].textColor.g, 
 					self.db.profile[i].textColor.b, self.db.profile[i].textColor.a)
 		end
 
 		---------------------------------
 		--- set cooldown animation
 		---------------------------------
-		if self.db.profile[i].showCountdownSwipe and expirationTime and duration then
-			CooldownFrame_Set(indicatorFrame.Cooldown, expirationTime - duration, duration, true, true)
+		if self.db.profile[i].showCountdownSwipe and thisAura.expirationTime and thisAura.duration then
+			CooldownFrame_Set(indicatorFrame.Cooldown, thisAura.expirationTime - thisAura.duration, thisAura.duration, true, true)
 		else
 			CooldownFrame_Clear(indicatorFrame.Cooldown)
 		end
@@ -392,12 +364,13 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 
 		indicatorFrame:Show() --show the frame
 
-	elseif not (auraInstanceID or auraIndex) and self.db.profile[i].missingOnly then --deal with "show only if missing"
+	elseif not (thisAura.auraInstanceID or thisAura.auraIndex) and self.db.profile[i].missingOnly then --deal with "show only if missing"
 		local auraIdentifier = self.auraStrings[i][1] --show the icon for the first auraString position
-
+		local icon
+		
 		--check our iconCache for the name. Note the icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons
 		if not self.iconCache[auraIdentifier] then
-			_,_,icon = GetSpellInfo(auraIdentifier)
+			icon = select(3, GetSpellInfo(auraIdentifier)) --icon is the 3rd return value of GetSpellInfo
 			if icon then
 				self.iconCache[auraIdentifier] = icon --cache our icon
 			else
@@ -446,20 +419,20 @@ function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame, parentFrame)
 	end
 
 	-- Set the tooltip
-	if (indicatorFrame.auraInstanceID or indicatorFrame.auraIndex) and indicatorFrame.auraInstanceID ~= 0 and indicatorFrame.Icon:GetTexture() then
+	if (indicatorFrame.thisAura.auraInstanceID or indicatorFrame.thisAura.auraIndex) and indicatorFrame.Icon:GetTexture() then
 		-- Set the buff/debuff as tooltip and anchor to the cursor
 		GameTooltip:SetOwner(UIParent, self.db.profile[i].tooltipLocation)
-		if indicatorFrame.isHelpful then
-			if indicatorFrame.auraInstanceID then
-				GameTooltip:SetUnitBuffByAuraInstanceID(parentFrame.unit, indicatorFrame.auraInstanceID)
+		if indicatorFrame.thisAura.isHelpful then
+			if indicatorFrame.thisAura.auraInstanceID then
+				GameTooltip:SetUnitBuffByAuraInstanceID(parentFrame.unit, indicatorFrame.thisAura.auraInstanceID)
 			elseif indicatorFrame.auraIndex then --the legacy way of doing things
-				GameTooltip:SetUnitAura(parentFrame.unit, indicatorFrame.auraIndex, "HELPFUL")
+				GameTooltip:SetUnitAura(parentFrame.unit, indicatorFrame.thisAura.auraIndex, "HELPFUL")
 			end
-		elseif indicatorFrame.isHarmful then
-			if indicatorFrame.auraInstanceID then
-				GameTooltip:SetUnitDebuffByAuraInstanceID(parentFrame.unit, indicatorFrame.auraInstanceID)
-			elseif indicatorFrame.auraIndex then --the legacy way of doing things
-				GameTooltip:SetUnitAura(parentFrame.unit, indicatorFrame.auraIndex, "HARMFUL")
+		elseif indicatorFrame.thisAura.isHarmful then
+			if indicatorFrame.thisAura.auraInstanceID then
+				GameTooltip:SetUnitDebuffByAuraInstanceID(parentFrame.unit, indicatorFrame.thisAura.auraInstanceID)
+			elseif indicatorFrame.thisAura.auraIndex then --the legacy way of doing things
+				GameTooltip:SetUnitAura(parentFrame.unit, indicatorFrame.thisAura.auraIndex, "HARMFUL")
 			end
 		end
 	else
@@ -492,27 +465,4 @@ function EnhancedRaidFrames:GenerateAuraStrings()
 			j = j + 1
 		end
 	end
-end
-
---- Does a quick scan of the current auras on the unit and returns true if any of them are set as tracked.
---- Its primary use is to reduce idle CPU usage by not scanning units that don't have any auras we're tracking.
---- @param frame table @The raid frame to check for tracked auras
-function EnhancedRaidFrames:HasTrackedAuras(frame)
-	-- If we don't have an aura table for the unit, return false
-	if not frame.ERF_unitAuras then
-		return false
-	end
-
-	-- Check each aura on the unit and return true if we find one we're watching for
-	for _, aura in pairs(frame.ERF_unitAuras) do
-		-- It's important to use the 4th argument in string.find to turn off pattern matching, 
-		-- otherwise strings with parentheses in them will fail to be found
-		if self.allAuras:find(" "..aura.name:lower().." ", nil, true) or --check for spell name
-				self.allAuras:find(aura.spellId) or --check for spell ID
-				(aura.isHarmful and aura.dispelName and self.allAuras:find(aura.dispelName:lower())) then --check for debuff type
-			return true
-		end
-	end
-
-	return false
 end

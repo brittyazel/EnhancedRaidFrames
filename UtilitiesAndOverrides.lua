@@ -29,9 +29,7 @@ end
 ---@return boolean @Whether or not we should continue processing the unit
 function EnhancedRaidFrames.ShouldContinue(unit)
 	-- Don't do any work if the raid frames aren't shown
-	if not CompactRaidFrameContainer:IsShown()
-			and CompactPartyFrame and not CompactPartyFrame:IsShown()
-			and CompactFrame and not CompactArenaFrame:IsShown() then
+	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
 		return false
 	end
 
@@ -39,13 +37,8 @@ function EnhancedRaidFrames.ShouldContinue(unit)
 		return false
 	end
 
-	-- Only process player, raid, party, and arena units
-	if not string.find(unit, "player") and not string.find(unit, "raid")
-			and not string.find(unit, "party") and not string.find(unit, "arena") then
-		return false
-	end
-
-	if not UnitExists(unit) then
+	-- Only process player, raid and party units
+	if not string.find(unit, "player") and not string.find(unit, "raid") and not string.find(unit, "party") then
 		return false
 	end
 	
@@ -56,9 +49,7 @@ end
 ---@param frame table @The frame to set the visibility on
 function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
 	-- Don't do any work if the raid frames aren't shown
-	if not CompactRaidFrameContainer:IsShown()
-			and CompactPartyFrame and not CompactPartyFrame:IsShown()
-			and CompactArenaFrame and not CompactArenaFrame:IsShown() then
+	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
 		return
 	end
 	
