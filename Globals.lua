@@ -30,6 +30,20 @@ EnhancedRaidFrames.BROWN_COLOR = CreateColor(0.7804, 0.6118, 0.4314) --disease t
 EnhancedRaidFrames.BLUE_COLOR = CreateColor(0.0, 0.4392, 0.8706) --magic text color
 
 -- Declare Global positions table
-EnhancedRaidFrames.POSITIONS = { [1] = L["Top-Left"], [2] = L["Top"], [3] = L["Top-Right"],
-					[4] = L["Left"], [5] = L["Center"], [6] = L["Right"],
-					[7] = L["Bottom-Left"], [8] = L["Bottom"], [9] = L["Bottom-Right"]}
+EnhancedRaidFrames.POSITIONS = {}
+EnhancedRaidFrames.POSITIONS[1] = L["Top-Left"]
+EnhancedRaidFrames.POSITIONS[2] = L["Top"]
+EnhancedRaidFrames.POSITIONS[3] = L["Top-Right"]
+EnhancedRaidFrames.POSITIONS[4] = L["Left"]
+EnhancedRaidFrames.POSITIONS[5] = L["Center"]
+EnhancedRaidFrames.POSITIONS[6] = L["Right"]
+EnhancedRaidFrames.POSITIONS[7] = L["Bottom-Left"]
+EnhancedRaidFrames.POSITIONS[8] = L["Bottom"]
+EnhancedRaidFrames.POSITIONS[9] = L["Bottom-Right"]
+
+-- Declare Global iconCache table with pre-populated values
+EnhancedRaidFrames.iconCache = {}
+EnhancedRaidFrames.iconCache["poison"] = 132104
+EnhancedRaidFrames.iconCache["disease"] = 132099
+EnhancedRaidFrames.iconCache["curse"] = 132095
+EnhancedRaidFrames.iconCache["magic"] = 135894

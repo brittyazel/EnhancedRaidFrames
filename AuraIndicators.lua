@@ -9,12 +9,6 @@ local EnhancedRaidFrames = _G.EnhancedRaidFrames
 -- Import libraries
 local LibSharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 
-EnhancedRaidFrames.iconCache = {}
-EnhancedRaidFrames.iconCache["poison"] = 132104
-EnhancedRaidFrames.iconCache["disease"] = 132099
-EnhancedRaidFrames.iconCache["curse"] = 132095
-EnhancedRaidFrames.iconCache["magic"] = 135894
-
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
