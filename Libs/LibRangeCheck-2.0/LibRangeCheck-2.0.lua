@@ -40,7 +40,7 @@ License: Public Domain
 -- @class file
 -- @name LibRangeCheck-2.0
 local MAJOR_VERSION = "LibRangeCheck-2.0"
-local MINOR_VERSION = 10000000000001 -- mistakes were made...
+local MINOR_VERSION = 10000000000003 -- mistakes were made...
 
 local lib, oldminor = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
 if not lib then
@@ -179,6 +179,7 @@ FriendSpells["WARLOCK"] = {
 HarmSpells["WARLOCK"] = {
   686, -- ["Shadow Bolt"], -- 40
   5019, -- ["Shoot"], -- 30
+  6789, -- ["Mortal Coil"], -- 20
 }
 
 -- Items [Special thanks to Maldivia for the nice list]
@@ -432,8 +433,8 @@ local friendItemRequests
 local harmItemRequests
 local lastUpdate = 0
 
--- minRangeCheck is a function to check if spells with minimum range are really out of range, or fail due to range < minRange. See :init() for its setup
-local minRangeCheck = function(unit) return CheckInteractDistance(unit, 2) end
+local function null() end
+local useCombatCheckers = IsMainline and InCombatLockdown or null
 
 local checkers_Spell = setmetatable({}, {
   __index = function(t, spellIdx)
@@ -446,19 +447,7 @@ local checkers_Spell = setmetatable({}, {
     return func
   end
 })
-local checkers_SpellWithMin = setmetatable({}, {
-  __index = function(t, spellIdx)
-    local func = function(unit)
-      if IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
-        return true
-      elseif minRangeCheck(unit) then
-        return true, true
-      end
-    end
-    t[spellIdx] = func
-    return func
-  end
-})
+local checkers_SpellWithMin = {} -- see getCheckerForSpellWithMinRange()
 local checkers_Item = setmetatable({}, {
   __index = function(t, item)
     local func = function(unit)
@@ -534,6 +523,48 @@ local function addChecker(t, range, minRange, checker, info)
   tinsert(t, rc)
 end
 
+local function fixRange(range)
+  if range then
+    return math_floor(range + 0.5)
+  end
+end
+
+local function getSpellData(sid)
+  local name, _, _, _, minRange, range = GetSpellInfo(sid)
+  return name, fixRange(minRange), fixRange(range), findSpellIdx(name)
+end
+
+local function findMinRangeChecker(origMinRange, origRange, spellList)
+  for i = 1, #spellList do
+    local sid = spellList[i]
+    local name, minRange, range, spellIdx = getSpellData(sid)
+    -- print("### checking minChecker: " .. tostring(name) .. ", idx: " .. tostring(spellIdx) .. ", " .. tostring(minRange) .. " - " ..  tostring(range) .. " for range " .. origMinRange .. " - " .. origRange)
+    if range and spellIdx and origMinRange <= range and range <= origRange and minRange == 0 then
+      -- print("### using minChecker: " .. tostring(name) .. ", " .. tostring(minRange) .. " - " ..  tostring(range) .. " for range " .. origMinRange .. " - " .. origRange)
+      return checkers_Spell[findSpellIdx]
+    end
+  end
+end
+
+local function getCheckerForSpellWithMinRange(spellIdx, minRange, range, spellList)
+  local checker = checkers_SpellWithMin[spellIdx]
+  if checker then
+    return checker
+  end
+  local minRangeChecker = findMinRangeChecker(minRange, range, spellList)
+  if minRangeChecker then
+    checker = function(unit)
+      if IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
+        return true
+      elseif minRangeChecker(unit) then
+        return true, true
+      end
+    end
+    checkers_SpellWithMin[spellIdx] = checker
+    return checker
+  end
+end
+
 local function createCheckerList(spellList, itemList, interactList)
   local res = {}
   if itemList then
@@ -551,11 +582,8 @@ local function createCheckerList(spellList, itemList, interactList)
   if spellList then
     for i = 1, #spellList do
       local sid = spellList[i]
-      local name, _, _, _, minRange, range = GetSpellInfo(sid)
-      local spellIdx = findSpellIdx(name)
+      local name, minRange, range, spellIdx = getSpellData(sid)
       if spellIdx and range then
-        minRange = math_floor(minRange + 0.5)
-        range = math_floor(range + 0.5)
         -- print("### spell: " .. tostring(name) .. ", " .. tostring(minRange) .. " - " ..  tostring(range))
         if minRange == 0 then -- getRange() expects minRange to be nil in this case
           minRange = nil
@@ -564,7 +592,10 @@ local function createCheckerList(spellList, itemList, interactList)
           range = MeleeRange
         end
         if minRange then
-          addChecker(res, range, minRange, checkers_SpellWithMin[spellIdx], "spell:" .. sid .. ":" .. tostring(name))
+          local checker = getCheckerForSpellWithMinRange(spellIdx, minRange, range, spellList)
+          if checker then
+            addChecker(res, range, minRange, checker, "spell:" .. sid .. ":" .. tostring(name))
+          end
         else
           addChecker(res, range, minRange, checkers_Spell[spellIdx], "spell:" .. sid .. ":" .. tostring(name))
         end
@@ -584,6 +615,9 @@ end
 -- returns minRange, maxRange  or nil
 local function getRange(unit, checkerList)
   local lo, hi = 1, #checkerList
+  if hi == 0 then
+    return nil
+  end
   while lo <= hi do
     local mid = math_floor((lo + hi) / 2)
     local rc = checkerList[mid]
@@ -659,9 +693,6 @@ local function getChecker(checkerList, range)
   end
 end
 
-local function null()
-end
-
 local function createSmartChecker(friendChecker, harmChecker, miscChecker)
   miscChecker = miscChecker or null
   friendChecker = friendChecker or miscChecker
@@ -691,9 +722,14 @@ end
 -- friendRC and harmRC will be properly initialized later when we have all the necessary data for them
 lib.checkerCache_Spell = lib.checkerCache_Spell or {}
 lib.checkerCache_Item = lib.checkerCache_Item or {}
+
 lib.miscRC = createCheckerList(nil, nil, DefaultInteractList)
 lib.friendRC = createCheckerList(nil, nil, DefaultInteractList)
 lib.harmRC = createCheckerList(nil, nil, DefaultInteractList)
+
+lib.miscRCInCombat = createCheckerList(nil, nil, nil)
+lib.friendRCInCombat = createCheckerList(nil, nil, nil)
+lib.harmRCInCombat = createCheckerList(nil, nil, nil)
 
 lib.failedItemRequests = {}
 
@@ -736,65 +772,17 @@ function lib:init(forced)
   local _, playerClass = UnitClass("player")
   local _, playerRace = UnitRace("player")
 
-  minRangeCheck = nil
-  -- first try to find a nice item we can use for minRangeCheck
-  if HarmItems[15] then
-    local items = HarmItems[15]
-    for i = 1, #items do
-      local item = items[i]
-      if GetItemInfo(item) then
-        minRangeCheck = function(unit)
-          return IsItemInRange(item, unit)
-        end
-        break
-      end
-    end
-  end
-  if not minRangeCheck then
-    -- ok, then try to find some class specific spell
-    if playerClass == "WARRIOR" then
-      -- for warriors, use Intimidating Shout if available
-      local name = GetSpellInfo(5246) -- ["Intimidating Shout"]
-      local spellIdx = findSpellIdx(name)
-      if spellIdx then
-        minRangeCheck = function(unit)
-          return (IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1)
-        end
-      end
-    elseif playerClass == "ROGUE" then
-      -- for rogues, use Blind if available
-      local name = GetSpellInfo(2094) -- ["Blind"]
-      local spellIdx = findSpellIdx(name)
-      if spellIdx then
-        minRangeCheck = function(unit)
-          return (IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1)
-        end
-      end
-    end
-  end
-  if not minRangeCheck then
-    -- fall back to interact distance checks
-    if playerClass == "HUNTER" or playerRace == "Tauren" then
-      -- for hunters, use interact4 as it's safer
-      -- for Taurens interact4 is actually closer than 25yd and interact3 is closer than 8yd, so we can't use that
-      minRangeCheck = checkers_Interact[4]
-    else
-      minRangeCheck = checkers_Interact[3]
-    end
-  end
-
   local interactList = InteractLists[playerRace] or DefaultInteractList
   self.handSlotItem = GetInventoryItemLink("player", HandSlotId)
+
   local changed = false
-  if updateCheckers(self.friendRC, createCheckerList(FriendSpells[playerClass], FriendItems, interactList)) then
-    changed = true
-  end
-  if updateCheckers(self.harmRC, createCheckerList(HarmSpells[playerClass], HarmItems, interactList)) then
-    changed = true
-  end
-  if updateCheckers(self.miscRC, createCheckerList(nil, nil, interactList)) then
-    changed = true
-  end
+  changed = updateCheckers(self.friendRC, createCheckerList(FriendSpells[playerClass], FriendItems, interactList)) or changed
+  changed = updateCheckers(self.friendRCInCombat, createCheckerList(FriendSpells[playerClass], nil, nil)) or changed
+  changed = updateCheckers(self.harmRC, createCheckerList(HarmSpells[playerClass], HarmItems, interactList)) or changed
+  changed = updateCheckers(self.harmRCInCombat, createCheckerList(HarmSpells[playerClass], nil, nil)) or changed
+  changed = updateCheckers(self.miscRC, createCheckerList(nil, nil, interactList)) or changed
+  changed = updateCheckers(self.miscRCInCombat, createCheckerList(nil, nil, nil)) or changed
+
   if changed and self.callbacks then
     self.callbacks:Fire(self.CHECKERS_CHANGED)
   end
@@ -926,14 +914,14 @@ function lib:GetRange(unit, checkVisible)
     return nil
   end
   if UnitIsDeadOrGhost(unit) then
-    return getRange(unit, self.miscRC)
+    return getRange(unit, useCombatCheckers() and self.miscRCInCombat or self.miscRC)
   end
   if UnitCanAttack("player", unit) then
-    return getRange(unit, self.harmRC)
+    return getRange(unit, useCombatCheckers() and self.harmRCInCombat or self.harmRC)
   elseif UnitCanAssist("player", unit) then
-    return getRange(unit, self.friendRC)
+    return getRange(unit, useCombatCheckers() and self.friendRCInCombat or self.friendRC)
   else
-    return getRange(unit, self.miscRC)
+    return getRange(unit, useCombatCheckers() and self.miscRCInCombat or self.miscRC)
   end
 end
 
