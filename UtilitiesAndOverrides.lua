@@ -47,7 +47,7 @@ end
 
 --- Set the visibility on the stock buff/debuff frames
 ---@param frame table @The frame to set the visibility on
-function EnhancedRaidFrames:SetStockIndicatorVisibility(frame)
+function EnhancedRaidFrames:UpdateStockIndicatorVisibility(frame)
 	-- Don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
 		return

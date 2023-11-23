@@ -133,7 +133,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 		return
 	end
 
-	self:SetStockIndicatorVisibility(frame)
+	self:UpdateStockIndicatorVisibility(frame)
 
 	-- Create the indicator frame if it doesn't exist, otherwise just update the appearance
 	if not frame.ERF_indicatorFrames then
