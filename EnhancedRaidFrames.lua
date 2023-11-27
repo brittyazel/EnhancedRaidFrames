@@ -35,7 +35,7 @@ function EnhancedRaidFrames:OnInitialize()
 		--enhance the database object with per spec profile features
 		LibStub('LibDualSpec-1.0'):EnhanceDatabase(self.db, "EnhancedRaidFrames")
 		-- enhance the profile options table with per spec profile features
-		LibStub('LibDualSpec-1.0'):EnhanceOptions(AceDBOptions:GetOptionsTable(self.db), self.db) 
+		LibStub('LibDualSpec-1.0'):EnhanceOptions(AceDBOptions:GetOptionsTable(self.db), self.db)
 	end
 
 	-- Setup config panels in the Blizzard interface options
@@ -53,7 +53,7 @@ end
 function EnhancedRaidFrames:OnEnable()
 	-- Populate our starting config values
 	self:RefreshConfig()
-	
+
 	-- Create our listeners for UNIT_AURA events
 	self:CreateAllListeners()
 
@@ -66,7 +66,7 @@ function EnhancedRaidFrames:OnEnable()
 		self:UpdateAllAuras()
 		self:UpdateAllIndicators(true)
 	end)
-	
+
 	-- Hook our UpdateStockIndicatorVisibility function onto the default UtilSetBuff, UtilSetDebuff, and UtilSetDispelDebuff functions. 
 	-- We use SecureHook() because the default function is protected, and we want to make sure our code runs after the default code.
 	self:SecureHook("CompactUnitFrame_UtilSetBuff", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
@@ -74,12 +74,12 @@ function EnhancedRaidFrames:OnEnable()
 	self:SecureHook("CompactUnitFrame_UtilSetDispelDebuff", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
 	--also hook the UpdateWidgetsOnlyMode function as it also seems to trigger the stock buff/debuff frames
 	self:SecureHook("CompactUnitFrame_UpdateWidgetsOnlyMode", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
-	
+
 	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
 	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) self:UpdateInRange(frame) end)
 
 	-- Force a full update of all frames when a raid target icon changes
-	self:RegisterEvent("RAID_TARGET_UPDATE", "UpdateAllTargetMarkers")
+	self:RegisterEvent("RAID_TARGET_UPDATE",  function() self:UpdateAllTargetMarkers() end)
 
 	-- Start a repeating timer to make sure the responsiveness feels right
 	self:ScheduleRepeatingTimer(function() self:UpdateAllIndicators() end, 0.5)
@@ -114,7 +114,7 @@ function EnhancedRaidFrames:SetupConfigPanels()
 	AceConfigDialog:AddToBlizOptions("ERF Indicator Options", L["Indicator Options"], "Enhanced Raid Frames")
 	AceConfigDialog:AddToBlizOptions("ERF Target Marker Options", L["Target Marker Options"], "Enhanced Raid Frames")
 	AceConfigDialog:AddToBlizOptions("ERF Profiles", L["Profiles"], "Enhanced Raid Frames")
-	AceConfigDialog:AddToBlizOptions("ERF Import Export Profile Options", 
+	AceConfigDialog:AddToBlizOptions("ERF Import Export Profile Options",
 			(L["Profile"].." "..L["Import"].."/"..L["Export"]), "Enhanced Raid Frames")
 end
 

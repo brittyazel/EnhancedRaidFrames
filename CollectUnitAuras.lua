@@ -49,12 +49,12 @@ function EnhancedRaidFrames:CreateAuraListener(frame)
 				frame.ERF_auraListenerFrame =  _G[frame:GetName().."-ERF_auraListenerFrame"]
 				frame.ERF_auraListenerFrame:SetParent(frame) --if we capture an old indicator frame, we should reattach it to the current unit frame
 			end
-			
+
 		end
-		
+
 		frame.ERF_auraListenerFrame.unit = frame.unit
 		frame.ERF_auraListenerFrame:RegisterUnitEvent("UNIT_AURA", frame.unit)
-		
+
 		if not self.isWoWClassicEra and not self.isWoWClassic then
 			frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, unit, payload)
 				self:UpdateUnitAuras(unit, payload, frame)
@@ -94,13 +94,13 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 	if not self.ShouldContinue(unit) then
 		return
 	end
-	
+
 	-- Create the main table for the unit
 	if not parentFrame.ERF_unitAuras then
 		parentFrame.ERF_unitAuras = {}
 		payload.isFullUpdate = true --force a full update if we don't have a table for the unit yet
 	end
-	
+
 	local shouldUpdateFrames = false
 
 	-- If we get a full update signal, reset the table and rescan all auras for the unit
@@ -156,23 +156,23 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	if not auraData then
 		return false
 	end
-	
+
 	-- Quickly check if we're watching for this aura, and ignore if we aren't
 	-- It's important to use the 4th argument in string.find to turn off pattern matching, 
 	-- otherwise strings with parentheses in them will fail to be found
-	if self.allAuras:find(" "..auraData.name:lower().." ", nil, true) or self.allAuras:find(auraData.spellId) or 
+	if self.allAuras:find(" "..auraData.name:lower().." ", nil, true) or self.allAuras:find(auraData.spellId) or
 			--check if the aura is a debuff, and if it's a dispellable debuff check if we're tracking the wildcard of that debuff type
 			(auraData.isHarmful and auraData.dispelName and self.allAuras:find(auraData.dispelName:lower())) then
-		
+
 		auraData.name = auraData.name:lower()
 		if auraData.dispelName then
 			auraData.dispelName = auraData.dispelName:lower()
 		end
-		
+
 		parentFrame.ERF_unitAuras[auraData.auraInstanceID] = auraData
 		return true --return true if we added or updated an aura
 	end
-	return false 
+	return false
 end
 
 --- Called by our UNIT_AURA listeners and is used to store unit aura information for a given unit.
@@ -187,7 +187,7 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(unit, parentFrame)
 
 	-- Create or clear out the tables for the unit
 	parentFrame.ERF_unitAuras = {}
-	
+
 	-- Iterate through all buffs and debuffs on the unit
 	for _, filter in pairs({"HELPFUL", "HARMFUL"}) do
 		local i = 1 --counting the index of our aura
@@ -195,7 +195,7 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(unit, parentFrame)
 			local auraData = {}
 
 			if self.isWoWClassicEra then --For wow classic. This is the LibClassicDurations wrapper
-				auraData.name, auraData.icon, auraData.applications, auraData.dispelName, auraData.duration, 
+				auraData.name, auraData.icon, auraData.applications, auraData.dispelName, auraData.duration,
 				auraData.expirationTime, auraData.sourceUnit, _, _, auraData.spellId =  self.UnitAuraWrapper(unit, i, filter)
 			else
 				auraData.name, auraData.icon, auraData.applications, auraData.dispelName, auraData.duration,
@@ -210,17 +210,17 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(unit, parentFrame)
 				else
 					auraData.isHarmful = true
 				end
-	
+
 				-- Add our auraIndex into the table
 				auraData.auraIndex = i
-			
+
 				self:addToAuraTable_Classic(parentFrame, auraData, i)
 			end
-			
+
 			i = i + 1 --increment our counter no matter what
 		until(not auraData.name)
 	end
-	
+
 	self:UpdateIndicators(parentFrame)
 end
 
@@ -238,7 +238,7 @@ function EnhancedRaidFrames:addToAuraTable_Classic(parentFrame, auraData)
 	if self.allAuras:find(" "..auraData.name:lower().." ", nil, true) or self.allAuras:find(auraData.spellId) or
 			--check if the aura is a debuff, and if it's a dispellable debuff check if we're tracking the wildcard of that debuff type
 			(auraData.isHarmful and auraData.dispelName and self.allAuras:find(auraData.dispelName:lower())) then
-		
+
 		auraData.name = auraData.name:lower()
 		if auraData.dispelName then
 			auraData.dispelName = auraData.dispelName:lower()

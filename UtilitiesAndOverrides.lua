@@ -41,7 +41,7 @@ function EnhancedRaidFrames.ShouldContinue(unit)
 	if not string.find(unit, "player") and not string.find(unit, "raid") and not string.find(unit, "party") then
 		return false
 	end
-	
+
 	return true
 end
 
@@ -52,7 +52,7 @@ function EnhancedRaidFrames:UpdateStockIndicatorVisibility(frame)
 	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
 		return
 	end
-	
+
 	if not self.db.profile.showBuffs then
 		CompactUnitFrame_HideAllBuffs(frame)
 	end
@@ -73,7 +73,7 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 	if not self.ShouldContinue(frame.unit) then
 		return
 	end
-	
+
 	local effectiveUnit = frame.unit
 	if frame.unit ~= frame.displayedUnit then
 		effectiveUnit = frame.displayedUnit
@@ -82,7 +82,7 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 	if not UnitExists(effectiveUnit) then
 		return
 	end
-	
+
 	local inRange, checkedRange
 
 	--if we have a custom range set use LibRangeCheck, otherwise use default UnitInRange function
@@ -97,13 +97,13 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 	else
 		inRange, checkedRange = UnitInRange(effectiveUnit)
 	end
-	
+
 	if checkedRange and not inRange then --If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
 		frame:SetAlpha(self.db.profile.rangeAlpha)
 	else
 		frame:SetAlpha(1)
 	end
-	
+
 end
 
 --- Set the background alpha amount based on a defined value by the user.
@@ -160,7 +160,7 @@ function EnhancedRaidFrames:SetSerializedAndCompressedProfile(input)
 	local result, newProfile = self:Deserialize(decompressed)
 
 	-- If we successfully deserialize, load the new table into the database
-	if result == true and newProfile then 
+	if result == true and newProfile then
 		for k,v in pairs(newProfile) do
 			if type(v) == "table" then
 				self.db.profile[k] = CopyTable(v)

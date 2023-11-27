@@ -185,11 +185,11 @@ end
 function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	local i = indicatorFrame.position
 	local parentFrame = indicatorFrame:GetParent()
-	
+
 	--holds the information of the aura we're looking for once it is found
 	local thisAura = {}
 	indicatorFrame.thisAura = {} --for easy access from our tooltip code
-	
+
 	-- if we only are to show the indicator on me, then don't bother if I'm not the unit
 	if self.db.profile[i].meOnly then
 		if unit ~= "player" then
@@ -215,7 +215,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 				break --once we find the aura, we can stop searching
 			end
 		end
-		
+
 		-- add spell icon info to cache in case we need it later on
 		if thisAura.icon and not self.iconCache[auraIdentifier] then
 			self.iconCache[auraIdentifier] = thisAura.icon
@@ -334,7 +334,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			end
 		else
 			--set default textColor to user selected choice
-			indicatorFrame.Text:SetTextColor(self.db.profile[i].textColor.r, self.db.profile[i].textColor.g, 
+			indicatorFrame.Text:SetTextColor(self.db.profile[i].textColor.r, self.db.profile[i].textColor.g,
 					self.db.profile[i].textColor.b, self.db.profile[i].textColor.a)
 		end
 
@@ -361,7 +361,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	elseif not (thisAura.auraInstanceID or thisAura.auraIndex) and self.db.profile[i].missingOnly then --deal with "show only if missing"
 		local auraIdentifier = self.auraStrings[i][1] --show the icon for the first auraString position
 		local icon
-		
+
 		--check our iconCache for the name. Note the icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons
 		if not self.iconCache[auraIdentifier] then
 			icon = select(3, GetSpellInfo(auraIdentifier)) --icon is the 3rd return value of GetSpellInfo

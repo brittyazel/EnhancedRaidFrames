@@ -447,7 +447,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						type = "color",
 						name = L["Text Color"],
 						desc = L["textColor_desc1"].."\n"..
-						"("..L["textColor_desc2"]..")",
+								"("..L["textColor_desc2"]..")",
 						hasAlpha = true,
 						get = function()
 							return self.db.profile[i].textColor.r, self.db.profile[i].textColor.g, self.db.profile[i].textColor.b, self.db.profile[i].textColor.a
