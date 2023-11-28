@@ -101,8 +101,6 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 		payload.isFullUpdate = true --force a full update if we don't have a table for the unit yet
 	end
 
-	local shouldUpdateFrames = false
-
 	-- If we get a full update signal, reset the table and rescan all auras for the unit
 	if payload.isFullUpdate then
 		-- Clear out the table
@@ -110,7 +108,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 		-- Iterate through all buffs and debuffs on the unit
 		for _, filter in pairs({"HELPFUL", "HARMFUL"}) do
 			AuraUtil.ForEachAura(unit, filter, nil, function(auraData)
-				shouldUpdateFrames = self:addToAuraTable(parentFrame, auraData)
+				self:addToAuraTable(parentFrame, auraData)
 			end, true);
 		end
 		return
@@ -119,7 +117,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 	-- If new auras are added, update the table with their payload information
 	if payload.addedAuras then
 		for _, auraData in pairs(payload.addedAuras) do
-			shouldUpdateFrames = self:addToAuraTable(parentFrame, auraData)
+			self:addToAuraTable(parentFrame, auraData)
 		end
 	end
 
@@ -129,7 +127,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 			parentFrame.ERF_unitAuras[auraInstanceID] = nil
 			--it's possible for auraData to return nil if the aura was removed just prior to us querying it
 			local auraData = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
-			shouldUpdateFrames = self:addToAuraTable(parentFrame, auraData)
+			self:addToAuraTable(parentFrame, auraData)
 		end
 	end
 
@@ -138,23 +136,19 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 		for _, auraInstanceID in pairs(payload.removedAuraInstanceIDs) do
 			if parentFrame.ERF_unitAuras[auraInstanceID] then
 				parentFrame.ERF_unitAuras[auraInstanceID] = nil
-				shouldUpdateFrames = true
 			end
 		end
 	end
-
-	if shouldUpdateFrames then
-		self:UpdateIndicators(parentFrame)
-	end
+	
+	self:UpdateIndicators(parentFrame)
 end
 
 --- Add or update an aura to the ERFAuras table
 ---@param parentFrame table @The raid frame that we're updating
 ---@param auraData table @Payload from UNIT_AURA event
----@return boolean @True if we added or updated an aura
 function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	if not auraData then
-		return false
+		return
 	end
 
 	-- Quickly check if we're watching for this aura, and ignore if we aren't
@@ -170,9 +164,8 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 		end
 
 		parentFrame.ERF_unitAuras[auraData.auraInstanceID] = auraData
-		return true --return true if we added or updated an aura
+		return
 	end
-	return false
 end
 
 --- Called by our UNIT_AURA listeners and is used to store unit aura information for a given unit.
