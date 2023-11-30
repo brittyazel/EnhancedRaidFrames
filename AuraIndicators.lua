@@ -40,7 +40,10 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		indicatorFrame:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 		--hook OnCooldownDone for stopping our update ticker
-		indicatorFrame.Cooldown:SetScript("OnCooldownDone", function() self:StopUpdateTicker(indicatorFrame) end)
+		indicatorFrame.Cooldown:SetScript("OnCooldownDone", function() 
+			self:StopUpdateTicker(indicatorFrame) 
+			indicatorFrame:Hide() --hide the frame
+		end)
 
 		--disable the mouse click on our frames to allow those clicks to get passed straight through to the raid frame behind (switch target, right click, etc)
 		--this MUST come after the SetScript lines for OnEnter and OnLeave. SetScript will re-enable mouse clicks when called.
