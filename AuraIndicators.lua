@@ -65,7 +65,7 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		indicatorFrame:SetHeight(self.db.profile[i].indicatorSize)
 
 		--------------------------------------
-
+		
 		--set indicator frame position
 		local PAD = 1
 		local indicatorVerticalOffset = floor((self.db.profile[i].indicatorVerticalOffset * frame:GetHeight()) + 0.5)
@@ -101,16 +101,10 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		end
 
 		--------------------------------------
+		
 		--Set font family and size for our countdown text
 		local font = (LibSharedMedia and LibSharedMedia:Fetch('font', self.db.profile.indicatorFont)) or "Fonts\\ARIALN.TTF"
 		indicatorFrame.Countdown:SetFont(font, self.db.profile[i].textSize, "OUTLINE")
-		--Set the countdown text position
-		indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", 0, 0)	--Set the countdown text position
-
-		--Either show or hide the countdown swipe animation
-		indicatorFrame.Cooldown:SetDrawSwipe(true)
-		indicatorFrame.Cooldown:SetDrawEdge(true)
-
 		
 		--clear any animations
 		ActionButton_HideOverlayGlow(indicatorFrame)
@@ -185,7 +179,6 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 
 	--holds the information of the aura we're looking for once it is found
 	local thisAura = {}
-	indicatorFrame.thisAura = {} --for easy access from our tooltip code
 
 	-- if we only are to show the indicator on me, then don't bother if I'm not the unit
 	if self.db.profile[i].meOnly then
@@ -208,7 +201,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 			if aura.name == auraIdentifier or (tonumber(auraIdentifier) and aura.spellId == tonumber(auraIdentifier)) or
 					(aura.isHarmful and aura.dispelName == auraIdentifier) then
 				thisAura = aura
-				indicatorFrame.thisAura = aura
+				indicatorFrame.thisAura = aura --for easy access from our IndicatorTick and Tooltip functions
 				break --once we find the aura, we can stop searching
 			end
 		end
@@ -226,6 +219,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		end
 	end
 
+
 	------------------------------------------------------
 	------- output visuals to the indicator frame --------
 	------------------------------------------------------
@@ -238,11 +232,11 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------- Set cooldown ---------
 		---------------------------------
 		if self.db.profile[i].showCountdownSwipe and thisAura.expirationTime and thisAura.duration then
-			indicatorFrame.Cooldown:SetCooldownDuration(thisAura.duration)
+			indicatorFrame.Cooldown:SetCooldown(thisAura.expirationTime - thisAura.duration, thisAura.duration);
 		end
 
 		if thisAura.expirationTime and thisAura.duration then
-			self:StartUpdateTicker(indicatorFrame, thisAura)
+			self:StartUpdateTicker(indicatorFrame)
 		end
 		---------------------------------
 		----- Process icon to show ------
@@ -347,22 +341,29 @@ end
 
 --- Process a single tick of our indicator animation for things like color changing, glow, etc
 --- @param indicatorFrame table @The indicator frame to process
---- @param aura table @The aura to process
-function EnhancedRaidFrames:IndicatorTick(indicatorFrame, aura)
+function EnhancedRaidFrames:IndicatorTick(indicatorFrame)
+	if not indicatorFrame.thisAura then
+		return
+	end
+	
 	local i = indicatorFrame.position
-	local remainingTime = aura.expirationTime - GetTime()
+	local remainingTime = indicatorFrame.thisAura.expirationTime - GetTime()
+	
+	if not remainingTime or remainingTime <= 0 then
+		return
+	end
 	
 	--- Set the countdown text
 	if self.db.profile[i].showCountdownText and remainingTime then
-		if remainingTime > 60 then
-			indicatorFrame.Countdown:SetFormattedText("%.0f%s", floor(remainingTime/60), "m")
-		elseif remainingTime > 0 then
-			indicatorFrame.Countdown:SetFormattedText("%.0f", floor(remainingTime))
+		if remainingTime < 60 then
+			indicatorFrame.Countdown:SetText(floor(remainingTime))
+		else
+			indicatorFrame.Countdown:SetText(floor(remainingTime/60).."m") --shorten to minutes instead of seconds
 		end
 	else
 		indicatorFrame.Countdown:SetText("")
 	end
-
+	
 	--- Set glow animation based on time remaining
 	if self.db.profile[i].indicatorGlow and (self.db.profile[i].glowRemainingSecs == 0 or self.db.profile[i].glowRemainingSecs >= remainingTime) then
 		ActionButton_ShowOverlayGlow(indicatorFrame)
@@ -371,19 +372,19 @@ function EnhancedRaidFrames:IndicatorTick(indicatorFrame, aura)
 	end
 
 	--- Set indicator background color based on time remaining
-	if self.db.profile[i].colorIndicatorByTime and not (aura.icon and self.db.profile[i].showIcon) then -- Color by remaining time
-		if remainingTime and self.db.profile[i].colorIndicatorByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_low then
+	if self.db.profile[i].colorIndicatorByTime and not (indicatorFrame.thisAura.icon and self.db.profile[i].showIcon) then -- Color by remaining time
+		if self.db.profile[i].colorIndicatorByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_low then
 			indicatorFrame.Icon:SetColorTexture(self.RED_COLOR:GetRGB())
-		elseif remainingTime and self.db.profile[i].colorIndicatorByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_high then
+		elseif self.db.profile[i].colorIndicatorByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_high then
 			indicatorFrame.Icon:SetColorTexture(self.YELLOW_COLOR:GetRGB())
 		end
 	end
 
 	--- Set indicator text color based on time remaining
 	if self.db.profile[i].colorTextByTime then -- Color by remaining time
-		if remainingTime and self.db.profile[i].colorTextByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_low then
+		if self.db.profile[i].colorTextByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_low then
 			indicatorFrame.Countdown:SetTextColor(self.RED_COLOR:GetRGB())
-		elseif remainingTime and self.db.profile[i].colorTextByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_high then
+		elseif self.db.profile[i].colorTextByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_high then
 			indicatorFrame.Countdown:SetTextColor(self.YELLOW_COLOR:GetRGB())
 		end
 	end
@@ -391,23 +392,20 @@ end
 
 --- Start the update ticker for our indicator animation
 --- @param indicatorFrame table @The indicator frame to process
---- @param aura table @The aura to process
-function EnhancedRaidFrames:StartUpdateTicker(indicatorFrame, aura)
-	if indicatorFrame.updateTicker then
-		self:StopUpdateTicker(indicatorFrame)
+function EnhancedRaidFrames:StartUpdateTicker(indicatorFrame)
+	self:IndicatorTick(indicatorFrame) --run right away to set initial values
+	if not indicatorFrame.updateTicker then --only start the ticker if it isn't already running
+		indicatorFrame.updateTicker = self:ScheduleRepeatingTimer(function() self:IndicatorTick(indicatorFrame) end, 0.5)
 	end
-	self:IndicatorTick(indicatorFrame, aura) --run right away to set initial values
-	indicatorFrame.updateTicker = self:ScheduleRepeatingTimer(function() self:IndicatorTick(indicatorFrame, aura) end, 0.5)
 end
 
 --- Stop the update ticker for our indicator animation
 --- @param indicatorFrame table @The indicator frame to process
 function EnhancedRaidFrames:StopUpdateTicker(indicatorFrame)
-	if not indicatorFrame.updateTicker then
-		return
+	if indicatorFrame.updateTicker then
+		self:CancelTimer(indicatorFrame.updateTicker)
+		indicatorFrame.updateTicker = nil
 	end
-	self:CancelTimer(indicatorFrame.updateTicker)
-	indicatorFrame.updateTicker = nil
 end
 
 ------------------------------------------------

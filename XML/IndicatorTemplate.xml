@@ -10,7 +10,7 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/FrameXML/UI
 				<Texture name="$parentIcon" parentKey="Icon" setAllPoints="true"/>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="$parentCountdown" parentKey="Countdown" inherits="NumberFontNormalSmall">
+				<FontString name="$parentCountdown" parentKey="Countdown">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
@@ -23,7 +23,8 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/FrameXML/UI
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" useParentLevel="true" hidden="true">
+			<Cooldown name="$parentCooldown" parentKey="Cooldown" useParentLevel="true" inherits="CooldownFrameTemplate" 
+					  reverse="true" hideCountdownNumbers="true">
 				<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
