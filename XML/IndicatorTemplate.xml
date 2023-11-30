@@ -7,25 +7,23 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/FrameXML/UI
 	<Button name="ERF_indicatorTemplate" virtual="true" frameStrata="HIGH">
 		<Layers>
 			<Layer>
-				<Texture name="$parentIcon" parentKey="Icon" setAllPoints="true"/>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Text" inherits="NumberFontNormalSmall">
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</FontString>
+				<Texture parentKey="Icon" setAllPoints="true"/>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" parentKey="Cooldown" hideCountdownNumbers="true" inherits="CooldownFrameTemplate" reverse="true" hidden="true">
+			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" reverse="true" hidden="true">
 				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="5" y="-2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</Cooldown>
 		</Frames>
 	</Button>

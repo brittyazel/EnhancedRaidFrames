@@ -186,18 +186,17 @@ L["indicatorColor_desc2"] = "unless augmented by other color options"
 
 L["Text"] = true
 
-L["Show Text"] = true
-L["showText_desc"] = "The text to show on the indicator frame"
+L["Show Countdown Text"] = true
+L["showCountdownText_desc"] = "Display the time remaining on the buff or debuff"
 
-L["Stack Size"] = true
-L["Countdown"] = true
-L["None"] = true
+L["Show Stack Size"] = true
+L["showStackSize_desc"] = "Display the stack size of the buff or debuff"
 
-L["Text Size"] = true
-L["textSize_desc"] = "The size of the text (in pixels)"
+L["Countdown Text Size"] = true
+L["countdownTextSize_desc"] = "The size of the countdown text (in pixels)"
 
 L["Text Color"] = true
-L["textColor_desc1"] = "The color used for the indicator text"
+L["textColor_desc1"] = "The color used for the countdown text"
 L["textColor_desc2"] = "unless augmented by other text color options"
 
 L["Animations"] = true

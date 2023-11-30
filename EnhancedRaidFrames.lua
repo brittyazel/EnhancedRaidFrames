@@ -79,9 +79,6 @@ function EnhancedRaidFrames:OnEnable()
 	-- Force a full update of all frames when a raid target icon changes
 	self:RegisterEvent("RAID_TARGET_UPDATE",  function() self:UpdateAllTargetMarkers() end)
 
-	-- Start a repeating timer to make sure the responsiveness feels right
-	self:ScheduleRepeatingTimer(function() self:UpdateAllIndicators() end, 0.5)
-
 	-- Register our slash command to open the config panel
 	self:RegisterChatCommand("erf", function() Settings.OpenToCategory("Enhanced Raid Frames") end)
 
