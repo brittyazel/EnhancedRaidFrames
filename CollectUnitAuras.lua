@@ -100,6 +100,9 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 		parentFrame.ERF_unitAuras = {}
 		payload.isFullUpdate = true --force a full update if we don't have a table for the unit yet
 	end
+	
+	--flag to determine if we need to run an update on the indicators since we only care about select auras
+	local shouldRunUpdate = false
 
 	-- If we get a full update signal, reset the table and rescan all auras for the unit
 	if payload.isFullUpdate then
@@ -108,16 +111,23 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 		-- Iterate through all buffs and debuffs on the unit
 		for _, filter in pairs({"HELPFUL", "HARMFUL"}) do
 			AuraUtil.ForEachAura(unit, filter, nil, function(auraData)
-				self:addToAuraTable(parentFrame, auraData)
+				local updateFlag = self:addToAuraTable(parentFrame, auraData)
+				if updateFlag then
+					shouldRunUpdate = true
+				end
 			end, true);
 		end
-		return
+		self:UpdateIndicators(parentFrame)
+		return --bail early since we've already updated all the indicators
 	end
 
 	-- If new auras are added, update the table with their payload information
 	if payload.addedAuras then
 		for _, auraData in pairs(payload.addedAuras) do
-			self:addToAuraTable(parentFrame, auraData)
+			local updateFlag = self:addToAuraTable(parentFrame, auraData)
+			if updateFlag then
+				shouldRunUpdate = true
+			end
 		end
 	end
 
@@ -127,7 +137,10 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 			parentFrame.ERF_unitAuras[auraInstanceID] = nil
 			--it's possible for auraData to return nil if the aura was removed just prior to us querying it
 			local auraData = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
-			self:addToAuraTable(parentFrame, auraData)
+			local updateFlag = self:addToAuraTable(parentFrame, auraData)
+			if updateFlag then
+				shouldRunUpdate = true
+			end
 		end
 	end
 
@@ -139,13 +152,16 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 			end
 		end
 	end
-	
-	self:UpdateIndicators(parentFrame)
+
+	if shouldRunUpdate then
+		self:UpdateIndicators(parentFrame)
+	end
 end
 
 --- Add or update an aura to the ERFAuras table
 ---@param parentFrame table @The raid frame that we're updating
 ---@param auraData table @Payload from UNIT_AURA event
+---@return boolean @True if we added or updated an aura
 function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	if not auraData then
 		return
@@ -157,14 +173,16 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	if self.allAuras:find(" "..auraData.name:lower().." ", nil, true) or self.allAuras:find(auraData.spellId) or
 			--check if the aura is a debuff, and if it's a dispellable debuff check if we're tracking the wildcard of that debuff type
 			(auraData.isHarmful and auraData.dispelName and self.allAuras:find(auraData.dispelName:lower())) then
-
+		
 		auraData.name = auraData.name:lower()
 		if auraData.dispelName then
 			auraData.dispelName = auraData.dispelName:lower()
 		end
-
+		
 		parentFrame.ERF_unitAuras[auraData.auraInstanceID] = auraData
-		return
+		
+		--return true if we added or updated an aura
+		return true
 	end
 end
 
