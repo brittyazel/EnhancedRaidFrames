@@ -39,25 +39,9 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		indicatorFrame:SetScript("OnEnter", function() self:Tooltip_OnEnter(indicatorFrame, frame) end)
 		indicatorFrame:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-		--hook OnCooldownDone for stopping our update ticker
-		indicatorFrame.Cooldown:SetScript("OnCooldownDone", function() 
-			self:StopUpdateTicker(indicatorFrame) 
-			indicatorFrame:Hide() --hide the frame
-		end)
-
 		--disable the mouse click on our frames to allow those clicks to get passed straight through to the raid frame behind (switch target, right click, etc)
 		--this MUST come after the SetScript lines for OnEnter and OnLeave. SetScript will re-enable mouse clicks when called.
 		indicatorFrame:SetMouseClickEnabled(false)
-
-		--capture a handle to our countdown font region which is managing our countdown text via the C_Cooldown API
-		if not indicatorFrame.Countdown then
-			indicatorFrame.Countdown = indicatorFrame.Cooldown.Countdown
-		end
-		
-		if not indicatorFrame.Count then
-			--create a handle that's easy to access for our stack count text
-			indicatorFrame.Count = indicatorFrame.Cooldown.Count
-		end
 	end
 
 	--set our initial indicator appearance
@@ -124,13 +108,9 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", 0, 0)	--Set the countdown text position
 
 		--Either show or hide the countdown swipe animation
-		if self.db.profile[i].showCountdownSwipe then
-			indicatorFrame.Cooldown:SetDrawSwipe(true)
-			indicatorFrame.Cooldown:SetDrawEdge(true)
-		else
-			indicatorFrame.Cooldown:SetDrawSwipe(false)
-			indicatorFrame.Cooldown:SetDrawEdge(false)
-		end
+		indicatorFrame.Cooldown:SetDrawSwipe(true)
+		indicatorFrame.Cooldown:SetDrawEdge(true)
+
 		
 		--clear any animations
 		ActionButton_HideOverlayGlow(indicatorFrame)
@@ -257,12 +237,12 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------------------------------
 		---------- Set cooldown ---------
 		---------------------------------
+		if self.db.profile[i].showCountdownSwipe and thisAura.expirationTime and thisAura.duration then
+			indicatorFrame.Cooldown:SetCooldownDuration(thisAura.duration)
+		end
+
 		if thisAura.expirationTime and thisAura.duration then
 			self:StartUpdateTicker(indicatorFrame, thisAura)
-			indicatorFrame.Cooldown:SetCooldownDuration(thisAura.duration)
-		else
-			self:StopUpdateTicker(indicatorFrame)
-			indicatorFrame.Cooldown:Clear()
 		end
 		---------------------------------
 		----- Process icon to show ------
@@ -295,11 +275,11 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		if self.db.profile[i].showStackSize and thisAura.applications and thisAura.applications > 1 then
 			--adjust the position of the countdown text to make room for the stack count
 			indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", -1, 1)
-			indicatorFrame.Count:SetFormattedText(thisAura.applications)
+			indicatorFrame.Count:SetText(thisAura.applications)
 		else
 			--reset the position of the countdown text
 			indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", 0, 0)
-			indicatorFrame.Count:SetFormattedText("")
+			indicatorFrame.Count:SetText("")
 		end
 
 		--Set the countdown text color
@@ -369,10 +349,6 @@ end
 --- @param indicatorFrame table @The indicator frame to process
 --- @param aura table @The aura to process
 function EnhancedRaidFrames:IndicatorTick(indicatorFrame, aura)
-	if not indicatorFrame:IsShown() then
-		return
-	end
-	
 	local i = indicatorFrame.position
 	local remainingTime = aura.expirationTime - GetTime()
 	
@@ -384,7 +360,7 @@ function EnhancedRaidFrames:IndicatorTick(indicatorFrame, aura)
 			indicatorFrame.Countdown:SetFormattedText("%.0f", floor(remainingTime))
 		end
 	else
-		indicatorFrame.Countdown:SetFormattedText("")
+		indicatorFrame.Countdown:SetText("")
 	end
 
 	--- Set glow animation based on time remaining
@@ -420,7 +396,8 @@ function EnhancedRaidFrames:StartUpdateTicker(indicatorFrame, aura)
 	if indicatorFrame.updateTicker then
 		self:StopUpdateTicker(indicatorFrame)
 	end
-	indicatorFrame.updateTicker = C_Timer.NewTicker(0.5, function() self:IndicatorTick(indicatorFrame, aura) end);
+	self:IndicatorTick(indicatorFrame, aura) --run right away to set initial values
+	indicatorFrame.updateTicker = self:ScheduleRepeatingTimer(function() self:IndicatorTick(indicatorFrame, aura) end, 0.5)
 end
 
 --- Stop the update ticker for our indicator animation
@@ -429,7 +406,7 @@ function EnhancedRaidFrames:StopUpdateTicker(indicatorFrame)
 	if not indicatorFrame.updateTicker then
 		return
 	end
-	indicatorFrame.updateTicker:Cancel()
+	self:CancelTimer(indicatorFrame.updateTicker)
 	indicatorFrame.updateTicker = nil
 end
 
