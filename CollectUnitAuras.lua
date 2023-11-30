@@ -149,6 +149,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 		for _, auraInstanceID in pairs(payload.removedAuraInstanceIDs) do
 			if parentFrame.ERF_unitAuras[auraInstanceID] then
 				parentFrame.ERF_unitAuras[auraInstanceID] = nil
+				shouldRunUpdate = true
 			end
 		end
 	end
