@@ -100,6 +100,9 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 		parentFrame.ERF_unitAuras = {}
 		payload.isFullUpdate = true --force a full update if we don't have a table for the unit yet
 	end
+	
+	--flag to determine if we need to run an update on the indicators since we only care about select auras
+	local shouldRunUpdate = false
 
 	--flag to determine if we need to run an update on the indicators since we only care about select auras
 	local shouldRunUpdate = false
@@ -174,14 +177,16 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	if self.allAuras:find(" "..auraData.name:lower().." ", nil, true) or self.allAuras:find(auraData.spellId) or
 			--check if the aura is a debuff, and if it's a dispellable debuff check if we're tracking the wildcard of that debuff type
 			(auraData.isHarmful and auraData.dispelName and self.allAuras:find(auraData.dispelName:lower())) then
-
+		
 		auraData.name = auraData.name:lower()
 		if auraData.dispelName then
 			auraData.dispelName = auraData.dispelName:lower()
 		end
-
+		
 		parentFrame.ERF_unitAuras[auraData.auraInstanceID] = auraData
-		return true --return true if we added or updated an aura
+		
+		--return true if we added or updated an aura
+		return true
 	end
 end
 

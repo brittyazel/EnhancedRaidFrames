@@ -397,28 +397,38 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						name = L["General"],
 						order = 1,
 					},
-					showText = {
-						type = "select",
-						name = L["Show Text"],
-						desc = L["showText_desc"],
-						style = "dropdown",
-						values = {["stack"] = L["Stack Size"], ["countdown"] = L["Countdown"],
-								  ["stack+countdown"] = L["Stack Size"].." + "..L["Countdown"], ["none"] = L["None"]},
-						sorting = {[1] = "stack", [2] = "countdown", [3] = "stack+countdown", [4] = "none"},
+					showCountdownText = {
+						type = "toggle",
+						name = L["Show Countdown Text"],
+						desc = L["showCountdownText_desc"],
 						get = function()
-							return self.db.profile[i].showText
+							return self.db.profile[i].showCountdownText
 						end,
 						set = function(_, value)
-							self.db.profile[i].showText = value
+							self.db.profile[i].showCountdownText = value
 							self:RefreshConfig()
 						end,
 						width = THIRD_WIDTH,
 						order = 2,
 					},
+					showStackSize = {
+						type = "toggle",
+						name = L["Show Stack Size"],
+						desc = L["showStackSize_desc"],
+						get = function()
+							return self.db.profile[i].showStackSize
+						end,
+						set = function(_, value)
+							self.db.profile[i].showStackSize = value
+							self:RefreshConfig()
+						end,
+						width = THIRD_WIDTH,
+						order = 3,
+					},
 					textSize = {
 						type = "range",
-						name = L["Text Size"],
-						desc = L["textSize_desc"],
+						name = L["Countdown Text Size"],
+						desc = L["countdownTextSize_desc"],
 						min = 1,
 						max = 30,
 						step = 1,
@@ -430,12 +440,12 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							if self.db.profile[i].showText == "none" then
+							if not self.db.profile[i].showCountdownText then
 								return true
 							end
 						end,
 						width = THIRD_WIDTH,
-						order = 3,
+						order = 4,
 					},
 					-------------------------------------------------
 					colorHeader = {
@@ -457,7 +467,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							if self.db.profile[i].showText == "none" then
+							if not self.db.profile[i].showCountdownText then
 								return true
 							end
 						end,
@@ -482,7 +492,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							if self.db.profile[i].showText == "none" then
+							if not self.db.profile[i].showCountdownText then
 								return true
 							end
 						end,
@@ -505,7 +515,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							if self.db.profile[i].showText == "none" then
+							if not self.db.profile[i].showCountdownText then
 								return true
 							end
 						end,
@@ -528,7 +538,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							if self.db.profile[i].showText == "none" or not self.db.profile[i].colorTextByTime then
+							if not self.db.profile[i].showCountdownText or not self.db.profile[i].colorTextByTime then
 								return true
 							end
 						end,
@@ -551,7 +561,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							if self.db.profile[i].showText == "none" or not self.db.profile[i].colorTextByTime then
+							if not self.db.profile[i].showCountdownText or not self.db.profile[i].colorTextByTime then
 								return true
 							end
 						end,

@@ -73,7 +73,8 @@ function EnhancedRaidFrames:CreateDefaults()
 			colorIndicatorByTime_high = 5,
 
 			--Text and Color
-			showText = "none",
+			showCountdownText = false,
+			showStackSize = true,
 			textColor = {r = 1, g = 1, b = 1, a = 1},
 			colorTextByTime = false,
 			colorTextByTime_low = 2,

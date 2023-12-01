@@ -541,7 +541,7 @@ local function findMinRangeChecker(origMinRange, origRange, spellList)
     -- print("### checking minChecker: " .. tostring(name) .. ", idx: " .. tostring(spellIdx) .. ", " .. tostring(minRange) .. " - " ..  tostring(range) .. " for range " .. origMinRange .. " - " .. origRange)
     if range and spellIdx and origMinRange <= range and range <= origRange and minRange == 0 then
       -- print("### using minChecker: " .. tostring(name) .. ", " .. tostring(minRange) .. " - " ..  tostring(range) .. " for range " .. origMinRange .. " - " .. origRange)
-      return checkers_Spell[findSpellIdx]
+      return checkers_Spell[findSpellIdx(name)]
     end
   end
 end

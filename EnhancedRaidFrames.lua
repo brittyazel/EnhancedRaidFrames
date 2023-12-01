@@ -67,10 +67,9 @@ function EnhancedRaidFrames:OnEnable()
 		self:UpdateAllIndicators(true)
 	end)
 
-	-- Hook our UpdateStockIndicatorVisibility function onto the default UpdateAuras function. 
+	-- Hook our UpdateStockIndicatorVisibility function onto internal functions. 
 	-- We use SecureHook() because the default function is protected, and we want to make sure our code runs after the default code.
 	self:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
-	--also hook the UpdateWidgetsOnlyMode function as it also seems to trigger the stock buff/debuff frames
 	self:SecureHook("CompactUnitFrame_UpdateWidgetsOnlyMode", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
 
 	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
@@ -78,9 +77,6 @@ function EnhancedRaidFrames:OnEnable()
 
 	-- Force a full update of all frames when a raid target icon changes
 	self:RegisterEvent("RAID_TARGET_UPDATE",  function() self:UpdateAllTargetMarkers() end)
-
-	-- Start a repeating timer to make sure the responsiveness feels right
-	self:ScheduleRepeatingTimer(function() self:UpdateAllIndicators() end, 0.5)
 
 	-- Register our slash command to open the config panel
 	self:RegisterChatCommand("erf", function() Settings.OpenToCategory("Enhanced Raid Frames") end)
