@@ -22,11 +22,14 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		--I'm not sure if this is ever the case, but to stop us from creating redundant frames we should try to re-capture them when possible
 		--On the global table, our frames our named "CompactRaidFrame#" + "-ERF_indicator-" + index#, i.e. "CompactRaidFrame1-ERF_indicator-1"
 		if not _G[frame:GetName().."-ERF_indicator-"..i] then
-			--We have to use CompactAuraTemplate to allow for our clicks to be passed through, otherwise our frames won't allow selecting the raid frame behind it
-			frame.ERF_indicatorFrames[i] = CreateFrame("Button", frame:GetName().."-ERF_indicator-"..i, frame, "ERF_indicatorTemplate")
+			--We have to use CompactAuraTemplate to allow for our clicks to be passed through, otherwise our frames won't 
+			--allow selecting the raid frame behind it
+			frame.ERF_indicatorFrames[i] = CreateFrame("Button", frame:GetName().."-ERF_indicator-"..i,
+					frame, "ERF_indicatorTemplate")
 		else
 			frame.ERF_indicatorFrames[i] =  _G[frame:GetName().."-ERF_indicator-"..i]
-			frame.ERF_indicatorFrames[i]:SetParent(frame) --if we capture an old indicator frame, we should reattach it to the current unit frame
+			--if we capture an old indicator frame, we should reattach it to the current unit frame
+			frame.ERF_indicatorFrames[i]:SetParent(frame)
 		end
 
 		--create local pointer for readability
@@ -39,7 +42,8 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		indicatorFrame:SetScript("OnEnter", function() self:Tooltip_OnEnter(indicatorFrame, frame) end)
 		indicatorFrame:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-		--disable the mouse click on our frames to allow those clicks to get passed straight through to the raid frame behind (switch target, right click, etc)
+		--disable the mouse click on our frames to allow those clicks to get passed straight through to the raid frame 
+		--behind (switch target, right click, etc)
 		--this MUST come after the SetScript lines for OnEnter and OnLeave. SetScript will re-enable mouse clicks when called.
 		indicatorFrame:SetMouseClickEnabled(false)
 	end
@@ -81,23 +85,32 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 
 		indicatorFrame:ClearAllPoints()
 		if i == 1 then
-			indicatorFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD + indicatorHorizontalOffset, -PAD + indicatorVerticalOffset)
+			indicatorFrame:SetPoint("TOPLEFT", frame, "TOPLEFT",
+					PAD + indicatorHorizontalOffset, -PAD + indicatorVerticalOffset)
 		elseif i == 2 then
-			indicatorFrame:SetPoint("TOP", frame, "TOP", 0 + indicatorHorizontalOffset, -PAD + indicatorVerticalOffset)
+			indicatorFrame:SetPoint("TOP", frame, "TOP",
+					0 + indicatorHorizontalOffset, -PAD + indicatorVerticalOffset)
 		elseif i == 3 then
-			indicatorFrame:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD + indicatorHorizontalOffset, -PAD + indicatorVerticalOffset)
+			indicatorFrame:SetPoint("TOPRIGHT", frame, "TOPRIGHT",
+					-PAD + indicatorHorizontalOffset, -PAD + indicatorVerticalOffset)
 		elseif i == 4 then
-			indicatorFrame:SetPoint("LEFT", frame, "LEFT", PAD + indicatorHorizontalOffset, 0 + indicatorVerticalOffset + powerBarVertOffset/2)
+			indicatorFrame:SetPoint("LEFT", frame, "LEFT",
+					PAD + indicatorHorizontalOffset, 0 + indicatorVerticalOffset + powerBarVertOffset/2)
 		elseif i == 5 then
-			indicatorFrame:SetPoint("CENTER", frame, "CENTER", 0 + indicatorHorizontalOffset, 0 + indicatorVerticalOffset + powerBarVertOffset/2)
+			indicatorFrame:SetPoint("CENTER", frame, "CENTER",
+					0 + indicatorHorizontalOffset, 0 + indicatorVerticalOffset + powerBarVertOffset/2)
 		elseif i == 6 then
-			indicatorFrame:SetPoint("RIGHT", frame, "RIGHT", -PAD + indicatorHorizontalOffset, 0 + indicatorVerticalOffset + powerBarVertOffset/2)
+			indicatorFrame:SetPoint("RIGHT", frame, "RIGHT",
+					-PAD + indicatorHorizontalOffset, 0 + indicatorVerticalOffset + powerBarVertOffset/2)
 		elseif i == 7 then
-			indicatorFrame:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD + indicatorHorizontalOffset, PAD + indicatorVerticalOffset + powerBarVertOffset)
+			indicatorFrame:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT",
+					PAD + indicatorHorizontalOffset, PAD + indicatorVerticalOffset + powerBarVertOffset)
 		elseif i == 8 then
-			indicatorFrame:SetPoint("BOTTOM", frame, "BOTTOM", 0 + indicatorHorizontalOffset, PAD + indicatorVerticalOffset + powerBarVertOffset)
+			indicatorFrame:SetPoint("BOTTOM", frame, "BOTTOM",
+					0 + indicatorHorizontalOffset, PAD + indicatorVerticalOffset + powerBarVertOffset)
 		elseif i == 9 then
-			indicatorFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD + indicatorHorizontalOffset, PAD + indicatorVerticalOffset + powerBarVertOffset)
+			indicatorFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT",
+					-PAD + indicatorHorizontalOffset, PAD + indicatorVerticalOffset + powerBarVertOffset)
 		end
 
 		--------------------------------------
@@ -107,9 +120,9 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		indicatorFrame.Countdown:SetFont(font, self.db.profile[i].textSize, "OUTLINE")
 
 		--clear any animations
-		ActionButton_HideOverlayGlow(indicatorFrame)
 		indicatorFrame.Cooldown:Clear()
 		self:StopUpdateTicker(indicatorFrame)
+		self:UpdateOverlayGlow(indicatorFrame)
 		indicatorFrame.Icon:SetAlpha(1)
 	end
 end
@@ -176,22 +189,19 @@ end
 function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 	local i = indicatorFrame.position
 	local parentFrame = indicatorFrame:GetParent()
+	
+	indicatorFrame.thisAura = nil
 
-	--holds the information of the aura we're looking for once it is found
-	local thisAura = {}
-
-	-- if we only are to show the indicator on me, then don't bother if I'm not the unit
-	if self.db.profile[i].meOnly then
-		if unit ~= "player" then
-			return
-		end
+	--stop here if we're only showing the unit on us and we are not the unit
+	if self.db.profile[i].meOnly and unit ~= "player" then
+		return
 	end
 
 	----------------------------------------------------------
-	---- parse each aura and find the information of each ----
+	------------------- Find the Aura ------------------------
 	----------------------------------------------------------
 	for _, auraIdentifier in pairs(self.auraStrings[i]) do
-		--if we don't have any auraStrings for this indicator, stop here
+		--if our unitAura table doesn't exist, stop here
 		if not parentFrame.ERF_unitAuras then
 			return
 		end
@@ -200,141 +210,84 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		for _,aura in pairs(parentFrame.ERF_unitAuras) do --loop through list of auras
 			if aura.name == auraIdentifier or (tonumber(auraIdentifier) and aura.spellId == tonumber(auraIdentifier)) or
 					(aura.isHarmful and aura.dispelName == auraIdentifier) then
-				thisAura = aura
 				indicatorFrame.thisAura = aura --for easy access from our IndicatorTick and Tooltip functions
 				break --once we find the aura, we can stop searching
 			end
 		end
 
 		-- add spell icon info to cache in case we need it later on
-		if thisAura.icon and not self.iconCache[auraIdentifier] then
-			self.iconCache[auraIdentifier] = thisAura.icon
+		if indicatorFrame.thisAura and indicatorFrame.thisAura.icon and not self.iconCache[auraIdentifier] then
+			self.iconCache[auraIdentifier] = indicatorFrame.thisAura.icon
 		end
 
 		-- when tracking multiple things, this determines "where" we stop in the list
 		-- if we find the aura, we can stop querying down the list
 		-- we want to stop only when sourceUnit == "player" if we are tracking "mine only"
-		if (thisAura.auraInstanceID or thisAura.auraIndex) and (not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and thisAura.sourceUnit == "player")) then
+		if indicatorFrame.thisAura and (not self.db.profile[i].mineOnly or 
+				(self.db.profile[i].mineOnly and indicatorFrame.thisAura.sourceUnit == "player")) then
 			break
 		end
 	end
 
-
 	------------------------------------------------------
-	------- output visuals to the indicator frame --------
+	------------------- Apply Visuals --------------------
 	------------------------------------------------------
 
-	-- if we find the spell and we don't only want to show when it is missing
-	if (thisAura.auraInstanceID or thisAura.auraIndex) and not self.db.profile[i].missingOnly and
-			(not self.db.profile[i].mineOnly or (self.db.profile[i].mineOnly and thisAura.sourceUnit == "player")) then
+	--- Primary indicator processing pipeline if we find the aura (and we don't only want to show when it is missing)
+	if indicatorFrame.thisAura and not self.db.profile[i].missingOnly and (not self.db.profile[i].mineOnly or 
+			(self.db.profile[i].mineOnly and indicatorFrame.thisAura.sourceUnit == "player")) then
 
-		---------------------------------
-		---------- Set cooldown ---------
-		---------------------------------
-		if self.db.profile[i].showCountdownSwipe and thisAura.expirationTime and thisAura.duration then
-			indicatorFrame.Cooldown:SetCooldown(thisAura.expirationTime - thisAura.duration, thisAura.duration, thisAura.timeMod)
+		--- Set the cooldown animation
+		if self.db.profile[i].showCountdownSwipe and indicatorFrame.thisAura.expirationTime and indicatorFrame.thisAura.duration then
+			indicatorFrame.Cooldown:SetCooldown(indicatorFrame.thisAura.expirationTime - indicatorFrame.thisAura.duration, 
+					indicatorFrame.thisAura.duration, indicatorFrame.thisAura.timeMod)
 		end
 
-		if thisAura.expirationTime and thisAura.duration then
+		--- Start our update ticker
+		if indicatorFrame.thisAura.expirationTime and indicatorFrame.thisAura.duration then
 			self:StartUpdateTicker(indicatorFrame)
 		end
-		---------------------------------
-		----- Process icon to show ------
-		---------------------------------
-		if thisAura.icon and self.db.profile[i].showIcon then
-			indicatorFrame.Icon:SetTexture(thisAura.icon)
-			indicatorFrame.Icon:SetAlpha(self.db.profile[i].indicatorAlpha)
-		else
-			if self.db.profile[i].colorIndicatorByDebuff and thisAura.dispelName then -- Color by debuff type
-				if thisAura.dispelName == "poison" then
-					indicatorFrame.Icon:SetColorTexture(self.GREEN_COLOR:GetRGB())
-				elseif thisAura.dispelName == "curse" then
-					indicatorFrame.Icon:SetColorTexture(self.PURPLE_COLOR:GetRGB())
-				elseif thisAura.dispelName == "disease" then
-					indicatorFrame.Icon:SetColorTexture(self.BROWN_COLOR:GetRGB())
-				elseif thisAura.dispelName == "magic" then
-					indicatorFrame.Icon:SetColorTexture(self.BLUE_COLOR:GetRGB())
-				end
-			else
-				--set color of custom texture
-				indicatorFrame.Icon:SetColorTexture(self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g,
-						self.db.profile[i].indicatorColor.b, self.db.profile[i].indicatorColor.a)
-			end
+
+		--- Set our indicator icon
+		self:UpdateIndicatorIcon(indicatorFrame)
+
+		--- Set our indicator color
+		if self:TimeLeft(indicatorFrame.updateTicker) == 0 then --only run this if we don't have a timer running
+			self:UpdateIndicatorColor(indicatorFrame)
 		end
 
-		---------------------------------
-		-------- Process text -----------
-		---------------------------------
-		--Set the stack count text
-		if self.db.profile[i].showStackSize and thisAura.applications and thisAura.applications > 1 then
-			--adjust the position of the countdown text to make room for the stack count
-			indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", -1, 1)
-			indicatorFrame.Count:SetText(thisAura.applications)
-		else
-			--reset the position of the countdown text
-			indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", 0, 0)
-			indicatorFrame.Count:SetText("")
+		--- Set our stack size text
+		self:UpdateStackSizeText(indicatorFrame)
+
+		--- Set our text color
+		if self:TimeLeft(indicatorFrame.updateTicker) == 0 then --only run this if we don't have a timer running
+			self:UpdateCountdownTextColor(indicatorFrame)
 		end
 
-		--Set the countdown text color
-		if self.db.profile[i].colorTextByDebuff and thisAura.isHarmful and thisAura.dispelName then -- Color by debuff type
-			if thisAura.dispelName == "poison" then
-				indicatorFrame.Countdown:SetTextColor(self.GREEN_COLOR:GetRGB())
-			elseif thisAura.dispelName == "curse" then
-				indicatorFrame.Countdown:SetTextColor(self.PURPLE_COLOR:GetRGB())
-			elseif thisAura.dispelName == "disease" then
-				indicatorFrame.Countdown:SetTextColor(self.BROWN_COLOR:GetRGB())
-			elseif thisAura.dispelName == "magic" then
-				indicatorFrame.Countdown:SetTextColor(self.BLUE_COLOR:GetRGB())
-			end
-		else
-			--set default textColor to user selected choice
-			indicatorFrame.Countdown:SetTextColor(self.db.profile[i].textColor.r, self.db.profile[i].textColor.g,
-					self.db.profile[i].textColor.b, self.db.profile[i].textColor.a)
-		end
+		---Display our frame
+		indicatorFrame:Show()
 
-		---------------------------------
-		------ Display our frame --------
-		---------------------------------
-		indicatorFrame:Show() --show the frame
+	elseif not indicatorFrame.thisAura and self.db.profile[i].missingOnly then
+		--- Deal with "show only if missing" condition
 
-		--- Deal with "show only if missing"
-	elseif self.db.profile[i].missingOnly and not (thisAura.auraInstanceID or thisAura.auraIndex) then
-		local auraIdentifier = self.auraStrings[i][1] --show the icon for the first auraString position
-		local icon
+		--- Set our indicator icon
+		self:UpdateIndicatorIcon(indicatorFrame)
 
-		--check our iconCache for the name. Note the icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons
-		if not self.iconCache[auraIdentifier] then
-			icon = select(3, GetSpellInfo(auraIdentifier)) --icon is the 3rd return value of GetSpellInfo
-			if icon then
-				self.iconCache[auraIdentifier] = icon --cache our icon
-			else
-				icon = "Interface\\Icons\\INV_Misc_QuestionMark"
-			end
-		else
-			icon = self.iconCache[auraIdentifier]
-		end
+		--- Set our indicator color
+		self:UpdateIndicatorColor(indicatorFrame)
 
-		if self.db.profile[i].showIcon then
-			indicatorFrame.Icon:SetTexture(icon)
-			indicatorFrame.Icon:SetAlpha(self.db.profile[i].indicatorAlpha)
-		else
-			--set color of custom texture
-			indicatorFrame.Icon:SetColorTexture(
-					self.db.profile[i].indicatorColor.r,
-					self.db.profile[i].indicatorColor.g,
-					self.db.profile[i].indicatorColor.b,
-					self.db.profile[i].indicatorColor.a)
-		end
+		--- Clear our countdown text if there is any
+		self:UpdateCountdownText(indicatorFrame)
 
-		--Display our frame
-		indicatorFrame:Show() --show the frame
+		--- Display our frame
+		indicatorFrame:Show()
 
 	else
-		--if no aura is found and we're not showing missing, clear animations and hide the frame
+		--- If we don't find the aura and we're not showing missing, clear animations and hide the frame
 		indicatorFrame.Cooldown:Clear()
 		self:StopUpdateTicker(indicatorFrame)
-		ActionButton_HideOverlayGlow(indicatorFrame)
+		self:UpdateOverlayGlow(indicatorFrame)
+		self:UpdateCountdownText(indicatorFrame)
 		indicatorFrame:Hide() --hide the frame
 	end
 end
@@ -342,50 +295,21 @@ end
 --- Process a single tick of our indicator animation for things like color changing, glow, etc
 --- @param indicatorFrame table @The indicator frame to process
 function EnhancedRaidFrames:IndicatorTick(indicatorFrame)
-	if not indicatorFrame.thisAura then
-		return
-	end
+	if indicatorFrame.thisAura then
+		local remainingTime = floor(indicatorFrame.thisAura.expirationTime - GetTime())
 
-	local i = indicatorFrame.position
-	local remainingTime = floor(indicatorFrame.thisAura.expirationTime - GetTime())
+		if remainingTime and remainingTime >= 0 then
+			--- Set the countdown text
+			self:UpdateCountdownText(indicatorFrame, remainingTime)
 
-	if not remainingTime or remainingTime <= 0 then
-		return
-	end
+			--- Set glow animation based on time remaining
+			self:UpdateOverlayGlow(indicatorFrame, remainingTime)
 
-	--- Set the countdown text
-	if self.db.profile[i].showCountdownText and remainingTime then
-		if remainingTime < 60 then
-			indicatorFrame.Countdown:SetText(remainingTime)
-		else
-			indicatorFrame.Countdown:SetText(floor(remainingTime/60).."m") --shorten to minutes instead of seconds
-		end
-	else
-		indicatorFrame.Countdown:SetText("")
-	end
+			--- Set indicator text color based on time remaining
+			self:UpdateCountdownTextColor(indicatorFrame, remainingTime)
 
-	--- Set glow animation based on time remaining
-	if self.db.profile[i].indicatorGlow and (self.db.profile[i].glowRemainingSecs == 0 or self.db.profile[i].glowRemainingSecs >= remainingTime) then
-		ActionButton_ShowOverlayGlow(indicatorFrame)
-	else
-		ActionButton_HideOverlayGlow(indicatorFrame)
-	end
-
-	--- Set indicator background color based on time remaining
-	if self.db.profile[i].colorIndicatorByTime and not (indicatorFrame.thisAura.icon and self.db.profile[i].showIcon) then -- Color by remaining time
-		if self.db.profile[i].colorIndicatorByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_low then
-			indicatorFrame.Icon:SetColorTexture(self.RED_COLOR:GetRGB())
-		elseif self.db.profile[i].colorIndicatorByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorIndicatorByTime_high then
-			indicatorFrame.Icon:SetColorTexture(self.YELLOW_COLOR:GetRGB())
-		end
-	end
-
-	--- Set indicator text color based on time remaining
-	if self.db.profile[i].colorTextByTime then -- Color by remaining time
-		if self.db.profile[i].colorTextByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_low then
-			indicatorFrame.Countdown:SetTextColor(self.RED_COLOR:GetRGB())
-		elseif self.db.profile[i].colorTextByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_high then
-			indicatorFrame.Countdown:SetTextColor(self.YELLOW_COLOR:GetRGB())
+			--- Set indicator background color based on time remaining
+			self:UpdateIndicatorColor(indicatorFrame, remainingTime)
 		end
 	end
 end
@@ -409,6 +333,198 @@ function EnhancedRaidFrames:StopUpdateTicker(indicatorFrame)
 end
 
 ------------------------------------------------
+-------------------- Visuals -------------------
+------------------------------------------------
+
+--- Update the countdown text on the indicator
+--- @param indicatorFrame table @The indicator frame to process
+--- @param remainingTime number @The time remaining on the aura
+function EnhancedRaidFrames:UpdateCountdownText(indicatorFrame, remainingTime)
+	local i = indicatorFrame.position
+	local thisAura = indicatorFrame.thisAura
+
+	if self.db.profile[i].showCountdownText and remainingTime and thisAura then
+		if remainingTime < 60 then
+			indicatorFrame.Countdown:SetText(remainingTime)
+		else
+			indicatorFrame.Countdown:SetText(floor(remainingTime/60).."m") --shorten to minutes instead of seconds
+		end
+	else
+		indicatorFrame.Countdown:SetText("")
+	end
+end
+
+--- Update the stack size text on the indicator
+--- @param indicatorFrame table @The indicator frame to process
+function EnhancedRaidFrames:UpdateStackSizeText(indicatorFrame)
+	local i = indicatorFrame.position
+	local thisAura = indicatorFrame.thisAura
+
+	--Set the stack count text
+	if self.db.profile[i].showStackSize and thisAura.applications and thisAura.applications > 1 then
+		--adjust the position of the countdown text to make room for the stack count
+		indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", -1, 1)
+		indicatorFrame.Count:SetText(thisAura.applications)
+	else
+		--reset the position of the countdown text
+		indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", 0, 0)
+		indicatorFrame.Count:SetText("")
+	end
+end
+
+--- Update the indicator icon
+--- @param indicatorFrame table @The indicator frame to process
+function EnhancedRaidFrames:UpdateIndicatorIcon(indicatorFrame)
+	local i = indicatorFrame.position
+	local thisAura = indicatorFrame.thisAura
+
+	-- Stop here if we've set to not show an icon
+	if not self.db.profile[i].showIcon then
+		return
+	end
+
+	if thisAura then
+		--- Set our active indicator icon
+		if thisAura.icon then --if we have an icon, use it
+			indicatorFrame.Icon:SetTexture(thisAura.icon)
+		elseif self.iconCache[thisAura.name] then --look in our icon cache for the name
+			indicatorFrame.Icon:SetTexture(self.iconCache[thisAura.name])
+		elseif self.iconCache[thisAura.spellId] then --look in our icon cache for the spellId
+			indicatorFrame.Icon:SetTexture(self.iconCache[thisAura.spellId])
+		else --if we don't have an icon, use the default question mark
+			indicatorFrame.Icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+		end
+		--set the alpha of the icon
+		indicatorFrame.Icon:SetAlpha(self.db.profile[i].indicatorAlpha)
+	else
+		--- Set our "missing" indicator icon
+		local auraIdentifier = self.auraStrings[i][1] --show the icon for the first auraString position
+
+		-- Check our iconCache for the name. 
+		-- Note: The icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons.
+		if not self.iconCache[auraIdentifier] then
+			-- Query the game for the icon
+			local icon = select(3, GetSpellInfo(auraIdentifier)) --icon is the 3rd return value of GetSpellInfo
+			if icon then
+				self.iconCache[auraIdentifier] = icon --cache our icon if we found one
+				indicatorFrame.Icon:SetTexture(icon)
+			else
+				indicatorFrame.Icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+			end
+		else
+			indicatorFrame.Icon:SetTexture(self.iconCache[auraIdentifier])
+		end
+		--set the alpha of the icon
+		indicatorFrame.Icon:SetAlpha(self.db.profile[i].indicatorAlpha)
+	end
+end
+
+--- Update the indicator color
+--- @param indicatorFrame table @The indicator frame to process
+--- @param remainingTime number @The time remaining on the aura
+function EnhancedRaidFrames:UpdateIndicatorColor(indicatorFrame, remainingTime)
+	local i = indicatorFrame.position
+	local thisAura = indicatorFrame.thisAura
+
+	-- Stop here if we've set to show an icon
+	if self.db.profile[i].showIcon then
+		return
+	end
+
+	if thisAura then
+		--- Set color based on time remaining
+		if self.db.profile[i].colorIndicatorByTime and remainingTime then -- Color by remaining time
+			if remainingTime and self.db.profile[i].colorIndicatorByTime_low ~= 0 and
+					remainingTime <= self.db.profile[i].colorIndicatorByTime_low then
+				indicatorFrame.Icon:SetColorTexture(self.RED_COLOR:GetRGB())
+				return
+			elseif remainingTime and self.db.profile[i].colorIndicatorByTime_high ~= 0 and
+					remainingTime <= self.db.profile[i].colorIndicatorByTime_high then
+				indicatorFrame.Icon:SetColorTexture(self.YELLOW_COLOR:GetRGB())
+				return
+			end
+		end
+
+		--- Set the color by debuff type
+		if self.db.profile[i].colorIndicatorByDebuff and thisAura.isHarmful and thisAura.dispelName then
+			if thisAura.dispelName == "poison" then
+				indicatorFrame.Icon:SetColorTexture(self.GREEN_COLOR:GetRGB())
+				return
+			elseif thisAura.dispelName == "curse" then
+				indicatorFrame.Icon:SetColorTexture(self.PURPLE_COLOR:GetRGB())
+				return
+			elseif thisAura.dispelName == "disease" then
+				indicatorFrame.Icon:SetColorTexture(self.BROWN_COLOR:GetRGB())
+				return
+			elseif thisAura.dispelName == "magic" then
+				indicatorFrame.Icon:SetColorTexture(self.BLUE_COLOR:GetRGB())
+				return
+			end
+		end
+	end
+
+	--- Set the color to the user select choice
+	indicatorFrame.Icon:SetColorTexture(self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g,
+			self.db.profile[i].indicatorColor.b, self.db.profile[i].indicatorColor.a)
+end
+
+--- Update the indicator countdown text color
+--- @param indicatorFrame table @The indicator frame to process
+--- @param remainingTime number @The time remaining on the aura
+function EnhancedRaidFrames:UpdateCountdownTextColor(indicatorFrame, remainingTime)
+	local i = indicatorFrame.position
+	local thisAura = indicatorFrame.thisAura
+
+	if thisAura then
+		--- Set color based on time remaining
+		if self.db.profile[i].colorTextByTime and remainingTime then -- Color by remaining time
+			if self.db.profile[i].colorTextByTime_low ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_low then
+				indicatorFrame.Countdown:SetTextColor(self.RED_COLOR:GetRGB())
+				return
+			elseif self.db.profile[i].colorTextByTime_high ~= 0 and remainingTime <= self.db.profile[i].colorTextByTime_high then
+				indicatorFrame.Countdown:SetTextColor(self.YELLOW_COLOR:GetRGB())
+				return
+			end
+		end
+
+		--- Set the color by debuff type
+		if self.db.profile[i].colorTextByDebuff and thisAura.isHarmful and thisAura.dispelName then
+			if thisAura.dispelName == "poison" then
+				indicatorFrame.Countdown:SetTextColor(self.GREEN_COLOR:GetRGB())
+				return
+			elseif thisAura.dispelName == "curse" then
+				indicatorFrame.Countdown:SetTextColor(self.PURPLE_COLOR:GetRGB())
+				return
+			elseif thisAura.dispelName == "disease" then
+				indicatorFrame.Countdown:SetTextColor(self.BROWN_COLOR:GetRGB())
+				return
+			elseif thisAura.dispelName == "magic" then
+				indicatorFrame.Countdown:SetTextColor(self.BLUE_COLOR:GetRGB())
+				return
+			end
+		end
+	end
+
+	--- Set the color to the user select choice
+	indicatorFrame.Countdown:SetTextColor(self.db.profile[i].textColor.r, self.db.profile[i].textColor.g,
+			self.db.profile[i].textColor.b, self.db.profile[i].textColor.a)
+end
+
+--- Update the indicator glow effect
+--- @param indicatorFrame table @The indicator frame to process
+--- @param remainingTime number @The time remaining on the aura
+function EnhancedRaidFrames:UpdateOverlayGlow(indicatorFrame, remainingTime)
+	local i = indicatorFrame.position
+
+	if self.db.profile[i].indicatorGlow and remainingTime and
+			(self.db.profile[i].glowRemainingSecs == 0 or self.db.profile[i].glowRemainingSecs >= remainingTime) then
+		ActionButton_ShowOverlayGlow(indicatorFrame)
+	else
+		ActionButton_HideOverlayGlow(indicatorFrame)
+	end
+end
+
+------------------------------------------------
 ----------------- Tooltip Code -----------------
 ------------------------------------------------
 
@@ -417,26 +533,28 @@ end
 --- @param parentFrame table @The parent frame of the indicator
 function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame, parentFrame)
 	local i = indicatorFrame.position
+	local thisAura = indicatorFrame.thisAura
 
-	if not self.db.profile[i].showTooltip then --don't show tooltips unless we have the option set for this position
+	-- Stop here if we've set to not show a tooltip or we don't have an active aura
+	if not self.db.profile[i].showTooltip or not thisAura then
 		return
 	end
 
 	-- Set the tooltip
-	if (indicatorFrame.thisAura.auraInstanceID or indicatorFrame.thisAura.auraIndex) and indicatorFrame.Icon:GetTexture() then
+	if (thisAura.auraInstanceID or thisAura.auraIndex) and indicatorFrame.Icon:GetTexture() then
 		-- Set the buff/debuff as tooltip and anchor to the cursor
 		GameTooltip:SetOwner(UIParent, self.db.profile[i].tooltipLocation)
-		if indicatorFrame.thisAura.isHelpful then
-			if indicatorFrame.thisAura.auraInstanceID then
-				GameTooltip:SetUnitBuffByAuraInstanceID(parentFrame.unit, indicatorFrame.thisAura.auraInstanceID)
+		if thisAura.isHelpful then
+			if thisAura.auraInstanceID then
+				GameTooltip:SetUnitBuffByAuraInstanceID(parentFrame.unit, thisAura.auraInstanceID)
 			elseif indicatorFrame.auraIndex then --the legacy way of doing things
-				GameTooltip:SetUnitAura(parentFrame.unit, indicatorFrame.thisAura.auraIndex, "HELPFUL")
+				GameTooltip:SetUnitAura(parentFrame.unit, thisAura.auraIndex, "HELPFUL")
 			end
-		elseif indicatorFrame.thisAura.isHarmful then
-			if indicatorFrame.thisAura.auraInstanceID then
-				GameTooltip:SetUnitDebuffByAuraInstanceID(parentFrame.unit, indicatorFrame.thisAura.auraInstanceID)
-			elseif indicatorFrame.thisAura.auraIndex then --the legacy way of doing things
-				GameTooltip:SetUnitAura(parentFrame.unit, indicatorFrame.thisAura.auraIndex, "HARMFUL")
+		elseif thisAura.isHarmful then
+			if thisAura.auraInstanceID then
+				GameTooltip:SetUnitDebuffByAuraInstanceID(parentFrame.unit, thisAura.auraInstanceID)
+			elseif thisAura.auraIndex then --the legacy way of doing things
+				GameTooltip:SetUnitAura(parentFrame.unit, thisAura.auraIndex, "HARMFUL")
 			end
 		end
 	else
@@ -462,7 +580,8 @@ function EnhancedRaidFrames:GenerateAuraStrings()
 			name = name:lower() --force lowercase
 			name = name:gsub("^%s*(.-)%s*$", "%1") --strip any leading or trailing whitespace
 			name = name:gsub("\"", "") --strip any quotation marks if there are any
-			self.allAuras = self.allAuras.." "..name.." " -- Add each watched aura to a string so we later can quickly determine if we need to look for one
+			-- Add each watched aura to a string so we later can quickly determine if we need to look for one
+			self.allAuras = self.allAuras.." "..name.." "
 			self.auraStrings[i][j] = name
 			j = j + 1
 		end
