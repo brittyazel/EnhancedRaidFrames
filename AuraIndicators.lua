@@ -65,7 +65,7 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		indicatorFrame:SetHeight(self.db.profile[i].indicatorSize)
 
 		--------------------------------------
-		
+
 		--set indicator frame position
 		local PAD = 1
 		local indicatorVerticalOffset = floor((self.db.profile[i].indicatorVerticalOffset * frame:GetHeight()) + 0.5)
@@ -101,11 +101,11 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 		end
 
 		--------------------------------------
-		
+
 		--Set font family and size for our countdown text
 		local font = (LibSharedMedia and LibSharedMedia:Fetch('font', self.db.profile.indicatorFont)) or "Fonts\\ARIALN.TTF"
 		indicatorFrame.Countdown:SetFont(font, self.db.profile[i].textSize, "OUTLINE")
-		
+
 		--clear any animations
 		ActionButton_HideOverlayGlow(indicatorFrame)
 		indicatorFrame.Cooldown:Clear()
@@ -232,7 +232,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		---------- Set cooldown ---------
 		---------------------------------
 		if self.db.profile[i].showCountdownSwipe and thisAura.expirationTime and thisAura.duration then
-			indicatorFrame.Cooldown:SetCooldown(thisAura.expirationTime - thisAura.duration, thisAura.duration);
+			indicatorFrame.Cooldown:SetCooldown(thisAura.expirationTime - thisAura.duration, thisAura.duration, thisAura.timeMod)
 		end
 
 		if thisAura.expirationTime and thisAura.duration then
@@ -297,7 +297,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		------ Display our frame --------
 		---------------------------------
 		indicatorFrame:Show() --show the frame
-		
+
 		--- Deal with "show only if missing"
 	elseif self.db.profile[i].missingOnly and not (thisAura.auraInstanceID or thisAura.auraIndex) then
 		local auraIdentifier = self.auraStrings[i][1] --show the icon for the first auraString position
@@ -326,7 +326,7 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 					self.db.profile[i].indicatorColor.b,
 					self.db.profile[i].indicatorColor.a)
 		end
-		
+
 		--Display our frame
 		indicatorFrame:Show() --show the frame
 
@@ -345,25 +345,25 @@ function EnhancedRaidFrames:IndicatorTick(indicatorFrame)
 	if not indicatorFrame.thisAura then
 		return
 	end
-	
+
 	local i = indicatorFrame.position
-	local remainingTime = indicatorFrame.thisAura.expirationTime - GetTime()
-	
+	local remainingTime = floor(indicatorFrame.thisAura.expirationTime - GetTime())
+
 	if not remainingTime or remainingTime <= 0 then
 		return
 	end
-	
+
 	--- Set the countdown text
 	if self.db.profile[i].showCountdownText and remainingTime then
 		if remainingTime < 60 then
-			indicatorFrame.Countdown:SetText(floor(remainingTime))
+			indicatorFrame.Countdown:SetText(remainingTime)
 		else
 			indicatorFrame.Countdown:SetText(floor(remainingTime/60).."m") --shorten to minutes instead of seconds
 		end
 	else
 		indicatorFrame.Countdown:SetText("")
 	end
-	
+
 	--- Set glow animation based on time remaining
 	if self.db.profile[i].indicatorGlow and (self.db.profile[i].glowRemainingSecs == 0 or self.db.profile[i].glowRemainingSecs >= remainingTime) then
 		ActionButton_ShowOverlayGlow(indicatorFrame)
