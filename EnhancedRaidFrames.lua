@@ -71,9 +71,6 @@ function EnhancedRaidFrames:OnEnable()
 	-- We use SecureHook() because the default function is protected, and we want to make sure our code runs after the default code.
 	self:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
 	self:SecureHook("CompactUnitFrame_UpdateWidgetsOnlyMode", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
-	self:SecureHook("CompactUnitFrame_UtilSetBuff", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
-	self:SecureHook("CompactUnitFrame_UtilSetDebuff", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
-	self:SecureHook("CompactUnitFrame_UtilSetDispelDebuff", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
 
 	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
 	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) self:UpdateInRange(frame) end)
