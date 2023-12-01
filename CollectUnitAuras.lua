@@ -101,10 +101,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 		payload.isFullUpdate = true --force a full update if we don't have a table for the unit yet
 	end
 	
-	--flag to determine if we need to run an update on the indicators since we only care about select auras
-	local shouldRunUpdate = false
-
-	--flag to determine if we need to run an update on the indicators since we only care about select auras
+	-- Flag to determine if we need to run an update on the indicators since we only care about select auras
 	local shouldRunUpdate = false
 
 	-- If we get a full update signal, reset the table and rescan all auras for the unit
