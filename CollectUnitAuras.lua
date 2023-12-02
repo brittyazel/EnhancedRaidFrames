@@ -171,9 +171,10 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	-- Quickly check if we're watching for this aura, and ignore if we aren't
 	-- It's important to use the 4th argument in string.find to turn off pattern matching, 
 	-- otherwise strings with parentheses in them will fail to be found
-	if self.allAuras:find(" "..auraData.name:lower().." ", nil, true) or self.allAuras:find(auraData.spellId) or
+	if self.allAuras:find(" "..auraData.name:lower().." ", 1, true) 
+			or self.allAuras:find(auraData.spellId, 1, true)
 			--check if the aura is a debuff, and if it's a dispellable debuff check if we're tracking the wildcard of that debuff type
-			(auraData.isHarmful and auraData.dispelName and self.allAuras:find(auraData.dispelName:lower())) then
+			or (auraData.isHarmful and auraData.dispelName and self.allAuras:find(auraData.dispelName:lower(), 1, true)) then
 		
 		auraData.name = auraData.name:lower()
 		if auraData.dispelName then

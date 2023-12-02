@@ -434,12 +434,12 @@ function EnhancedRaidFrames:UpdateIndicatorColor(indicatorFrame, remainingTime)
 	if thisAura then
 		--- Set color based on time remaining
 		if self.db.profile[i].colorIndicatorByTime and remainingTime then -- Color by remaining time
-			if remainingTime and self.db.profile[i].colorIndicatorByTime_low ~= 0 and
-					remainingTime <= self.db.profile[i].colorIndicatorByTime_low then
+			if remainingTime and self.db.profile[i].colorIndicatorByTime_low ~= 0 
+					and remainingTime <= self.db.profile[i].colorIndicatorByTime_low then
 				indicatorFrame.Icon:SetColorTexture(self.RED_COLOR:GetRGB())
 				return
-			elseif remainingTime and self.db.profile[i].colorIndicatorByTime_high ~= 0 and
-					remainingTime <= self.db.profile[i].colorIndicatorByTime_high then
+			elseif remainingTime and self.db.profile[i].colorIndicatorByTime_high ~= 0 
+					and remainingTime <= self.db.profile[i].colorIndicatorByTime_high then
 				indicatorFrame.Icon:SetColorTexture(self.YELLOW_COLOR:GetRGB())
 				return
 			end
@@ -516,8 +516,8 @@ end
 function EnhancedRaidFrames:UpdateOverlayGlow(indicatorFrame, remainingTime)
 	local i = indicatorFrame.position
 
-	if self.db.profile[i].indicatorGlow and remainingTime and
-			(self.db.profile[i].glowRemainingSecs == 0 or self.db.profile[i].glowRemainingSecs >= remainingTime) then
+	if self.db.profile[i].indicatorGlow and remainingTime 
+			and (self.db.profile[i].glowRemainingSecs == 0 or self.db.profile[i].glowRemainingSecs >= remainingTime) then
 		ActionButton_ShowOverlayGlow(indicatorFrame)
 	else
 		ActionButton_HideOverlayGlow(indicatorFrame)

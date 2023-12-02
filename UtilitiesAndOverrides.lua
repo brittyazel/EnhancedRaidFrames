@@ -38,7 +38,9 @@ function EnhancedRaidFrames.ShouldContinue(unit)
 	end
 
 	-- Only process player, raid and party units
-	if not string.find(unit, "player") and not string.find(unit, "raid") and not string.find(unit, "party") then
+	if not unit:find("player", 1, true) 
+			and not unit:find("raid", 1, true) 
+			and not unit:find("party", 1, true) then
 		return false
 	end
 
