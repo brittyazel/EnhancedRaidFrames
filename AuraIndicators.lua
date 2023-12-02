@@ -541,13 +541,13 @@ function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame, parentFrame)
 	end
 
 	-- Set the tooltip
-	if (thisAura.auraInstanceID or thisAura.auraIndex) and indicatorFrame.Icon:GetTexture() then
+	if indicatorFrame.Icon:GetTexture() then
 		-- Set the buff/debuff as tooltip and anchor to the cursor
 		GameTooltip:SetOwner(UIParent, self.db.profile[i].tooltipLocation)
 		if thisAura.isHelpful then
 			if thisAura.auraInstanceID then
 				GameTooltip:SetUnitBuffByAuraInstanceID(parentFrame.unit, thisAura.auraInstanceID)
-			elseif indicatorFrame.auraIndex then --the legacy way of doing things
+			elseif thisAura.auraIndex then --the legacy way of doing things
 				GameTooltip:SetUnitAura(parentFrame.unit, thisAura.auraIndex, "HELPFUL")
 			end
 		elseif thisAura.isHarmful then
