@@ -70,7 +70,9 @@ function EnhancedRaidFrames:OnEnable()
 	-- Hook our UpdateStockIndicatorVisibility function onto internal functions. 
 	-- We use SecureHook() because the default function is protected, and we want to make sure our code runs after the default code.
 	self:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
-	self:SecureHook("CompactUnitFrame_UpdatePrivateAuras", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
+	if not self.isWoWClassicEra and not self.isWoWClassic then
+		self:SecureHook("CompactUnitFrame_UpdatePrivateAuras", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
+	end
 
 	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
 	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) self:UpdateInRange(frame) end)
