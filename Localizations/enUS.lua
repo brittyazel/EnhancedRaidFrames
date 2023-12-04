@@ -215,7 +215,8 @@ L["glowRemainingSecs_desc2"] = "A value of '0' means it will always glow"
 -------------------- Utilities ---------------------
 ----------------------------------------------------
 
-L["The database has been updated."] = true
+L["The database is being migrated to version:"] = true
+L["Database migration successful."] = true
 
 L["Profile"] = true
 L["Import"] = true

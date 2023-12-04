@@ -6,7 +6,7 @@
 ---@type EnhancedRaidFrames
 local EnhancedRaidFrames = _G.EnhancedRaidFrames
 
-EnhancedRaidFrames.DATABASE_VERSION = 2
+EnhancedRaidFrames.DATABASE_VERSION = 2.2
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
@@ -49,7 +49,7 @@ function EnhancedRaidFrames:CreateDefaults()
 
 	---Indicator Options Settings
 	for i = 1, 9 do
-		defaults.profile[i] = {
+		defaults.profile["indicator-"..i] = {
 			--Aura Strings
 			auras = "",
 
@@ -66,7 +66,7 @@ function EnhancedRaidFrames:CreateDefaults()
 			indicatorVerticalOffset = 0,
 			showIcon = true,
 			indicatorAlpha = 1,
-			indicatorColor = {r = 0, g = 1, b = 0.59, a = 1},
+			indicatorColor = {0, 1, 0.59, 1},
 			colorIndicatorByDebuff = false,
 			colorIndicatorByTime = false,
 			colorIndicatorByTime_low = 2,
@@ -75,7 +75,7 @@ function EnhancedRaidFrames:CreateDefaults()
 			--Text and Color
 			showCountdownText = false,
 			showStackSize = true,
-			textColor = {r = 1, g = 1, b = 1, a = 1},
+			textColor = {1, 1, 1, 1},
 			colorTextByTime = false,
 			colorTextByTime_low = 2,
 			colorTextByTime_high = 5,

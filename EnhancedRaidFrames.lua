@@ -24,27 +24,28 @@ local AceDB = LibStub("AceDB-3.0")
 --- **OnInitialize** is called directly after the addon is fully loaded.
 --- We do initialization tasks here, such as loading our saved variables or setting up slash commands.
 function EnhancedRaidFrames:OnInitialize()
-	-- Set up database defaults
-	local defaults = self:CreateDefaults()
-
-	-- Create database object
-	self.db = AceDB:New("EnhancedRaidFramesDB", defaults) --EnhancedRaidFramesDB is our saved variable table
-
-	-- Enhance database and profile options using LibDualSpec
-	if not self.isWoWClassicEra then -- Not available in Classic Era
-		--enhance the database object with per spec profile features
-		LibStub('LibDualSpec-1.0'):EnhanceDatabase(self.db, "EnhancedRaidFrames")
-		-- enhance the profile options table with per spec profile features
-		LibStub('LibDualSpec-1.0'):EnhanceOptions(AceDBOptions:GetOptionsTable(self.db), self.db)
-	end
+	-- Set up our database
+	self:SetupDatabase()
+	
+	-- Run our database migration if necessary
+	self:MigrateDatabase()
 
 	-- Setup config panels in the Blizzard interface options
 	self:SetupConfigPanels()
 
 	-- Register callbacks for profile switching
-	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
-	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
-	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
+	self.db.RegisterCallback(self, "OnProfileChanged", function()
+		self:MigrateDatabase()
+		self:RefreshConfig() 
+	end)
+	self.db.RegisterCallback(self, "OnProfileCopied", function()
+		self:MigrateDatabase()
+		self:RefreshConfig()
+	end)
+	self.db.RegisterCallback(self, "OnProfileReset", function()
+		self:MigrateDatabase()
+		self:RefreshConfig()
+	end)
 end
 
 --- **OnEnable** is called during the PLAYER_LOGIN event when most of the data provided by the game is already present.
@@ -82,9 +83,6 @@ function EnhancedRaidFrames:OnEnable()
 
 	-- Register our slash command to open the config panel
 	self:RegisterChatCommand("erf", function() Settings.OpenToCategory("Enhanced Raid Frames") end)
-
-	-- Notify to the chat window of any new major updates, if necessary
-	self:UpdateNotifier()
 end
 
 --- **OnDisable** is called when our addon is manually being disabled during a running session.
@@ -95,6 +93,23 @@ end
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
+
+--- Create a table containing our default database values
+function EnhancedRaidFrames:SetupDatabase()
+	-- Set up database defaults
+	local defaults = self:CreateDefaults()
+	
+	-- Create database object
+	self.db = AceDB:New("EnhancedRaidFramesDB", defaults) --EnhancedRaidFramesDB is our saved variable table
+
+	-- Enhance database and profile options using LibDualSpec
+	if not self.isWoWClassicEra then -- Not available in Classic Era
+		--enhance the database object with per spec profile features
+		LibStub('LibDualSpec-1.0'):EnhanceDatabase(self.db, "EnhancedRaidFrames")
+		-- enhance the profile options table with per spec profile features
+		LibStub('LibDualSpec-1.0'):EnhanceOptions(AceDBOptions:GetOptionsTable(self.db), self.db)
+	end
+end
 
 --- Create our database, import saved variables, and set up our configuration panels
 function EnhancedRaidFrames:SetupConfigPanels()

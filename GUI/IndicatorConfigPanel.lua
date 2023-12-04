@@ -68,9 +68,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						self.BROWN_COLOR:WrapTextInColorCode("Disease")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["diseaseWildcard_desc"]).."\n"..
 						self.BLUE_COLOR:WrapTextInColorCode("Magic")..self.WHITE_COLOR:WrapTextInColorCode(": "..L["magicWildcard_desc"]).."\n",
 				multiline = 7,
-				get = function() return self.db.profile[i].auras end,
+				get = function() return self.db.profile["indicator-"..i].auras end,
 				set = function(_, value)
-					self.db.profile[i].auras = value
+					self.db.profile["indicator-"..i].auras = value
 					self:RefreshConfig()
 				end,
 				width = THIRD_WIDTH * 1.75,
@@ -92,10 +92,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						name = L["Mine Only"],
 						desc = L["mineOnly_desc"],
 						get = function()
-							return self.db.profile[i].mineOnly
+							return self.db.profile["indicator-"..i].mineOnly
 						end,
 						set = function(_, value)
-							self.db.profile[i].mineOnly = value
+							self.db.profile["indicator-"..i].mineOnly = value
 							self:RefreshConfig()
 						end,
 						width = THIRD_WIDTH,
@@ -106,10 +106,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						name = L["Show On Me Only"],
 						desc = L["meOnly_desc"],
 						get = function()
-							return self.db.profile[i].meOnly
+							return self.db.profile["indicator-"..i].meOnly
 						end,
 						set = function(_, value)
-							self.db.profile[i].meOnly = value
+							self.db.profile["indicator-"..i].meOnly = value
 							self:RefreshConfig()
 						end,
 						width = THIRD_WIDTH,
@@ -120,10 +120,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						name = L["Show Only if Missing"],
 						desc = L["missingOnly_desc"],
 						get = function()
-							return self.db.profile[i].missingOnly
+							return self.db.profile["indicator-"..i].missingOnly
 						end,
 						set = function(_, value)
-							self.db.profile[i].missingOnly = value
+							self.db.profile["indicator-"..i].missingOnly = value
 							self:RefreshConfig()
 						end,
 						width = THIRD_WIDTH,
@@ -140,10 +140,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						name = L["Show Tooltip"],
 						desc = L["showTooltip_desc"],
 						get = function()
-							return self.db.profile[i].showTooltip
+							return self.db.profile["indicator-"..i].showTooltip
 						end,
 						set = function(_, value)
-							self.db.profile[i].showTooltip = value
+							self.db.profile["indicator-"..i].showTooltip = value
 							self:RefreshConfig()
 						end,
 						width = THIRD_WIDTH,
@@ -157,13 +157,13 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						values = {["ANCHOR_CURSOR"] = L["Attached to Cursor"], ["ANCHOR_PRESERVE"] = L["Blizzard Default"]},
 						sorting = {[1] = "ANCHOR_CURSOR", [2] = "ANCHOR_PRESERVE"},
 						get = function()
-							return self.db.profile[i].tooltipLocation
+							return self.db.profile["indicator-"..i].tooltipLocation
 						end,
 						set = function(_, value)
-							self.db.profile[i].tooltipLocation = value
+							self.db.profile["indicator-"..i].tooltipLocation = value
 							self:RefreshConfig()
 						end,
-						disabled = function() return not self.db.profile[i].showTooltip end,
+						disabled = function() return not self.db.profile["indicator-"..i].showTooltip end,
 						width = THIRD_WIDTH,
 						order = 12,
 					},
@@ -189,10 +189,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						max = 30,
 						step = 1,
 						get = function()
-							return self.db.profile[i].indicatorSize
+							return self.db.profile["indicator-"..i].indicatorSize
 						end,
 						set = function(_, value)
-							self.db.profile[i].indicatorSize = value
+							self.db.profile["indicator-"..i].indicatorSize = value
 							self:RefreshConfig()
 						end,
 						width = THIRD_WIDTH,
@@ -206,9 +206,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						min = -1,
 						max = 1,
 						step = .01,
-						get = function() return self.db.profile[i].indicatorVerticalOffset end,
+						get = function() return self.db.profile["indicator-"..i].indicatorVerticalOffset end,
 						set = function(_, value)
-							self.db.profile[i].indicatorVerticalOffset = value
+							self.db.profile["indicator-"..i].indicatorVerticalOffset = value
 							self:RefreshConfig()
 							self:RefreshConfig()
 						end,
@@ -223,9 +223,9 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						min = -1,
 						max = 1,
 						step = .01,
-						get = function() return self.db.profile[i].indicatorHorizontalOffset end,
+						get = function() return self.db.profile["indicator-"..i].indicatorHorizontalOffset end,
 						set = function(_, value)
-							self.db.profile[i].indicatorHorizontalOffset = value
+							self.db.profile["indicator-"..i].indicatorHorizontalOffset = value
 							self:RefreshConfig()
 						end,
 						width = THIRD_WIDTH,
@@ -243,10 +243,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						desc = L["showIcon_desc1"].."\n"..
 								"("..L["showIcon_desc2"]..")",
 						get = function()
-							return self.db.profile[i].showIcon
+							return self.db.profile["indicator-"..i].showIcon
 						end,
 						set = function(_, value)
-							self.db.profile[i].showIcon = value
+							self.db.profile["indicator-"..i].showIcon = value
 							self:RefreshConfig()
 						end,
 						width = THIRD_WIDTH,
@@ -260,14 +260,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						max = 1,
 						step = 0.05,
 						get = function()
-							return self.db.profile[i].indicatorAlpha
+							return self.db.profile["indicator-"..i].indicatorAlpha
 						end,
 						set = function(_, value)
-							self.db.profile[i].indicatorAlpha = value
+							self.db.profile["indicator-"..i].indicatorAlpha = value
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							return not self.db.profile[i].showIcon
+							return not self.db.profile["indicator-"..i].showIcon
 						end,
 						width = THIRD_WIDTH,
 						order = 12,
@@ -285,14 +285,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 								"("..L["indicatorColor_desc2"]..")",
 						hasAlpha = true,
 						get = function()
-							return self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g, self.db.profile[i].indicatorColor.b, self.db.profile[i].indicatorColor.a
+							return unpack(self.db.profile["indicator-"..i].indicatorColor)
 						end,
 						set = function(_, r, g, b, a)
-							self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g, self.db.profile[i].indicatorColor.b, self.db.profile[i].indicatorColor.a = r, g, b, a
+							self.db.profile["indicator-"..i].indicatorColor = {r, g, b, a}
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							return self.db.profile[i].showIcon
+							return self.db.profile["indicator-"..i].showIcon
 						end,
 						width = THIRD_WIDTH,
 						order = 21,
@@ -308,14 +308,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 								self.BROWN_COLOR:WrapTextInColorCode(L["Disease"]).."\n"..
 								self.BLUE_COLOR:WrapTextInColorCode(L["Magic"]).."\n",
 						get = function()
-							return self.db.profile[i].colorIndicatorByDebuff
+							return self.db.profile["indicator-"..i].colorIndicatorByDebuff
 						end,
 						set = function(_, value)
-							self.db.profile[i].colorIndicatorByDebuff = value
+							self.db.profile["indicator-"..i].colorIndicatorByDebuff = value
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							return self.db.profile[i].showIcon
+							return self.db.profile["indicator-"..i].showIcon
 						end,
 						width = THIRD_WIDTH,
 						order = 22,
@@ -329,14 +329,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 								self.RED_COLOR:WrapTextInColorCode(L["Time #1"]).."\n"..
 								self.YELLOW_COLOR:WrapTextInColorCode(L["Time #2"]),
 						get = function()
-							return self.db.profile[i].colorIndicatorByTime
+							return self.db.profile["indicator-"..i].colorIndicatorByTime
 						end,
 						set = function(_, value)
-							self.db.profile[i].colorIndicatorByTime = value
+							self.db.profile["indicator-"..i].colorIndicatorByTime = value
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							return self.db.profile[i].showIcon
+							return self.db.profile["indicator-"..i].showIcon
 						end,
 						width = THIRD_WIDTH,
 						order = 23,
@@ -350,14 +350,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						max = 10,
 						step = 1,
 						get = function()
-							return self.db.profile[i].colorIndicatorByTime_low
+							return self.db.profile["indicator-"..i].colorIndicatorByTime_low
 						end,
 						set = function(_, value)
-							self.db.profile[i].colorIndicatorByTime_low = value
+							self.db.profile["indicator-"..i].colorIndicatorByTime_low = value
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							return self.db.profile[i].showIcon or not self.db.profile[i].colorIndicatorByTime
+							return self.db.profile["indicator-"..i].showIcon or not self.db.profile["indicator-"..i].colorIndicatorByTime
 						end,
 						width = THIRD_WIDTH,
 						order = 24,
@@ -371,14 +371,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						max = 10,
 						step = 1,
 						get = function()
-							return self.db.profile[i].colorIndicatorByTime_high
+							return self.db.profile["indicator-"..i].colorIndicatorByTime_high
 						end,
 						set = function(_, value)
-							self.db.profile[i].colorIndicatorByTime_high = value
+							self.db.profile["indicator-"..i].colorIndicatorByTime_high = value
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							return self.db.profile[i].showIcon or not self.db.profile[i].colorIndicatorByTime
+							return self.db.profile["indicator-"..i].showIcon or not self.db.profile["indicator-"..i].colorIndicatorByTime
 						end,
 						width = THIRD_WIDTH,
 						order = 25,
@@ -402,10 +402,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						name = L["Show Countdown Text"],
 						desc = L["showCountdownText_desc"],
 						get = function()
-							return self.db.profile[i].showCountdownText
+							return self.db.profile["indicator-"..i].showCountdownText
 						end,
 						set = function(_, value)
-							self.db.profile[i].showCountdownText = value
+							self.db.profile["indicator-"..i].showCountdownText = value
 							self:RefreshConfig()
 						end,
 						width = THIRD_WIDTH,
@@ -416,10 +416,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						name = L["Show Stack Size"],
 						desc = L["showStackSize_desc"],
 						get = function()
-							return self.db.profile[i].showStackSize
+							return self.db.profile["indicator-"..i].showStackSize
 						end,
 						set = function(_, value)
-							self.db.profile[i].showStackSize = value
+							self.db.profile["indicator-"..i].showStackSize = value
 							self:RefreshConfig()
 						end,
 						width = THIRD_WIDTH,
@@ -433,14 +433,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						max = 30,
 						step = 1,
 						get = function()
-							return self.db.profile[i].textSize
+							return self.db.profile["indicator-"..i].textSize
 						end,
 						set = function(_, value)
-							self.db.profile[i].textSize = value
+							self.db.profile["indicator-"..i].textSize = value
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							if not self.db.profile[i].showCountdownText then
+							if not self.db.profile["indicator-"..i].showCountdownText then
 								return true
 							end
 						end,
@@ -460,14 +460,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 								"("..L["textColor_desc2"]..")",
 						hasAlpha = true,
 						get = function()
-							return self.db.profile[i].textColor.r, self.db.profile[i].textColor.g, self.db.profile[i].textColor.b, self.db.profile[i].textColor.a
+							return unpack(self.db.profile["indicator-"..i].textColor)
 						end,
 						set = function(_, r, g, b, a)
-							self.db.profile[i].textColor.r, self.db.profile[i].textColor.g, self.db.profile[i].textColor.b, self.db.profile[i].textColor.a = r, g, b, a
+							self.db.profile["indicator-"..i].textColor = {r, g, b, a}
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							if not self.db.profile[i].showCountdownText then
+							if not self.db.profile["indicator-"..i].showCountdownText then
 								return true
 							end
 						end,
@@ -485,14 +485,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 								self.BROWN_COLOR:WrapTextInColorCode(L["Disease"]).."\n"..
 								self.BLUE_COLOR:WrapTextInColorCode(L["Magic"]).."\n",
 						get = function()
-							return self.db.profile[i].colorTextByDebuff
+							return self.db.profile["indicator-"..i].colorTextByDebuff
 						end,
 						set = function(_, value)
-							self.db.profile[i].colorTextByDebuff = value
+							self.db.profile["indicator-"..i].colorTextByDebuff = value
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							if not self.db.profile[i].showCountdownText then
+							if not self.db.profile["indicator-"..i].showCountdownText then
 								return true
 							end
 						end,
@@ -508,14 +508,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 								self.RED_COLOR:WrapTextInColorCode(L["Time #1"]).."\n"..
 								self.YELLOW_COLOR:WrapTextInColorCode(L["Time #2"]),
 						get = function()
-							return self.db.profile[i].colorTextByTime
+							return self.db.profile["indicator-"..i].colorTextByTime
 						end,
 						set = function(_, value)
-							self.db.profile[i].colorTextByTime = value
+							self.db.profile["indicator-"..i].colorTextByTime = value
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							if not self.db.profile[i].showCountdownText then
+							if not self.db.profile["indicator-"..i].showCountdownText then
 								return true
 							end
 						end,
@@ -531,14 +531,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						max = 10,
 						step = 1,
 						get = function()
-							return self.db.profile[i].colorTextByTime_low
+							return self.db.profile["indicator-"..i].colorTextByTime_low
 						end,
 						set = function(_, value)
-							self.db.profile[i].colorTextByTime_low = value
+							self.db.profile["indicator-"..i].colorTextByTime_low = value
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							if not self.db.profile[i].showCountdownText or not self.db.profile[i].colorTextByTime then
+							if not self.db.profile["indicator-"..i].showCountdownText or not self.db.profile["indicator-"..i].colorTextByTime then
 								return true
 							end
 						end,
@@ -554,14 +554,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						max = 10,
 						step = 1,
 						get = function()
-							return self.db.profile[i].colorTextByTime_high
+							return self.db.profile["indicator-"..i].colorTextByTime_high
 						end,
 						set = function(_, value)
-							self.db.profile[i].colorTextByTime_high = value
+							self.db.profile["indicator-"..i].colorTextByTime_high = value
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							if not self.db.profile[i].showCountdownText or not self.db.profile[i].colorTextByTime then
+							if not self.db.profile["indicator-"..i].showCountdownText or not self.db.profile["indicator-"..i].colorTextByTime then
 								return true
 							end
 						end,
@@ -587,10 +587,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						name = L["Show Countdown Swipe"],
 						desc = L["showCountdownSwipe_desc"],
 						get = function()
-							return self.db.profile[i].showCountdownSwipe
+							return self.db.profile["indicator-"..i].showCountdownSwipe
 						end,
 						set = function(_, value)
-							self.db.profile[i].showCountdownSwipe = value
+							self.db.profile["indicator-"..i].showCountdownSwipe = value
 							self:RefreshConfig()
 						end,
 						width = THIRD_WIDTH,
@@ -601,10 +601,10 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						name = L["Indicator Glow Effect"],
 						desc = L["indicatorGlow_desc"],
 						get = function()
-							return self.db.profile[i].indicatorGlow
+							return self.db.profile["indicator-"..i].indicatorGlow
 						end,
 						set = function(_, value)
-							self.db.profile[i].indicatorGlow = value
+							self.db.profile["indicator-"..i].indicatorGlow = value
 							self:RefreshConfig()
 						end,
 						width = THIRD_WIDTH,
@@ -619,14 +619,14 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						max = 10,
 						step = 1,
 						get = function()
-							return self.db.profile[i].glowRemainingSecs
+							return self.db.profile["indicator-"..i].glowRemainingSecs
 						end,
 						set = function(_, value)
-							self.db.profile[i].glowRemainingSecs = value
+							self.db.profile["indicator-"..i].glowRemainingSecs = value
 							self:RefreshConfig()
 						end,
 						disabled = function()
-							return not self.db.profile[i].indicatorGlow
+							return not self.db.profile["indicator-"..i].indicatorGlow
 						end,
 						width = THIRD_WIDTH,
 						order = 4,
