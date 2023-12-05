@@ -15,7 +15,7 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/FrameXML/UI
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentCount" parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+				<FontString name="$parentStackSize" parentKey="StackSize" inherits="NumberFontNormalSmall" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="5" y="-2"/>
 					</Anchors>

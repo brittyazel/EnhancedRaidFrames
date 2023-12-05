@@ -75,6 +75,7 @@ function EnhancedRaidFrames:CreateDefaults()
 			--Text and Color
 			showCountdownText = false,
 			showStackSize = true,
+			stackSizeLocation = "BOTTOMRIGHT",
 			textColor = {1, 1, 1, 1},
 			colorTextByTime = false,
 			colorTextByTime_low = 2,

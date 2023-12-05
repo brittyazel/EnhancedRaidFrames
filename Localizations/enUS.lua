@@ -195,6 +195,9 @@ L["showStackSize_desc"] = "Display the stack size of the buff or debuff"
 L["Countdown Text Size"] = true
 L["countdownTextSize_desc"] = "The size of the countdown text (in pixels)"
 
+L["Stack Size Location"] = true
+L["stackSizeLocation_desc"] = "The location of the stack size text within the indicator"
+
 L["Text Color"] = true
 L["textColor_desc1"] = "The color used for the countdown text"
 L["textColor_desc2"] = "unless augmented by other text color options"

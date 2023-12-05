@@ -447,6 +447,24 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						width = THIRD_WIDTH,
 						order = 4,
 					},
+					tooltipLocation = {
+						type = "select",
+						name = L["Stack Size Location"],
+						desc = L["stackSizeLocation_desc"],
+						style = "dropdown",
+						values = {["TOPLEFT"] = L["Top-Left"], ["TOPRIGHT"] = L["Top-Right"], ["BOTTOMLEFT"] = L["Bottom-Left"], ["BOTTOMRIGHT"] = L["Bottom-Right"]},
+						sorting = {[1] = "TOPLEFT", [2] = "TOPRIGHT", [3] = "BOTTOMLEFT", [4] = "BOTTOMRIGHT"},
+						get = function()
+							return self.db.profile["indicator-"..i].stackSizeLocation
+						end,
+						set = function(_, value)
+							self.db.profile["indicator-"..i].stackSizeLocation = value
+							self:RefreshConfig()
+						end,
+						disabled = function() return not self.db.profile["indicator-"..i].showStackSize end,
+						width = THIRD_WIDTH,
+						order = 5,
+					},
 					-------------------------------------------------
 					colorHeader = {
 						type = "header",

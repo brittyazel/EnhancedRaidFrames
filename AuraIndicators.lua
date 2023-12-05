@@ -380,13 +380,30 @@ function EnhancedRaidFrames:UpdateStackSizeText(indicatorFrame)
 
 	--Set the stack count text
 	if self.db.profile["indicator-"..i].showStackSize and thisAura.applications and thisAura.applications > 1 then
-		--adjust the position of the countdown text to make room for the stack count
-		indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", -1, 1)
-		indicatorFrame.Count:SetText(thisAura.applications)
+		--- Set the position of the stack size text based on the user's choice
+		-- Since space is limited, we have to move the countdown text to make room for the stack size text
+		if self.db.profile["indicator-"..i].stackSizeLocation == "TOPLEFT" then
+			indicatorFrame.StackSize:ClearAllPoints()
+			indicatorFrame.StackSize:SetPoint("TOPLEFT", indicatorFrame, "TOPLEFT", -3, 2)
+			indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", 1, -1)
+		elseif self.db.profile["indicator-"..i].stackSizeLocation == "TOPRIGHT" then
+			indicatorFrame.StackSize:ClearAllPoints()
+			indicatorFrame.StackSize:SetPoint("TOPRIGHT", indicatorFrame, "TOPRIGHT", 4, 2)
+			indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", -1, -1)
+		elseif self.db.profile["indicator-"..i].stackSizeLocation == "BOTTOMLEFT" then
+			indicatorFrame.StackSize:ClearAllPoints()
+			indicatorFrame.StackSize:SetPoint("BOTTOMLEFT", indicatorFrame, "BOTTOMLEFT", -3, -2)
+			indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", 1, 1)
+		elseif self.db.profile["indicator-"..i].stackSizeLocation == "BOTTOMRIGHT" then
+			indicatorFrame.StackSize:ClearAllPoints()
+			indicatorFrame.StackSize:SetPoint("BOTTOMRIGHT", indicatorFrame, "BOTTOMRIGHT", 4, -2)
+			indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", -1, 1)
+		end
+		indicatorFrame.StackSize:SetText(thisAura.applications)
 	else
-		--reset the position of the countdown text
+		--reset the position of the countdown text and clear our stack size text
 		indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", 0, 0)
-		indicatorFrame.Count:SetText("")
+		indicatorFrame.StackSize:SetText("")
 	end
 end
 
