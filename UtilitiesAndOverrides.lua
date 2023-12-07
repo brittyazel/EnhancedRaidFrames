@@ -80,23 +80,53 @@ function EnhancedRaidFrames.ShouldContinue(unit)
 end
 
 --- Set the visibility on the stock buff/debuff frames
+function EnhancedRaidFrames:UpdateAllStockAuraVisOverrides()
+	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
+		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
+			self:UpdateStockAuraVisOverrides(frame)
+		end)
+	else
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
+			self:UpdateStockAuraVisOverrides(frame)
+		end)
+	end
+end
+
+--- Set the visibility on the stock buff/debuff frames for a single frame
 ---@param frame table @The frame to set the visibility on
-function EnhancedRaidFrames:UpdateStockIndicatorVisibility(frame)
-	-- Don't do any work if the raid frames aren't shown
-	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
+function EnhancedRaidFrames:UpdateStockAuraVisOverrides(frame)
+	if not self.ShouldContinue(frame.unit) then
 		return
 	end
+	
+	-- Tables to track the stock buff/debuff frames and their visibility flags in our database
+	local allAuraFrames = {frame.buffFrames, frame.debuffFrames, frame.dispelDebuffFrames}
+	local auraVisibilityFlags = {self.db.profile.showBuffs, self.db.profile.showDebuffs, self.db.profile.showDispellableDebuffs}
 
-	if not self.db.profile.showBuffs then
-		CompactUnitFrame_HideAllBuffs(frame)
-	end
+	-- Iterate through the stock buff/debuff/dispelDebuff frame types
+	for i,auraFrames in ipairs(allAuraFrames) do
+		if not auraFrames then
+			break
+		end
 
-	if not self.db.profile.showDebuffs then
-		CompactUnitFrame_HideAllDebuffs(frame)
-	end
-
-	if not self.db.profile.showDispellableDebuffs then
-		CompactUnitFrame_HideAllDispelDebuffs(frame)
+		-- Iterate through the individual buff/debuff/dispelDebuff frames
+		for _,auraFrame in pairs(auraFrames) do
+			-- Set our hook to override "OnShow" on the frame based on the visibility flag in our database
+			if not auraVisibilityFlags[i] then --query the specific visibility flag for this frame type
+				if not self:IsHooked(auraFrame, "OnShow") then --careful not to hook the same frame multiple times
+					self:SecureHookScript(auraFrame, "OnShow", function(self)
+						self:Hide()
+					end)
+				end
+				-- Hide frame immediately as well, otherwise some already shown frames will remain visible
+				auraFrame:Hide()
+			else
+				if self:IsHooked(auraFrame, "OnShow") then
+					-- Unhook the frame if it's hooked and we want to return it to the default behavior
+					self:Unhook(auraFrame, "OnShow")
+				end
+			end
+		end
 	end
 end
 

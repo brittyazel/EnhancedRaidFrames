@@ -66,16 +66,11 @@ function EnhancedRaidFrames:OnEnable()
 		self:CreateAllListeners()
 		self:UpdateAllAuras()
 		self:UpdateAllIndicators(true)
+		self:UpdateAllStockAuraVisOverrides()
 	end)
-
-	-- Hook our UpdateStockIndicatorVisibility function onto internal functions. 
-	-- We use SecureHook() because the default function is protected, and we want to make sure our code runs after the default code.
-	self:SecureHook("CompactUnitFrame_UpdateAuras", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
-	if not self.isWoWClassicEra and not self.isWoWClassic then
-		self:SecureHook("CompactUnitFrame_UpdatePrivateAuras", function(frame) self:UpdateStockIndicatorVisibility(frame) end)
-	end
-
+	
 	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
+	-- Using SecureHook ensures that our function will run 'after' the default function, which is what we want.
 	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) self:UpdateInRange(frame) end)
 
 	-- Force a full update of all frames when a raid target icon changes
@@ -138,12 +133,14 @@ function EnhancedRaidFrames:RefreshConfig()
 			self:UpdateIndicators(frame, true)
 			self:UpdateBackgroundAlpha(frame)
 			self:UpdateTargetMarker(frame, true)
+			self:UpdateStockAuraVisOverrides(frame)
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
 			self:UpdateIndicators(frame, true)
 			self:UpdateBackgroundAlpha(frame)
 			self:UpdateTargetMarker(frame, true)
+			self:UpdateStockAuraVisOverrides(frame)
 		end)
 	end
 end
