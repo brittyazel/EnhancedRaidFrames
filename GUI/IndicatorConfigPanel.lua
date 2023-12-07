@@ -447,7 +447,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						width = THIRD_WIDTH,
 						order = 4,
 					},
-					tooltipLocation = {
+					stackSizeLocation = {
 						type = "select",
 						name = L["Stack Size Location"],
 						desc = L["stackSizeLocation_desc"],
