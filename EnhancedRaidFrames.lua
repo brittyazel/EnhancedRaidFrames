@@ -69,6 +69,14 @@ function EnhancedRaidFrames:OnEnable()
 		self:UpdateAllStockAuraVisOverrides()
 	end)
 
+	-- In retail, there's a special type of boss aura called a "private aura" that is not accessible to addons.
+	-- We can attempt to hide these auras by hooking the default CompactUnitFrame_UpdatePrivateAuras function.
+	if not self.isWoWClassicEra and not self.isWoWClassic then
+		self:SecureHook("CompactUnitFrame_UpdatePrivateAuras", function(frame)
+			self:UpdatePrivateAuraVisOverrides(frame)
+		end)
+	end
+
 	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
 	-- Using SecureHook ensures that our function will run 'after' the default function, which is what we want.
 	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame)

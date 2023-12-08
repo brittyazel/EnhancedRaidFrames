@@ -138,6 +138,26 @@ function EnhancedRaidFrames:UpdateStockAuraVisOverrides(frame)
 	end
 end
 
+--- Set the visibility on the private buff/debuff frames
+function EnhancedRaidFrames:UpdatePrivateAuraVisOverrides(frame)
+	if not self.ShouldContinue(frame.unit) then
+		return
+	end
+	
+	if not frame.PrivateAuraAnchors then
+		return
+	end
+
+	-- Use our debuff visibility flag because that's where these auras show up in-game
+	if not self.db.profile.showDebuffs then
+		-- Try to "hide" the private aura by clearing the attachment of its anchor frame and hiding the anchor frame
+		for _, auraAnchor in ipairs(frame.PrivateAuraAnchors) do
+			auraAnchor:ClearAllPoints()
+			auraAnchor:Hide()
+		end
+	end
+end
+
 --- Updates the frame alpha based on if a unit is in range or not.
 --- This function is secure hooked to the CompactUnitFrame_UpdateInRange function.
 ---@param frame table @The frame to update the alpha on
