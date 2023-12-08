@@ -4,31 +4,32 @@
 
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/FrameXML/UI_shared.xsd">
-	<Button name="ERF_indicatorTemplate" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon" parentKey="Icon" setAllPoints="true"/>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="$parentCountdown" parentKey="Countdown">
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentStackSize" parentKey="StackSize" inherits="NumberFontNormalSmall" justifyH="RIGHT">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="5" y="-2"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Cooldown name="$parentCooldown" parentKey="Cooldown" useParentLevel="true" inherits="CooldownFrameTemplate" 
-					  reverse="true" hideCountdownNumbers="true">
-				<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-				</Anchors>
-			</Cooldown>
-		</Frames>
-	</Button>
+    <Button name="ERF_indicatorTemplate" virtual="true">
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parentIcon" parentKey="Icon" setAllPoints="true"/>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString name="$parentCountdown" parentKey="Countdown">
+                    <Anchors>
+                        <Anchor point="CENTER" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentStackSize" parentKey="StackSize" inherits="NumberFontNormalSmall"
+                            justifyH="RIGHT">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT" x="5" y="-2"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Cooldown name="$parentCooldown" parentKey="Cooldown" useParentLevel="true" inherits="CooldownFrameTemplate"
+                      reverse="true" hideCountdownNumbers="true">
+                <Anchors>
+                    <Anchor point="CENTER" x="0" y="0"/>
+                </Anchors>
+            </Cooldown>
+        </Frames>
+    </Button>
 </Ui>

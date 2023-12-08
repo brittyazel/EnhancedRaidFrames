@@ -49,12 +49,12 @@ function EnhancedRaidFrames:CreateDefaults()
 
 	---Indicator Options Settings
 	for i = 1, 9 do
-		defaults.profile["indicator-"..i] = {
+		defaults.profile["indicator-" .. i] = {
 			--Aura Strings
 			auras = "",
 
 			--Visibility and Behavior
-			mineOnly= false,
+			mineOnly = false,
 			meOnly = false,
 			missingOnly = false,
 			showTooltip = true,
@@ -66,7 +66,7 @@ function EnhancedRaidFrames:CreateDefaults()
 			indicatorVerticalOffset = 0,
 			showIcon = true,
 			indicatorAlpha = 1,
-			indicatorColor = {0, 1, 0.59, 1},
+			indicatorColor = { 0, 1, 0.59, 1 },
 			colorIndicatorByDebuff = false,
 			colorIndicatorByTime = false,
 			colorIndicatorByTime_low = 2,
@@ -76,7 +76,7 @@ function EnhancedRaidFrames:CreateDefaults()
 			showCountdownText = false,
 			showStackSize = true,
 			stackSizeLocation = "BOTTOMRIGHT",
-			textColor = {1, 1, 1, 1},
+			textColor = { 1, 1, 1, 1 },
 			colorTextByTime = false,
 			colorTextByTime_low = 2,
 			colorTextByTime_high = 5,

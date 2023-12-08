@@ -17,42 +17,47 @@ local LibRangeCheck = LibStub("LibRangeCheck-2.0")
 --- Handle the migration of the database from one version to another
 function EnhancedRaidFrames:MigrateDatabase()
 	if not self.db.profile.DB_VERSION or self.db.profile.DB_VERSION < self.DATABASE_VERSION then
-		self:Print(L["The database is being migrated to version:"].." "..self.DATABASE_VERSION)
+		self:Print(L["The database is being migrated to version:"] .. " " .. self.DATABASE_VERSION)
 		--- Migrate the database to the current specification
-		
+
 		-----------------------------------------------------------
-		
+
 		-- Added in database version 2.1 on 12/4/2023
 		-- Fix indicatorColor and textColor to be our new table format without explicit r/g/b/a keys assigned
-		for i=1,9 do
-			if self.db.profile[i] then --check to see if we have the old format prior to database version 2.2
-				if self.db.profile[i].indicatorColor and self.db.profile[i].indicatorColor.r then --check to see if we have the old format
-					self.db.profile[i].indicatorColor = {self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g, self.db.profile[i].indicatorColor.b, self.db.profile[i].indicatorColor.a}
+		for i = 1, 9 do
+			if self.db.profile[i] then
+				--check to see if we have the old format prior to database version 2.2
+				if self.db.profile[i].indicatorColor and self.db.profile[i].indicatorColor.r then
+					--check to see if we have the old format
+					self.db.profile[i].indicatorColor = { self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g,
+														  self.db.profile[i].indicatorColor.b, self.db.profile[i].indicatorColor.a }
 				end
-				if self.db.profile[i].textColor and self.db.profile[i].textColor.r then --check to see if we have the old format
-					self.db.profile[i].textColor = {self.db.profile[i].textColor.r, self.db.profile[i].textColor.g, self.db.profile[i].textColor.b, self.db.profile[i].textColor.a}
+				if self.db.profile[i].textColor and self.db.profile[i].textColor.r then
+					--check to see if we have the old format
+					self.db.profile[i].textColor = { self.db.profile[i].textColor.r, self.db.profile[i].textColor.g,
+													 self.db.profile[i].textColor.b, self.db.profile[i].textColor.a }
 				end
 			end
 		end
 
 		-- Added in database version 2.2 on 12/4/2023
 		-- Rename indicator position keys to be "indicator-1" rather than just "1"
-		for i=1,9 do
+		for i = 1, 9 do
 			if self.db.profile[i] then
-				for k,v in pairs(self.db.profile[i]) do
-					self.db.profile["indicator-"..i][k] = v
+				for k, v in pairs(self.db.profile[i]) do
+					self.db.profile["indicator-" .. i][k] = v
 				end
 			end
 		end
 
 		--Reload our database object with the defaults post-migration
 		self:SetupDatabase()
-		
+
 		-----------------------------------------------------------
 
 		self:Print(L["Database migration successful."])
 		self.db.profile.DB_VERSION = self.DATABASE_VERSION
-		
+
 	end
 end
 
@@ -70,8 +75,8 @@ function EnhancedRaidFrames.ShouldContinue(unit)
 	end
 
 	-- Only process player, raid and party units
-	if not unit:find("player", 1, true) 
-			and not unit:find("raid", 1, true) 
+	if not unit:find("player", 1, true)
+			and not unit:find("raid", 1, true)
 			and not unit:find("party", 1, true) then
 		return false
 	end
@@ -81,7 +86,8 @@ end
 
 --- Set the visibility on the stock buff/debuff frames
 function EnhancedRaidFrames:UpdateAllStockAuraVisOverrides()
-	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
+	if not self.isWoWClassicEra and not self.isWoWClassic then
+		--10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:UpdateStockAuraVisOverrides(frame)
 		end)
@@ -98,22 +104,24 @@ function EnhancedRaidFrames:UpdateStockAuraVisOverrides(frame)
 	if not self.ShouldContinue(frame.unit) then
 		return
 	end
-	
+
 	-- Tables to track the stock buff/debuff frames and their visibility flags in our database
-	local allAuraFrames = {frame.buffFrames, frame.debuffFrames, frame.dispelDebuffFrames}
-	local auraVisibilityFlags = {self.db.profile.showBuffs, self.db.profile.showDebuffs, self.db.profile.showDispellableDebuffs}
+	local allAuraFrames = { frame.buffFrames, frame.debuffFrames, frame.dispelDebuffFrames }
+	local auraVisibilityFlags = { self.db.profile.showBuffs, self.db.profile.showDebuffs, self.db.profile.showDispellableDebuffs }
 
 	-- Iterate through the stock buff/debuff/dispelDebuff frame types
-	for i,auraFrames in ipairs(allAuraFrames) do
+	for i, auraFrames in ipairs(allAuraFrames) do
 		if not auraFrames then
 			break
 		end
 
 		-- Iterate through the individual buff/debuff/dispelDebuff frames
-		for _,auraFrame in pairs(auraFrames) do
+		for _, auraFrame in pairs(auraFrames) do
 			-- Set our hook to override "OnShow" on the frame based on the visibility flag in our database
-			if not auraVisibilityFlags[i] then --query the specific visibility flag for this frame type
-				if not self:IsHooked(auraFrame, "OnShow") then --careful not to hook the same frame multiple times
+			if not auraVisibilityFlags[i] then
+				--query the specific visibility flag for this frame type
+				if not self:IsHooked(auraFrame, "OnShow") then
+					--careful not to hook the same frame multiple times
 					self:SecureHookScript(auraFrame, "OnShow", function(self)
 						self:Hide()
 					end)
@@ -162,7 +170,8 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 		inRange, checkedRange = UnitInRange(effectiveUnit)
 	end
 
-	if checkedRange and not inRange then --If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
+	if checkedRange and not inRange then
+		--If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
 		frame:SetAlpha(self.db.profile.rangeAlpha)
 	else
 		frame:SetAlpha(1)
@@ -202,21 +211,21 @@ end
 function EnhancedRaidFrames:SetSerializedAndCompressedProfile(input)
 	--check if the input is empty
 	if input == "" then
-		self:Print(L["No data to import."].." "..L["Aborting."])
+		self:Print(L["No data to import."] .. " " .. L["Aborting."])
 		return
 	end
 
 	-- Decode and check if decoding worked properly
 	local decoded = LibDeflate:DecodeForPrint(input)
 	if decoded == nil then
-		self:Print(L["Decoding failed."].." "..L["Aborting."])
+		self:Print(L["Decoding failed."] .. " " .. L["Aborting."])
 		return
 	end
 
 	-- Decompress and verify if decompression worked properly
 	local decompressed = LibDeflate:DecompressZlib(decoded)
 	if decompressed == nil then
-		self:Print(L["Decompression failed."].." "..L["Aborting."])
+		self:Print(L["Decompression failed."] .. " " .. L["Aborting."])
 		return
 	end
 
@@ -225,7 +234,7 @@ function EnhancedRaidFrames:SetSerializedAndCompressedProfile(input)
 
 	-- If we successfully deserialize, load the new table into the database
 	if result == true and newProfile then
-		for k,v in pairs(newProfile) do
+		for k, v in pairs(newProfile) do
 			if type(v) == "table" then
 				self.db.profile[k] = CopyTable(v)
 			else
@@ -233,6 +242,6 @@ function EnhancedRaidFrames:SetSerializedAndCompressedProfile(input)
 			end
 		end
 	else
-		self:Print(L["Data import Failed."].." "..L["Aborting."])
+		self:Print(L["Data import Failed."] .. " " .. L["Aborting."])
 	end
 end

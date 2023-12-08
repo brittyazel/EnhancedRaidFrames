@@ -26,7 +26,7 @@ local AceDB = LibStub("AceDB-3.0")
 function EnhancedRaidFrames:OnInitialize()
 	-- Set up our database
 	self:SetupDatabase()
-	
+
 	-- Run our database migration if necessary
 	self:MigrateDatabase()
 
@@ -36,7 +36,7 @@ function EnhancedRaidFrames:OnInitialize()
 	-- Register callbacks for profile switching
 	self.db.RegisterCallback(self, "OnProfileChanged", function()
 		self:MigrateDatabase()
-		self:RefreshConfig() 
+		self:RefreshConfig()
 	end)
 	self.db.RegisterCallback(self, "OnProfileCopied", function()
 		self:MigrateDatabase()
@@ -62,22 +62,28 @@ function EnhancedRaidFrames:OnEnable()
 	self:UpdateAllAuras()
 
 	-- Force a full update of all frames and auras when the raid roster changes
-	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, function()
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", function()
 		self:CreateAllListeners()
 		self:UpdateAllAuras()
 		self:UpdateAllIndicators(true)
 		self:UpdateAllStockAuraVisOverrides()
 	end)
-	
+
 	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
 	-- Using SecureHook ensures that our function will run 'after' the default function, which is what we want.
-	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame) self:UpdateInRange(frame) end)
+	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame)
+		self:UpdateInRange(frame)
+	end)
 
 	-- Force a full update of all frames when a raid target icon changes
-	self:RegisterEvent("RAID_TARGET_UPDATE",  function() self:UpdateAllTargetMarkers() end)
+	self:RegisterEvent("RAID_TARGET_UPDATE", function()
+		self:UpdateAllTargetMarkers()
+	end)
 
 	-- Register our slash command to open the config panel
-	self:RegisterChatCommand("erf", function() Settings.OpenToCategory("Enhanced Raid Frames") end)
+	self:RegisterChatCommand("erf", function()
+		Settings.OpenToCategory("Enhanced Raid Frames")
+	end)
 end
 
 --- **OnDisable** is called when our addon is manually being disabled during a running session.
@@ -93,12 +99,13 @@ end
 function EnhancedRaidFrames:SetupDatabase()
 	-- Set up database defaults
 	local defaults = self:CreateDefaults()
-	
+
 	-- Create database object
 	self.db = AceDB:New("EnhancedRaidFramesDB", defaults) --EnhancedRaidFramesDB is our saved variable table
 
 	-- Enhance database and profile options using LibDualSpec
-	if not self.isWoWClassicEra then -- Not available in Classic Era
+	if not self.isWoWClassicEra then
+		-- Not available in Classic Era
 		--enhance the database object with per spec profile features
 		LibStub('LibDualSpec-1.0'):EnhanceDatabase(self.db, "EnhancedRaidFrames")
 		-- enhance the profile options table with per spec profile features
@@ -111,7 +118,7 @@ function EnhancedRaidFrames:SetupConfigPanels()
 	-- Build our config panels
 	AceConfigRegistry:RegisterOptionsTable("Enhanced Raid Frames", self:CreateGeneralOptions())
 	AceConfigRegistry:RegisterOptionsTable("ERF Indicator Options", self:CreateIndicatorOptions())
-	AceConfigRegistry:RegisterOptionsTable("ERF Target Marker Options",  self:CreateIconOptions())
+	AceConfigRegistry:RegisterOptionsTable("ERF Target Marker Options", self:CreateIconOptions())
 	AceConfigRegistry:RegisterOptionsTable("ERF Profiles", AceDBOptions:GetOptionsTable(self.db))
 	AceConfigRegistry:RegisterOptionsTable("ERF Import Export Profile Options", self:CreateProfileImportExportOptions())
 
@@ -121,14 +128,15 @@ function EnhancedRaidFrames:SetupConfigPanels()
 	AceConfigDialog:AddToBlizOptions("ERF Target Marker Options", L["Target Marker Options"], "Enhanced Raid Frames")
 	AceConfigDialog:AddToBlizOptions("ERF Profiles", L["Profiles"], "Enhanced Raid Frames")
 	AceConfigDialog:AddToBlizOptions("ERF Import Export Profile Options",
-			(L["Profile"].." "..L["Import"].."/"..L["Export"]), "Enhanced Raid Frames")
+			(L["Profile"] .. " " .. L["Import"] .. "/" .. L["Export"]), "Enhanced Raid Frames")
 end
 
 --- Refresh everything that is affected by changes to the configuration
 function EnhancedRaidFrames:RefreshConfig()
 	self:GenerateAuraStrings()
 	self:UpdateScale()
-	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
+	if not self.isWoWClassicEra and not self.isWoWClassic then
+		--10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:UpdateIndicators(frame, true)
 			self:UpdateBackgroundAlpha(frame)

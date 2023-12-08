@@ -19,10 +19,10 @@ function EnhancedRaidFrames:CreateIconOptions()
 		type = "group",
 		childGroups = "tree",
 		name = L["Target Marker Options"],
-		args  = {
+		args = {
 			instructions = {
 				type = "description",
-				name = L["markerOptions_desc"]..":",
+				name = L["markerOptions_desc"] .. ":",
 				fontSize = "medium",
 				order = 1,
 			},
@@ -36,7 +36,9 @@ function EnhancedRaidFrames:CreateIconOptions()
 				type = "toggle",
 				name = L["Show Target Markers"],
 				desc = L["showTargetMarkers_desc"],
-				get = function() return self.db.profile.showTargetMarkers end,
+				get = function()
+					return self.db.profile.showTargetMarkers
+				end,
 				set = function(_, value)
 					self.db.profile.showTargetMarkers = value
 					self:RefreshConfig()
@@ -51,12 +53,16 @@ function EnhancedRaidFrames:CreateIconOptions()
 				min = 1,
 				max = 40,
 				step = 1,
-				get = function() return self.db.profile.markerSize end,
+				get = function()
+					return self.db.profile.markerSize
+				end,
 				set = function(_, value)
 					self.db.profile.markerSize = value
 					self:RefreshConfig()
 				end,
-				disabled = function () return not self.db.profile.showTargetMarkers end,
+				disabled = function()
+					return not self.db.profile.showTargetMarkers
+				end,
 				width = THIRD_WIDTH,
 				order = 11,
 			},
@@ -68,12 +74,16 @@ function EnhancedRaidFrames:CreateIconOptions()
 				min = 0,
 				max = 1,
 				step = 0.01,
-				get = function() return self.db.profile.markerAlpha end,
+				get = function()
+					return self.db.profile.markerAlpha
+				end,
 				set = function(_, value)
 					self.db.profile.markerAlpha = value
 					self:RefreshConfig()
 				end,
-				disabled = function () return not self.db.profile.showTargetMarkers end,
+				disabled = function()
+					return not self.db.profile.showTargetMarkers
+				end,
 				width = THIRD_WIDTH,
 				order = 12,
 			},
@@ -88,12 +98,16 @@ function EnhancedRaidFrames:CreateIconOptions()
 				name = L["Marker Position"],
 				desc = L["markerPosition_desc"],
 				values = self.POSITIONS,
-				get = function() return self.db.profile.markerPosition end,
+				get = function()
+					return self.db.profile.markerPosition
+				end,
 				set = function(_, value)
 					self.db.profile.markerPosition = value
 					self:RefreshConfig()
 				end,
-				disabled = function () return not self.db.profile.showTargetMarkers end,
+				disabled = function()
+					return not self.db.profile.showTargetMarkers
+				end,
 				width = THIRD_WIDTH,
 				order = 21,
 			},
@@ -105,12 +119,16 @@ function EnhancedRaidFrames:CreateIconOptions()
 				min = -1,
 				max = 1,
 				step = .01,
-				get = function() return self.db.profile.markerVerticalOffset end,
+				get = function()
+					return self.db.profile.markerVerticalOffset
+				end,
 				set = function(_, value)
 					self.db.profile.markerVerticalOffset = value
 					self:RefreshConfig()
 				end,
-				disabled = function () return not self.db.profile.showTargetMarkers end,
+				disabled = function()
+					return not self.db.profile.showTargetMarkers
+				end,
 				width = THIRD_WIDTH,
 				order = 22,
 			},
@@ -122,12 +140,16 @@ function EnhancedRaidFrames:CreateIconOptions()
 				min = -1,
 				max = 1,
 				step = .01,
-				get = function() return self.db.profile.markerHorizontalOffset end,
+				get = function()
+					return self.db.profile.markerHorizontalOffset
+				end,
 				set = function(_, value)
 					self.db.profile.markerHorizontalOffset = value
 					self:RefreshConfig()
 				end,
-				disabled = function () return not self.db.profile.showTargetMarkers end,
+				disabled = function()
+					return not self.db.profile.showTargetMarkers
+				end,
 				width = THIRD_WIDTH,
 				order = 23,
 			},

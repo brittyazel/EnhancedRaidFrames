@@ -4,7 +4,9 @@
 
 local L = LibStub("AceLocale-3.0"):NewLocale("EnhancedRaidFrames", "enUS", true)
 
-if not L then return end
+if not L then
+	return
+end
 
 ----------------------------------------------------
 ---------------------- Common ----------------------
@@ -60,9 +62,9 @@ L["Melee"] = true
 L["10 yards"] = true
 L["15 yards"] = true
 L["20 yards"] = true
-L["25 yards"] = true 
-L["30 yards"] = true 
-L["35 yards"] = true 
+L["25 yards"] = true
+L["30 yards"] = true
+L["35 yards"] = true
 L["40 yards"] = true
 
 ----------------------------------------------------

@@ -19,7 +19,8 @@ end
 
 --- Creates all of our listeners for the UNIT_AURA event attached to their respective raid frames
 function EnhancedRaidFrames:CreateAllListeners()
-	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
+	if not self.isWoWClassicEra and not self.isWoWClassic then
+		--10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			if frame and frame.unit then
 				self:CreateAuraListener(frame)
@@ -27,7 +28,7 @@ function EnhancedRaidFrames:CreateAllListeners()
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			if frame and frame.unit  then
+			if frame and frame.unit then
 				self:CreateAuraListener(frame)
 			end
 		end)
@@ -43,10 +44,10 @@ function EnhancedRaidFrames:CreateAuraListener(frame)
 		if not frame.ERF_auraListenerFrame then
 			--I'm not sure if this is ever the case, but to stop us from creating redundant frames we should try to re-capture them when possible
 			--On the global table, our frames our named "CompactRaidFrame#" + "-ERF_auraListenerFrame", i.e. "CompactRaidFrame1-ERF_auraListenerFrame"
-			if not _G[frame:GetName().."-ERF_auraListenerFrame"] then
-				frame.ERF_auraListenerFrame = CreateFrame("Frame", frame:GetName().."-ERF_auraListenerFrame", frame)
+			if not _G[frame:GetName() .. "-ERF_auraListenerFrame"] then
+				frame.ERF_auraListenerFrame = CreateFrame("Frame", frame:GetName() .. "-ERF_auraListenerFrame", frame)
 			else
-				frame.ERF_auraListenerFrame =  _G[frame:GetName().."-ERF_auraListenerFrame"]
+				frame.ERF_auraListenerFrame = _G[frame:GetName() .. "-ERF_auraListenerFrame"]
 				frame.ERF_auraListenerFrame:SetParent(frame) --if we capture an old indicator frame, we should reattach it to the current unit frame
 			end
 
@@ -73,9 +74,10 @@ end
 --- Scans all raid frame units and updates the unitAuras table with all auras on each unit.
 function EnhancedRaidFrames:UpdateAllAuras()
 	-- Iterate over all raid frame units and force a full update
-	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
+	if not self.isWoWClassicEra and not self.isWoWClassic then
+		--10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			self:UpdateUnitAuras(frame.unit, {isFullUpdate = true}, frame)
+			self:UpdateUnitAuras(frame.unit, { isFullUpdate = true }, frame)
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
@@ -100,7 +102,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 		parentFrame.ERF_unitAuras = {}
 		payload.isFullUpdate = true --force a full update if we don't have a table for the unit yet
 	end
-	
+
 	-- Flag to determine if we need to run an update on the indicators since we only care about select auras
 	local shouldRunUpdate = false
 
@@ -109,7 +111,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 		-- Clear out the table
 		parentFrame.ERF_unitAuras = {}
 		-- Iterate through all buffs and debuffs on the unit
-		for _, filter in pairs({"HELPFUL", "HARMFUL"}) do
+		for _, filter in pairs({ "HELPFUL", "HARMFUL" }) do
 			AuraUtil.ForEachAura(unit, filter, nil, function(auraData)
 				local updateFlag = self:addToAuraTable(parentFrame, auraData)
 				if updateFlag then
@@ -171,18 +173,18 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	-- Quickly check if we're watching for this aura, and ignore if we aren't
 	-- It's important to use the 4th argument in string.find to turn off pattern matching, 
 	-- otherwise strings with parentheses in them will fail to be found
-	if self.allAuras:find(" "..auraData.name:lower().." ", 1, true) 
+	if self.allAuras:find(" " .. auraData.name:lower() .. " ", 1, true)
 			or self.allAuras:find(auraData.spellId, 1, true)
 			--check if the aura is a debuff, and if it's a dispellable debuff check if we're tracking the wildcard of that debuff type
 			or (auraData.isHarmful and auraData.dispelName and self.allAuras:find(auraData.dispelName:lower(), 1, true)) then
-		
+
 		auraData.name = auraData.name:lower()
 		if auraData.dispelName then
 			auraData.dispelName = auraData.dispelName:lower()
 		end
-		
+
 		parentFrame.ERF_unitAuras[auraData.auraInstanceID] = auraData
-		
+
 		--return true if we added or updated an aura
 		return true
 	end
@@ -202,14 +204,15 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(unit, parentFrame)
 	parentFrame.ERF_unitAuras = {}
 
 	-- Iterate through all buffs and debuffs on the unit
-	for _, filter in pairs({"HELPFUL", "HARMFUL"}) do
+	for _, filter in pairs({ "HELPFUL", "HARMFUL" }) do
 		local i = 1 --counting the index of our aura
 		repeat --repeat until we run out of auras
 			local auraData = {}
 
-			if self.isWoWClassicEra then --For wow classic. This is the LibClassicDurations wrapper
+			if self.isWoWClassicEra then
+				--For wow classic. This is the LibClassicDurations wrapper
 				auraData.name, auraData.icon, auraData.applications, auraData.dispelName, auraData.duration,
-				auraData.expirationTime, auraData.sourceUnit, _, _, auraData.spellId =  self.UnitAuraWrapper(unit, i, filter)
+				auraData.expirationTime, auraData.sourceUnit, _, _, auraData.spellId = self.UnitAuraWrapper(unit, i, filter)
 			else
 				auraData.name, auraData.icon, auraData.applications, auraData.dispelName, auraData.duration,
 				auraData.expirationTime, auraData.sourceUnit, _, _, auraData.spellId = UnitAura(unit, i, filter)
@@ -231,7 +234,7 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(unit, parentFrame)
 			end
 
 			i = i + 1 --increment our counter no matter what
-		until(not auraData.name)
+		until (not auraData.name)
 	end
 
 	self:UpdateIndicators(parentFrame)
@@ -248,7 +251,7 @@ function EnhancedRaidFrames:addToAuraTable_Classic(parentFrame, auraData)
 	-- Quickly check if we're watching for this aura, and ignore if we aren't
 	-- It's important to use the 4th argument in string.find to turn off pattern matching, 
 	-- otherwise strings with parentheses in them will fail to be found
-	if self.allAuras:find(" "..auraData.name:lower().." ", nil, true) or self.allAuras:find(auraData.spellId) or
+	if self.allAuras:find(" " .. auraData.name:lower() .. " ", nil, true) or self.allAuras:find(auraData.spellId) or
 			--check if the aura is a debuff, and if it's a dispellable debuff check if we're tracking the wildcard of that debuff type
 			(auraData.isHarmful and auraData.dispelName and self.allAuras:find(auraData.dispelName:lower())) then
 

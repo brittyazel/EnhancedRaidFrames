@@ -20,7 +20,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 		type = "group",
 		childGroups = "tree",
 		name = L["General Options"],
-		args  = {
+		args = {
 			instructions = {
 				type = "description",
 				name = L["generalOptions_desc"],
@@ -53,7 +53,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "toggle",
 				name = L["Stock Buff Icons"],
 				desc = L["showBuffs_desc"],
-				get = function() return self.db.profile.showBuffs end,
+				get = function()
+					return self.db.profile.showBuffs
+				end,
 				set = function(_, value)
 					self.db.profile.showBuffs = value
 					self:RefreshConfig()
@@ -65,7 +67,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "toggle",
 				name = L["Stock Debuff Icons"],
 				desc = L["showDebuffs_desc"],
-				get = function() return self.db.profile.showDebuffs end,
+				get = function()
+					return self.db.profile.showDebuffs
+				end,
 				set = function(_, value)
 					self.db.profile.showDebuffs = value
 					self:RefreshConfig()
@@ -77,7 +81,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "toggle",
 				name = L["Stock Dispellable Icons"],
 				desc = L["showDispellableDebuffs_desc"],
-				get = function() return self.db.profile.showDispellableDebuffs end,
+				get = function()
+					return self.db.profile.showDispellableDebuffs
+				end,
 				set = function(_, value)
 					self.db.profile.showDispellableDebuffs = value
 					self:RefreshConfig()
@@ -95,7 +101,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "toggle",
 				name = L["Power Bar Vertical Offset"],
 				desc = L["powerBarOffset_desc"],
-				get = function() return self.db.profile.powerBarOffset end,
+				get = function()
+					return self.db.profile.powerBarOffset
+				end,
 				set = function(_, value)
 					self.db.profile.powerBarOffset = value
 					self:RefreshConfig()
@@ -111,7 +119,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				min = 0.5,
 				max = 2,
 				step = 0.01,
-				get = function() return self.db.profile.frameScale end,
+				get = function()
+					return self.db.profile.frameScale
+				end,
 				set = function(_, value)
 					self.db.profile.frameScale = value
 					self:RefreshConfig()
@@ -127,7 +137,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				min = 0,
 				max = 1,
 				step = 0.01,
-				get = function() return self.db.profile.backgroundAlpha end,
+				get = function()
+					return self.db.profile.backgroundAlpha
+				end,
 				set = function(_, value)
 					self.db.profile.backgroundAlpha = value
 					self:RefreshConfig()
@@ -141,7 +153,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				name = L["Indicator Font"],
 				desc = L["indicatorFont_desc"],
 				values = AceGUIWidgetLSMlists.font,
-				get = function() return self.db.profile.indicatorFont end,
+				get = function()
+					return self.db.profile.indicatorFont
+				end,
 				set = function(_, value)
 					self.db.profile.indicatorFont = value
 					self:RefreshConfig()
@@ -159,7 +173,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				type = "toggle",
 				name = L["Override Default Distance"],
 				desc = L["customRange_desc"],
-				get = function() return self.db.profile.customRangeCheck end,
+				get = function()
+					return self.db.profile.customRangeCheck
+				end,
 				set = function(_, value)
 					self.db.profile.customRangeCheck = value
 					self:RefreshConfig()
@@ -173,12 +189,16 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				desc = L["customRangeCheck_desc"],
 				values = { [5] = L["Melee"], [10] = L["10 yards"], [15] = L["15 yards"], [20] = L["20 yards"],
 						   [25] = L["25 yards"], [30] = L["30 yards"], [35] = L["35 yards"], [40] = L["40 yards"] },
-				get = function() return self.db.profile.customRange end,
+				get = function()
+					return self.db.profile.customRange
+				end,
 				set = function(_, value)
 					self.db.profile.customRange = value
 					self:RefreshConfig()
 				end,
-				disabled = function() return not self.db.profile.customRangeCheck end,
+				disabled = function()
+					return not self.db.profile.customRangeCheck
+				end,
 				width = THIRD_WIDTH,
 				order = 42,
 			},
@@ -190,7 +210,9 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				min = 0,
 				max = 1,
 				step = 0.01,
-				get = function() return self.db.profile.rangeAlpha end,
+				get = function()
+					return self.db.profile.rangeAlpha
+				end,
 				set = function(_, value)
 					self.db.profile.rangeAlpha = value
 					self:RefreshConfig()

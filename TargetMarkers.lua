@@ -41,11 +41,11 @@ function EnhancedRaidFrames:SetTargetMarkerAppearance(frame)
 	elseif pos == 3 then
 		targetMarker:SetPoint("TOPRIGHT", -PAD + markerHorizontalOffset, -PAD + markerVerticalOffset)
 	elseif pos == 4 then
-		targetMarker:SetPoint("LEFT", PAD + markerHorizontalOffset, 0 + markerVerticalOffset + powerBarVertOffset/2)
+		targetMarker:SetPoint("LEFT", PAD + markerHorizontalOffset, 0 + markerVerticalOffset + powerBarVertOffset / 2)
 	elseif pos == 5 then
-		targetMarker:SetPoint("CENTER", 0 + markerHorizontalOffset, 0 + markerVerticalOffset + powerBarVertOffset/2)
+		targetMarker:SetPoint("CENTER", 0 + markerHorizontalOffset, 0 + markerVerticalOffset + powerBarVertOffset / 2)
 	elseif pos == 6 then
-		targetMarker:SetPoint("RIGHT", -PAD + markerHorizontalOffset, 0 + markerVerticalOffset + powerBarVertOffset/2)
+		targetMarker:SetPoint("RIGHT", -PAD + markerHorizontalOffset, 0 + markerVerticalOffset + powerBarVertOffset / 2)
 	elseif pos == 7 then
 		targetMarker:SetPoint("BOTTOMLEFT", PAD + markerHorizontalOffset, PAD + markerVerticalOffset + powerBarVertOffset)
 	elseif pos == 8 then
@@ -93,7 +93,7 @@ function EnhancedRaidFrames:UpdateTargetMarker(frame, setAppearance)
 	if index and index >= 1 and index <= 8 then
 
 		local texture = UnitPopupRaidTarget1ButtonMixin:GetIcon() --this is the full texture file, we need to parse it to get the individual icons
-		local tCoordsTable = _G["UnitPopupRaidTarget"..index.."ButtonMixin"]:GetTextureCoords()
+		local tCoordsTable = _G["UnitPopupRaidTarget" .. index .. "ButtonMixin"]:GetTextureCoords()
 
 		local leftTexCoord = tCoordsTable.tCoordLeft
 		local rightTexCoord = tCoordsTable.tCoordRight
@@ -111,7 +111,8 @@ end
 
 --- Update the appearance of our target markers for all frames
 function EnhancedRaidFrames:UpdateAllTargetMarkers()
-	if not self.isWoWClassicEra and not self.isWoWClassic then --10.0 refactored CompactRaidFrameContainer with new functionality
+	if not self.isWoWClassicEra and not self.isWoWClassic then
+		--10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:UpdateTargetMarker(frame)
 		end)
