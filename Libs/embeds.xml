@@ -22,13 +22,19 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/FrameXML/UI
     <Include file="AceTab-3.0\AceTab-3.0.xml"/>
     <Include file="AceTimer-3.0\AceTimer-3.0.xml"/>
 
+    <!--LibSharedMedia-->
     <Include file="LibSharedMedia-3.0\lib.xml"/>
     <Include file="AceGUI-3.0-SharedMediaWidgets\widget.xml"/>
 
+    <!--LibDeflate-->
     <Script file="LibDeflate\LibDeflate.lua"/>
 
+    <!--LibDualSpec-->
     <Script file="LibDualSpec-1.0\LibDualSpec-1.0.lua"/>
+
+    <!--LibRangeCheck-->
     <Script file="LibRangeCheck-2.0\LibRangeCheck-2.0.lua"/>
 
+    <!--LibClassicDurations-->
     <Include file="LibClassicDurations\LibClassicDurations.xml"/>
 </Ui>

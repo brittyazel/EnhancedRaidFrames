@@ -9,13 +9,14 @@ local EnhancedRaidFrames = _G.EnhancedRaidFrames
 -- Import libraries
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 
+-- Constants
+local THIRD_WIDTH = 1.14
+
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
 --- Populate our "Indicator" options table for our Blizzard interface options
 function EnhancedRaidFrames:CreateIndicatorOptions()
-	local THIRD_WIDTH = 1.14
-
 	local indicatorOptions = {
 		type = "group",
 		childGroups = "select",
@@ -30,7 +31,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 		}
 	}
 
-	--- Add options for each indicator
+	-- Add options for each indicator
 	for i, v in ipairs(self.POSITIONS) do
 		indicatorOptions.args[v] = {}
 		indicatorOptions.args[v].type = "group"

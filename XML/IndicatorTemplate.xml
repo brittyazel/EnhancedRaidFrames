@@ -4,17 +4,21 @@
 
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/FrameXML/UI_shared.xsd">
+    <!--Template for ERF indicator frames-->
     <Button name="ERF_indicatorTemplate" virtual="true">
         <Layers>
             <Layer level="BACKGROUND">
+                <!--Icon texture-->
                 <Texture name="$parentIcon" parentKey="Icon" setAllPoints="true"/>
             </Layer>
             <Layer level="OVERLAY">
+                <!--Countdown Text-->
                 <FontString name="$parentCountdown" parentKey="Countdown">
                     <Anchors>
                         <Anchor point="CENTER" x="0" y="0"/>
                     </Anchors>
                 </FontString>
+                <!--Stack Size Text-->
                 <FontString name="$parentStackSize" parentKey="StackSize" inherits="NumberFontNormalSmall"
                             justifyH="RIGHT">
                     <Anchors>
@@ -24,6 +28,7 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/FrameXML/UI
             </Layer>
         </Layers>
         <Frames>
+            <!--Cooldown Frame Overlay-->
             <Cooldown name="$parentCooldown" parentKey="Cooldown" useParentLevel="true" inherits="CooldownFrameTemplate"
                       reverse="true" hideCountdownNumbers="true">
                 <Anchors>

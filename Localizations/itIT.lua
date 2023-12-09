@@ -8,9 +8,13 @@ if not L then
 	return
 end
 
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+
 --@localization(locale="itIT", format="lua_additive_table", handle-unlocalized="ignore")@
 
 --@do-not-package@
----exported translations go here:
+
+-- Exported translations go here --
 
 --@end-do-not-package@

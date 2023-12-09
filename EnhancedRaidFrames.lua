@@ -2,7 +2,7 @@
 -- Copyright (c) 2017-2023 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
---- **EnhancedRaidFrames** is the main addon object for the Enhanced Raid Frames add-on.
+--- EnhancedRaidFrames is the main addon object for the Enhanced Raid Frames add-on.
 ---@class EnhancedRaidFrames : AceAddon-3.0 @The main addon object for the Enhanced Raid Frames add-on
 _G.EnhancedRaidFrames = LibStub("AceAddon-3.0"):NewAddon("EnhancedRaidFrames", "AceTimer-3.0", "AceHook-3.0",
 		"AceEvent-3.0", "AceBucket-3.0", "AceConsole-3.0", "AceSerializer-3.0")
@@ -21,17 +21,17 @@ local AceDB = LibStub("AceDB-3.0")
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
---- **OnInitialize** is called directly after the addon is fully loaded.
+--- Called directly after the addon is fully loaded.
 --- We do initialization tasks here, such as loading our saved variables or setting up slash commands.
 function EnhancedRaidFrames:OnInitialize()
 	-- Set up our database
-	self:SetupDatabase()
+	self:InitializeDatabase()
 
 	-- Run our database migration if necessary
 	self:MigrateDatabase()
 
 	-- Setup config panels in the Blizzard interface options
-	self:SetupConfigPanels()
+	self:InitializeConfigPanels()
 
 	-- Register callbacks for profile switching
 	self.db.RegisterCallback(self, "OnProfileChanged", function()
@@ -48,7 +48,7 @@ function EnhancedRaidFrames:OnInitialize()
 	end)
 end
 
---- **OnEnable** is called during the PLAYER_LOGIN event when most of the data provided by the game is already present.
+--- Called during the PLAYER_LOGIN event when most of the data provided by the game is already present.
 --- We perform more startup tasks here, such as registering events, hooking functions, creating frames, or getting 
 --- information from the game that wasn't yet available during :OnInitialize()
 function EnhancedRaidFrames:OnEnable()
@@ -94,17 +94,17 @@ function EnhancedRaidFrames:OnEnable()
 	end)
 end
 
---- **OnDisable** is called when our addon is manually being disabled during a running session.
+--- Called when our addon is manually being disabled during a running session.
 --- We primarily use this to unhook scripts, unregister events, or hide frames that we created.
 function EnhancedRaidFrames:OnDisable()
-	-- empty --
+	-- Empty --
 end
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
 --- Create a table containing our default database values
-function EnhancedRaidFrames:SetupDatabase()
+function EnhancedRaidFrames:InitializeDatabase()
 	-- Set up database defaults
 	local defaults = self:CreateDefaults()
 
@@ -114,15 +114,15 @@ function EnhancedRaidFrames:SetupDatabase()
 	-- Enhance database and profile options using LibDualSpec
 	if not self.isWoWClassicEra then
 		-- Not available in Classic Era
-		--enhance the database object with per spec profile features
+		-- Enhance the database object with per spec profile features
 		LibStub('LibDualSpec-1.0'):EnhanceDatabase(self.db, "EnhancedRaidFrames")
-		-- enhance the profile options table with per spec profile features
+		-- Enhance the profile options table with per spec profile features
 		LibStub('LibDualSpec-1.0'):EnhanceOptions(AceDBOptions:GetOptionsTable(self.db), self.db)
 	end
 end
 
---- Create our database, import saved variables, and set up our configuration panels
-function EnhancedRaidFrames:SetupConfigPanels()
+--- Set up our configuration panels and add them to the Blizzard interface options
+function EnhancedRaidFrames:InitializeConfigPanels()
 	-- Build our config panels
 	AceConfigRegistry:RegisterOptionsTable("Enhanced Raid Frames", self:CreateGeneralOptions())
 	AceConfigRegistry:RegisterOptionsTable("ERF Indicator Options", self:CreateIndicatorOptions())
@@ -144,7 +144,7 @@ function EnhancedRaidFrames:RefreshConfig()
 	self:GenerateAuraStrings()
 	self:UpdateScale()
 	if not self.isWoWClassicEra and not self.isWoWClassic then
-		--10.0 refactored CompactRaidFrameContainer with new functionality
+		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:UpdateIndicators(frame, true)
 			self:UpdateBackgroundAlpha(frame)

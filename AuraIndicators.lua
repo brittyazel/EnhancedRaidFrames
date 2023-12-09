@@ -19,26 +19,23 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 
 	-- Create indicators
 	for i = 1, 9 do
-		--I'm not sure if this is ever the case, but to stop us from creating redundant frames we should try to re-capture them when possible
-		--On the global table, our frames our named "CompactRaidFrame#" + "-ERF_indicator-" + index#, i.e. "CompactRaidFrame1-ERF_indicator-1"
+		-- To stop us from creating redundant frames we should try to re-capture them when possible.
 		if not _G[frame:GetName() .. "-ERF_indicator-" .. i] then
-			--We have to use CompactAuraTemplate to allow for our clicks to be passed through, otherwise our frames won't 
-			--allow selecting the raid frame behind it
 			frame.ERF_indicatorFrames[i] = CreateFrame("Button", frame:GetName() .. "-ERF_indicator-" .. i,
 					frame, "ERF_indicatorTemplate")
 		else
 			frame.ERF_indicatorFrames[i] = _G[frame:GetName() .. "-ERF_indicator-" .. i]
-			--if we capture an old indicator frame, we should reattach it to the current unit frame
+			-- If we capture an old indicator frame, we should reattach it to the current unit frame.
 			frame.ERF_indicatorFrames[i]:SetParent(frame)
 		end
 
-		--create local pointer for readability
+		-- Create local pointer for readability
 		local indicatorFrame = frame.ERF_indicatorFrames[i]
 
-		--mark the position of this particular frame for use later (i.e. 1->9)
+		-- Indicate the position of this particular frame for use later (i.e. 1->9)
 		indicatorFrame.position = i
 
-		--hook OnEnter and OnLeave for showing and hiding ability tooltips
+		-- Hook OnEnter and OnLeave for showing and hiding ability tooltips
 		indicatorFrame:SetScript("OnEnter", function()
 			self:Tooltip_OnEnter(indicatorFrame, frame)
 		end)
@@ -46,43 +43,38 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 			GameTooltip:Hide()
 		end)
 
-		--disable the mouse click on our frames to allow those clicks to get passed straight through to the raid frame 
-		--behind (switch target, right click, etc)
-		--this MUST come after the SetScript lines for OnEnter and OnLeave. SetScript will re-enable mouse clicks when called.
+		-- Disable the mouse click on our frames to allow those clicks to get passed straight through to the raid frame.
+		-- This MUST come after the SetScript lines for OnEnter and OnLeave. SetScript will re-enable mouse clicks when called.
 		indicatorFrame:SetMouseClickEnabled(false)
 	end
 
-	--set our initial indicator appearance
+	-- Set our initial indicator appearance
 	self:SetIndicatorAppearance(frame)
 end
 
 --- Set the appearance of the Indicator
 --- @param frame table @The raid frame of our indicator
 function EnhancedRaidFrames:SetIndicatorAppearance(frame)
-	-- Check if the frame has an ERFIndicators table or if we have a frame unit, this is just for safety
-	if not frame.ERF_indicatorFrames or not frame.unit then
-		return
-	end
-
+	-- Loop over all 9 indicators and set their appearance
 	for i = 1, 9 do
-		--create local pointer for readability
+		-- Create local pointer for readability
 		local indicatorFrame = frame.ERF_indicatorFrames[i]
 
-		--set icon size
+		-- Set icon size
 		indicatorFrame:SetWidth(self.db.profile["indicator-" .. i].indicatorSize)
 		indicatorFrame:SetHeight(self.db.profile["indicator-" .. i].indicatorSize)
 
 		--------------------------------------
 
-		--set indicator frame position
+		-- Set the indicator frame position
 		local PAD = 1
 		local indicatorVerticalOffset = floor((self.db.profile["indicator-" .. i].indicatorVerticalOffset * frame:GetHeight()) + 0.5)
 		local indicatorHorizontalOffset = floor((self.db.profile["indicator-" .. i].indicatorHorizontalOffset * frame:GetWidth()) + 0.5)
 
-		--we probably don't want to overlap the power bar (rage, mana, energy, etc) so we need a compensation factor
+		-- We probably don't want to overlap the power bar (rage, mana, energy, etc) so we need a compensation factor
 		local powerBarVertOffset
 		if self.db.profile.powerBarOffset and frame.powerBar:IsShown() then
-			powerBarVertOffset = frame.powerBar:GetHeight() + 2 --add 2 to not overlap the powerBar border
+			powerBarVertOffset = frame.powerBar:GetHeight() + 2 -- Add 2 to not overlap the powerBar border
 		else
 			powerBarVertOffset = 0
 		end
@@ -153,11 +145,11 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 	for i, indicator in ipairs(frame.ERF_indicatorFrames) do
 		--if we don't have any auraStrings for this indicator, stop here
 		if self.auraStrings[i][1] then
-			--check if we have at least 1 auraString for this location
-			-- this is the meat of our processing loop
+			-- Check if we have at least 1 auraString for this location
+			-- This is the meat of our processing loop
 			self:ProcessIndicator(indicator, frame.unit)
 		else
-			indicator:Hide() --hide the frame
+			indicator:Hide() -- Hide the frame
 		end
 	end
 end
@@ -171,7 +163,7 @@ function EnhancedRaidFrames:UpdateAllIndicators()
 
 	-- This is the heart and soul of the addon. Everything gets called from here.
 	if not self.isWoWClassicEra and not self.isWoWClassic then
-		--10.0 refactored CompactRaidFrameContainer with new functionality
+		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			if frame and frame.unit then
 				self:UpdateIndicators(frame)
@@ -199,10 +191,10 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		return
 	end
 
-	--- Find the current aura, if there is one
+	-- Find the current aura, if there is one
 	indicatorFrame.thisAura = EnhancedRaidFrames:FindActiveAndTrackedAura(indicatorFrame)
 
-	--- Process our visuals
+	-- Process our visuals
 	if indicatorFrame.thisAura then
 		-- Clear the frame if we're only showing missing auras or we're only showing our own auras and the aura isn't ours
 		if self.db.profile["indicator-" .. i].missingOnly
@@ -247,14 +239,14 @@ function EnhancedRaidFrames:FindActiveAndTrackedAura(indicatorFrame)
 	local i = indicatorFrame.position
 	local parentFrame = indicatorFrame:GetParent()
 
-	--if our unitAura table doesn't exist, stop here
+	-- If our unitAura table doesn't exist, stop here
 	if not parentFrame.ERF_unitAuras then
 		return
 	end
 
-	--loop through list of tracked auraStrings
+	-- Loop through list of tracked auraStrings
 	for _, auraIdentifier in pairs(self.auraStrings[i]) do
-		--loop through list of the current auras on the unit
+		-- Loop through list of the current auras on the unit
 		for _, aura in pairs(parentFrame.ERF_unitAuras) do
 			-- Check if the aura matches our auraString
 			if aura.name == auraIdentifier or (tonumber(auraIdentifier) and aura.spellId == tonumber(auraIdentifier))
@@ -287,9 +279,9 @@ end
 --- Start the update ticker for our indicator animation
 --- @param indicatorFrame table @The indicator frame to process
 function EnhancedRaidFrames:StartUpdateTicker(indicatorFrame)
-	self:IndicatorTick(indicatorFrame) --run right away to set initial values
+	self:IndicatorTick(indicatorFrame) -- Run straight away to set initial values
 	if not indicatorFrame.updateTicker then
-		--only start the ticker if it isn't already running
+		-- Only start the ticker if it isn't already running
 		indicatorFrame.updateTicker = self:ScheduleRepeatingTimer(function()
 			self:IndicatorTick(indicatorFrame)
 		end, 0.5)
@@ -312,7 +304,7 @@ function EnhancedRaidFrames:ClearIndicator(indicatorFrame)
 	self:StopUpdateTicker(indicatorFrame)
 	self:UpdateOverlayGlow(indicatorFrame)
 	self:UpdateCountdownText(indicatorFrame)
-	indicatorFrame:Hide() --hide the frame
+	indicatorFrame:Hide() -- Hide the frame
 	indicatorFrame.Icon:SetAlpha(1)
 end
 
@@ -359,9 +351,9 @@ function EnhancedRaidFrames:UpdateStackSizeText(indicatorFrame)
 	local i = indicatorFrame.position
 	local thisAura = indicatorFrame.thisAura
 
-	--Set the stack count text
+	-- Set the stack count text
 	if self.db.profile["indicator-" .. i].showStackSize and thisAura.applications and thisAura.applications > 1 then
-		--- Set the position of the stack size text based on the user's choice
+		-- Set the position of the stack size text based on the user's choice
 		-- Since space is limited, we have to move the countdown text to make room for the stack size text
 		if self.db.profile["indicator-" .. i].stackSizeLocation == "TOPLEFT" then
 			indicatorFrame.StackSize:ClearAllPoints()
@@ -382,7 +374,7 @@ function EnhancedRaidFrames:UpdateStackSizeText(indicatorFrame)
 		end
 		indicatorFrame.StackSize:SetText(thisAura.applications)
 	else
-		--reset the position of the countdown text and clear our stack size text
+		-- Reset the position of the countdown text and clear our stack size text
 		indicatorFrame.Countdown:SetPoint("CENTER", indicatorFrame, "CENTER", 0, 0)
 		indicatorFrame.StackSize:SetText("")
 	end
@@ -400,9 +392,9 @@ function EnhancedRaidFrames:UpdateIndicatorIcon(indicatorFrame)
 	end
 
 	if thisAura then
-		--- Set our active indicator icon
+		-- Set our active indicator icon
 		if thisAura.icon then
-			--if we have an icon, use it
+			-- If we have an icon, use it
 			-- add spell icon info to cache in case we need it later on
 			if not self.iconCache[thisAura.name] or self.iconCache[thisAura.spellId] then
 				self.iconCache[thisAura.name] = thisAura.icon
@@ -410,26 +402,25 @@ function EnhancedRaidFrames:UpdateIndicatorIcon(indicatorFrame)
 			end
 			indicatorFrame.Icon:SetTexture(thisAura.icon)
 		elseif self.iconCache[thisAura.name] then
-			--look in our icon cache for the name
+			-- Look in our icon cache for the name
 			indicatorFrame.Icon:SetTexture(self.iconCache[thisAura.name])
 		elseif self.iconCache[thisAura.spellId] then
-			--look in our icon cache for the spellId
+			-- Look in our icon cache for the spellId
 			indicatorFrame.Icon:SetTexture(self.iconCache[thisAura.spellId])
 		else
-			--if we don't have an icon, use the default question mark
+			-- If we can't find an icon, use the default question mark icon
 			indicatorFrame.Icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
 		end
-		--set the alpha of the icon
+		-- Set the alpha of the icon to the user's choice
 		indicatorFrame.Icon:SetAlpha(self.db.profile["indicator-" .. i].indicatorAlpha)
 	else
-		--- Set our "missing" indicator icon
+		-- Set our "missing" indicator icon
 		local auraIdentifier = self.auraStrings[i][1] --show the icon for the first auraString position
 
-		-- Check our iconCache for the name. 
-		-- Note: The icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons.
 		if not self.iconCache[auraIdentifier] then
-			-- Query the game for the icon
-			local icon = select(3, GetSpellInfo(auraIdentifier)) --icon is the 3rd return value of GetSpellInfo
+			-- Check our iconCache for the name. 
+			-- Note: The icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons.
+			local icon = select(3, GetSpellInfo(auraIdentifier)) -- Query the game for the icon
 			if icon then
 				self.iconCache[auraIdentifier] = icon --cache our icon if we found one
 				indicatorFrame.Icon:SetTexture(icon)
@@ -439,7 +430,7 @@ function EnhancedRaidFrames:UpdateIndicatorIcon(indicatorFrame)
 		else
 			indicatorFrame.Icon:SetTexture(self.iconCache[auraIdentifier])
 		end
-		--set the alpha of the icon
+		-- Set the alpha of the icon to the user's choice
 		indicatorFrame.Icon:SetAlpha(self.db.profile["indicator-" .. i].indicatorAlpha)
 	end
 end
@@ -457,7 +448,7 @@ function EnhancedRaidFrames:UpdateIndicatorColor(indicatorFrame, remainingTime)
 	end
 
 	if thisAura then
-		--- Set color based on time remaining
+		-- Set color based on time remaining
 		if self.db.profile["indicator-" .. i].colorIndicatorByTime and remainingTime then
 			-- Color by remaining time
 			if remainingTime and self.db.profile["indicator-" .. i].colorIndicatorByTime_low ~= 0
@@ -471,7 +462,7 @@ function EnhancedRaidFrames:UpdateIndicatorColor(indicatorFrame, remainingTime)
 			end
 		end
 
-		--- Set the color by debuff type
+		-- Set the color by debuff type
 		if self.db.profile["indicator-" .. i].colorIndicatorByDebuff and thisAura.isHarmful and thisAura.dispelName then
 			if thisAura.dispelName == "poison" then
 				indicatorFrame.Icon:SetColorTexture(self.GREEN_COLOR:GetRGB())
@@ -489,7 +480,7 @@ function EnhancedRaidFrames:UpdateIndicatorColor(indicatorFrame, remainingTime)
 		end
 	end
 
-	--- Set the color to the user select choice
+	-- Set the color to the user select choice
 	indicatorFrame.Icon:SetColorTexture(unpack(self.db.profile["indicator-" .. i].indicatorColor))
 end
 
@@ -501,7 +492,7 @@ function EnhancedRaidFrames:UpdateCountdownTextColor(indicatorFrame, remainingTi
 	local thisAura = indicatorFrame.thisAura
 
 	if thisAura then
-		--- Set color based on time remaining
+		-- Set color based on time remaining
 		if self.db.profile["indicator-" .. i].colorTextByTime and remainingTime then
 			-- Color by remaining time
 			if self.db.profile["indicator-" .. i].colorTextByTime_low ~= 0
@@ -515,7 +506,7 @@ function EnhancedRaidFrames:UpdateCountdownTextColor(indicatorFrame, remainingTi
 			end
 		end
 
-		--- Set the color by debuff type
+		-- Set the color by debuff type
 		if self.db.profile["indicator-" .. i].colorTextByDebuff and thisAura.isHarmful and thisAura.dispelName then
 			if thisAura.dispelName == "poison" then
 				indicatorFrame.Countdown:SetTextColor(self.GREEN_COLOR:GetRGB())
@@ -533,7 +524,7 @@ function EnhancedRaidFrames:UpdateCountdownTextColor(indicatorFrame, remainingTi
 		end
 	end
 
-	--- Set the color to the user select choice
+	-- Set the color to the user select choice
 	indicatorFrame.Countdown:SetTextColor(unpack(self.db.profile["indicator-" .. i].textColor))
 end
 
@@ -576,19 +567,19 @@ function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame, parentFrame)
 			if thisAura.auraInstanceID then
 				GameTooltip:SetUnitBuffByAuraInstanceID(parentFrame.unit, thisAura.auraInstanceID)
 			elseif thisAura.auraIndex then
-				--the legacy way of doing things
+				-- The legacy way to set the tooltip for an aura
 				GameTooltip:SetUnitAura(parentFrame.unit, thisAura.auraIndex, "HELPFUL")
 			end
 		elseif thisAura.isHarmful then
 			if thisAura.auraInstanceID then
 				GameTooltip:SetUnitDebuffByAuraInstanceID(parentFrame.unit, thisAura.auraInstanceID)
 			elseif thisAura.auraIndex then
-				--the legacy way of doing things
+				-- The legacy way to set the tooltip for an aura
 				GameTooltip:SetUnitAura(parentFrame.unit, thisAura.auraIndex, "HARMFUL")
 			end
 		end
 	else
-		--causes the tooltip to reset to the "default" tooltip which is usually information about the character
+		-- Causes the tooltip to reset to the "default" tooltip which is usually information about the character
 		UnitFrame_UpdateTooltip(parentFrame)
 	end
 end
@@ -599,22 +590,34 @@ end
 
 --- Generates a table of individual, sanitized aura strings from the raw user text input.
 function EnhancedRaidFrames:GenerateAuraStrings()
-	-- reset aura strings
-	self.allAuras = " " --this is so we can do quick string searches later
+	-- Reset the aura strings
+	self.allAuras = " " -- Used for quick boolean searches
 	self.auraStrings = { {}, {}, {}, {}, {}, {}, {}, {}, {} }  -- Matrix to keep all aura strings to watch for
 
 	for i = 1, 9 do
-		local j = 1
-		for name in string.gmatch(self.db.profile["indicator-" .. i].auras, "[^\n]+") do
+		local rawStrings = {}
+		-- Split the user input into individual strings based on new lines
+		for rawString in self.db.profile["indicator-" .. i].auras:gmatch("[^\n]+") do
+			table.insert(rawStrings, rawString)
+		end
+
+		for j, rawString in ipairs(rawStrings) do
 			-- Grab each line
-			--sanitize strings
-			name = name:lower() --force lowercase
-			name = name:gsub("^%s*(.-)%s*$", "%1") --strip any leading or trailing whitespace
-			name = name:gsub("\"", "") --strip any quotation marks if there are any
-			-- Add each watched aura to a string so we later can quickly determine if we need to look for one
-			self.allAuras = self.allAuras .. " " .. name .. " "
-			self.auraStrings[i][j] = name
-			j = j + 1
+			-- Sanitize strings
+			local auraString = self:SanitizeAuraString(rawString)
+			-- Add each watched aura to a matrix for quick searching later
+			self.auraStrings[i][j] = auraString
+			-- Add each watched aura to a single large string for quick boolean searches later on
+			self.allAuras = self.allAuras .. " " .. auraString .. " "
 		end
 	end
+end
+
+--- Sanitize a single aura string
+--- @param auraString string @The aura string to sanitize
+function EnhancedRaidFrames:SanitizeAuraString(auraString)
+	auraString = auraString:lower() -- Force lowercase
+	auraString = auraString:gsub("^%s*(.-)%s*$", "%1") -- Strip any leading or trailing whitespace
+	auraString = auraString:gsub("\"", "") -- Strip any quotation marks if there are any
+	return auraString
 end

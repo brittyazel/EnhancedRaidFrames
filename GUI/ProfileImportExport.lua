@@ -14,30 +14,26 @@ local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 
 --- Populate our "Profile Import/Export" options table for our Blizzard interface options
 function EnhancedRaidFrames:CreateProfileImportExportOptions()
-
-	local importexport = {
+	local import_export = {
 		name = L["Profile"] .. " " .. L["Import"] .. "/" .. L["Export"],
 		type = "group",
 		order = 1,
 		args = {
-
 			Header = {
 				order = 1,
 				name = L["Profile"] .. " " .. L["Import"] .. "/" .. L["Export"],
 				type = "header",
 			},
-
 			Instructions = {
 				order = 2,
 				name = L["ImportExport_Desc"],
 				type = "description",
 				fontSize = "medium",
 			},
-
 			TextBox = {
 				order = 3,
 				name = L["Import or Export the current profile:"],
-				desc = DIM_RED_FONT_COLOR:WrapTextInColorCode(L["ImportExport_WarningDesc"]),
+				desc = self.RED_COLOR:WrapTextInColorCode(L["ImportExport_WarningDesc"]),
 				type = "input",
 				multiline = 22,
 				confirm = function()
@@ -55,5 +51,5 @@ function EnhancedRaidFrames:CreateProfileImportExportOptions()
 		},
 	}
 
-	return importexport
+	return import_export
 end

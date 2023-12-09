@@ -9,13 +9,17 @@ local EnhancedRaidFrames = _G.EnhancedRaidFrames
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
+--- Create a target marker for a given frame
+---@param frame table @The frame to create the target marker for
+function EnhancedRaidFrames:CreateTargetMarker(frame)
+	-- Create a texture for our target marker
+	frame.ERF_targetMarkerFrame = frame:CreateTexture(nil, "OVERLAY")
+	self:SetTargetMarkerAppearance(frame)
+end
+
 --- Set the appearance for our target marker for a given frame
 ---@param frame table @The frame to set the appearance for
 function EnhancedRaidFrames:SetTargetMarkerAppearance(frame)
-	if not frame.ERF_targetMarkerFrame then
-		return
-	end
-
 	local targetMarker = frame.ERF_targetMarkerFrame
 
 	local PAD = 3
@@ -24,10 +28,10 @@ function EnhancedRaidFrames:SetTargetMarkerAppearance(frame)
 	local markerVerticalOffset = self.db.profile.markerVerticalOffset * frame:GetHeight()
 	local markerHorizontalOffset = self.db.profile.markerHorizontalOffset * frame:GetWidth()
 
-	--we probably don't want to overlap the power bar (rage, mana, energy, etc) so we need a compensation factor
+	-- We probably don't want to overlap the power bar (rage, mana, energy, etc) so we need a compensation factor
 	local powerBarVertOffset
 	if self.db.profile.powerBarOffset and frame.powerBar:IsShown() then
-		powerBarVertOffset = frame.powerBar:GetHeight() + 2 --add 2 to not overlap the powerBar border
+		powerBarVertOffset = frame.powerBar:GetHeight() + 2 -- Add 2 to not overlap the powerBar border
 	else
 		powerBarVertOffset = 0
 	end
@@ -58,32 +62,30 @@ function EnhancedRaidFrames:SetTargetMarkerAppearance(frame)
 	targetMarker:SetWidth(self.db.profile.markerSize)
 	targetMarker:SetHeight(self.db.profile.markerSize)
 
-	-- Set the marker opacity
-	targetMarker:SetAlpha(self.db.profile.markerAlpha)
+	-- Clear the marker
+	self:ClearTargetMarker(frame)
 end
 
 --- Update the appearance of our target marker for a given frame
 ---@param frame table @The frame to update the appearance for
 ---@param setAppearance boolean @Whether or not to set the appearance of the marker
 function EnhancedRaidFrames:UpdateTargetMarker(frame, setAppearance)
-	-- If the frame doesn't point at anything, no need for an marker
-	if not frame.unit or not frame:IsShown() then
+	if not self.ShouldContinue(frame.unit) then
 		return
 	end
 
-	-- If our texture doesn't exist, create it
+	-- If our target marker doesn't exist, create it
 	if not frame.ERF_targetMarkerFrame then
-		frame.ERF_targetMarkerFrame = frame:CreateTexture(nil, "OVERLAY")
-		self:SetTargetMarkerAppearance(frame)
+		self:CreateTargetMarker(frame)
 	else
 		if setAppearance then
 			self:SetTargetMarkerAppearance(frame)
 		end
 	end
 
-	--if they don't have target markers set to show, don't show anything
+	-- If they don't have target markers enabled, don't show anything
 	if not self.db.profile.showTargetMarkers then
-		frame.ERF_targetMarkerFrame:Hide() -- hide the frame
+		self:ClearTargetMarker(frame)
 		return
 	end
 
@@ -91,28 +93,32 @@ function EnhancedRaidFrames:UpdateTargetMarker(frame, setAppearance)
 	local index = GetRaidTargetIndex(frame.unit)
 
 	if index and index >= 1 and index <= 8 then
+		-- Get the full texture path for the marker
+		local texture = UnitPopupRaidTarget1ButtonMixin:GetIcon() or "Interface\\TargetingFrame\\UI-RaidTargetingIcons"
 
-		local texture = UnitPopupRaidTarget1ButtonMixin:GetIcon() --this is the full texture file, we need to parse it to get the individual icons
-		local tCoordsTable = _G["UnitPopupRaidTarget" .. index .. "ButtonMixin"]:GetTextureCoords()
+		-- Get the texture coordinates for the marker
+		local coords = _G["UnitPopupRaidTarget" .. index .. "ButtonMixin"]:GetTextureCoords()
 
-		local leftTexCoord = tCoordsTable.tCoordLeft
-		local rightTexCoord = tCoordsTable.tCoordRight
-		local topTexCoord = tCoordsTable.tCoordTop
-		local bottomTexCoord = tCoordsTable.tCoordBottom
+		-- Set the marker texture using trilinear filtering (reduces pixelation)
+		frame.ERF_targetMarkerFrame:SetTexture(texture, nil, nil, "TRILINEAR")
 
-		frame.ERF_targetMarkerFrame:SetTexture(texture, nil, nil, "TRILINEAR") --use trilinear filtering to reduce jaggies
-		frame.ERF_targetMarkerFrame:SetTexCoord(leftTexCoord, rightTexCoord, topTexCoord, bottomTexCoord) --texture contains all the icons in a single texture, and we need to set coords to crop out the other icons
+		-- Set the texture coordinates to the correct icon of the larger texture
+		frame.ERF_targetMarkerFrame:SetTexCoord(coords.tCoordLeft, coords.tCoordRight, coords.tCoordTop, coords.tCoordBottom)
+
+		-- Set the marker opacity
+		frame.ERF_targetMarkerFrame:SetAlpha(self.db.profile.markerAlpha)
+
+		-- Show the marker
 		frame.ERF_targetMarkerFrame:Show()
 	else
-		frame.ERF_targetMarkerFrame:Hide()
-		frame.ERF_targetMarkerFrame:Hide()
+		self:ClearTargetMarker(frame)
 	end
 end
 
 --- Update the appearance of our target markers for all frames
 function EnhancedRaidFrames:UpdateAllTargetMarkers()
 	if not self.isWoWClassicEra and not self.isWoWClassic then
-		--10.0 refactored CompactRaidFrameContainer with new functionality
+		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:UpdateTargetMarker(frame)
 		end)
@@ -122,4 +128,12 @@ function EnhancedRaidFrames:UpdateAllTargetMarkers()
 			self:UpdateTargetMarker(frame)
 		end)
 	end
+end
+
+--- Clear the target marker for a given frame
+---@param frame table @The frame to clear the target marker for
+function EnhancedRaidFrames:ClearTargetMarker(frame)
+	local targetMarker = frame.ERF_targetMarkerFrame
+	targetMarker:Hide()
+	targetMarker:SetAlpha(1)
 end

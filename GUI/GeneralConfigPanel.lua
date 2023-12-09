@@ -9,13 +9,14 @@ local EnhancedRaidFrames = _G.EnhancedRaidFrames
 -- Import libraries
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 
+-- Constants
+local THIRD_WIDTH = 1.25
+
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
 --- Populate our "General" options table for our Blizzard interface options
 function EnhancedRaidFrames:CreateGeneralOptions()
-	local THIRD_WIDTH = 1.25
-
 	local generalOptions = {
 		type = "group",
 		childGroups = "tree",

@@ -17,23 +17,23 @@ local LibRangeCheck = LibStub("LibRangeCheck-2.0")
 --- Handle the migration of the database from one version to another
 function EnhancedRaidFrames:MigrateDatabase()
 	if not self.db.profile.DB_VERSION or self.db.profile.DB_VERSION < self.DATABASE_VERSION then
+		-- Migrate the database to the current specification
 		self:Print(L["The database is being migrated to version:"] .. " " .. self.DATABASE_VERSION)
-		--- Migrate the database to the current specification
 
+		-----------------------------------------------------------
 		-----------------------------------------------------------
 
 		-- Added in database version 2.1 on 12/4/2023
-		-- Fix indicatorColor and textColor to be our new table format without explicit r/g/b/a keys assigned
+		-- Fix indicatorColor and textColor to be our new table format without explicit R/G/B/A keys assigned
 		for i = 1, 9 do
 			if self.db.profile[i] then
-				--check to see if we have the old format prior to database version 2.2
+				-- Check to see if we have the old format prior to database version 2.2
 				if self.db.profile[i].indicatorColor and self.db.profile[i].indicatorColor.r then
-					--check to see if we have the old format
 					self.db.profile[i].indicatorColor = { self.db.profile[i].indicatorColor.r, self.db.profile[i].indicatorColor.g,
 														  self.db.profile[i].indicatorColor.b, self.db.profile[i].indicatorColor.a }
 				end
+				-- Check to see if we have the old format prior to database version 2.2
 				if self.db.profile[i].textColor and self.db.profile[i].textColor.r then
-					--check to see if we have the old format
 					self.db.profile[i].textColor = { self.db.profile[i].textColor.r, self.db.profile[i].textColor.g,
 													 self.db.profile[i].textColor.b, self.db.profile[i].textColor.a }
 				end
@@ -50,14 +50,14 @@ function EnhancedRaidFrames:MigrateDatabase()
 			end
 		end
 
-		--Reload our database object with the defaults post-migration
-		self:SetupDatabase()
+		-- Reload our database object with the defaults post-migration
+		self:InitializeDatabase()
 
+		-----------------------------------------------------------
 		-----------------------------------------------------------
 
 		self:Print(L["Database migration successful."])
 		self.db.profile.DB_VERSION = self.DATABASE_VERSION
-
 	end
 end
 
@@ -70,6 +70,7 @@ function EnhancedRaidFrames.ShouldContinue(unit)
 		return false
 	end
 
+	-- If we don't have a unit, stop here
 	if not unit then
 		return false
 	end
@@ -87,7 +88,7 @@ end
 --- Set the visibility on the stock buff/debuff frames
 function EnhancedRaidFrames:UpdateAllStockAuraVisOverrides()
 	if not self.isWoWClassicEra and not self.isWoWClassic then
-		--10.0 refactored CompactRaidFrameContainer with new functionality
+		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:UpdateStockAuraVisOverrides(frame)
 		end)
@@ -119,9 +120,9 @@ function EnhancedRaidFrames:UpdateStockAuraVisOverrides(frame)
 		for _, auraFrame in pairs(auraFrames) do
 			-- Set our hook to override "OnShow" on the frame based on the visibility flag in our database
 			if not auraVisibilityFlags[i] then
-				--query the specific visibility flag for this frame type
+				-- Query the specific visibility flag for this frame type
 				if not self:IsHooked(auraFrame, "OnShow") then
-					--careful not to hook the same frame multiple times
+					-- Be careful not to hook the same frame multiple times
 					self:SecureHookScript(auraFrame, "OnShow", function(self)
 						self:Hide()
 					end)
@@ -143,12 +144,13 @@ function EnhancedRaidFrames:UpdatePrivateAuraVisOverrides(frame)
 	if not self.ShouldContinue(frame.unit) then
 		return
 	end
-	
+
+	-- If we don't have any private auras, stop here
 	if not frame.PrivateAuraAnchors then
 		return
 	end
 
-	-- Use our debuff visibility flag because that's where these auras show up in-game
+	-- Use our debuff visibility flag because that's where these auras are anchored by default
 	if not self.db.profile.showDebuffs then
 		-- Try to "hide" the private aura by clearing the attachment of its anchor frame and hiding the anchor frame
 		for _, auraAnchor in ipairs(frame.PrivateAuraAnchors) do
@@ -166,37 +168,36 @@ function EnhancedRaidFrames:UpdateInRange(frame)
 		return
 	end
 
+	-- Sometimes the "displayed unit" is different than the actual unit, so we'll check both.
+	-- (E.g. If we're in a vehicle, we'll use the vehicle unit instead of the player unit.)
 	local effectiveUnit = frame.unit
 	if frame.unit ~= frame.displayedUnit then
 		effectiveUnit = frame.displayedUnit
 	end
 
-	if not UnitExists(effectiveUnit) then
-		return
-	end
-
 	local inRange, checkedRange
 
-	--if we have a custom range set use LibRangeCheck, otherwise use default UnitInRange function
+	-- Try to use LibRangeCheck if we have a custom range set
 	if self.db.profile.customRangeCheck then
 		local rangeChecker = LibRangeCheck:GetFriendChecker(self.db.profile.customRange)
 		if rangeChecker then
+			-- If we have a valid range checker, use it
 			inRange = rangeChecker(effectiveUnit)
 			checkedRange = true
-		else
-			inRange, checkedRange = UnitInRange(effectiveUnit) --if no rangeChecker can be generated, fallback to UnitInRange
 		end
-	else
+	end
+
+	-- If we haven't successfully checked the range yet, use the default range checking function
+	if not checkedRange then
 		inRange, checkedRange = UnitInRange(effectiveUnit)
 	end
 
+	-- If we weren't able to check the range for some reason, treat them as being in-range as a fallback.
 	if checkedRange and not inRange then
-		--If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
 		frame:SetAlpha(self.db.profile.rangeAlpha)
 	else
 		frame:SetAlpha(1)
 	end
-
 end
 
 --- Set the background alpha amount based on a defined value by the user.
@@ -206,6 +207,7 @@ function EnhancedRaidFrames:UpdateBackgroundAlpha(frame)
 		return
 	end
 
+	-- Set the background alpha to the user defined value
 	frame.background:SetAlpha(self.db.profile.backgroundAlpha)
 end
 
@@ -221,15 +223,15 @@ end
 
 --- Serialize and compress the profile for copy+paste.
 function EnhancedRaidFrames:GetSerializedAndCompressedProfile()
-	local uncompressed = self:Serialize(self.db.profile) --serialize the database into a string value
-	local compressed = LibDeflate:CompressZlib(uncompressed) --compress the data
-	local encoded = LibDeflate:EncodeForPrint(compressed) --encode the data for print for copy+paste
+	local uncompressed = self:Serialize(self.db.profile) -- Serialize the database into a single string value
+	local compressed = LibDeflate:CompressZlib(uncompressed) -- Compress the serialized data
+	local encoded = LibDeflate:EncodeForPrint(compressed) -- Encode the compressed data for print for easy copy+paste
 	return encoded
 end
 
 --- Deserialize and decompress the profile from copy+paste.
 function EnhancedRaidFrames:SetSerializedAndCompressedProfile(input)
-	--check if the input is empty
+	-- Stop here if the input is empty
 	if input == "" then
 		self:Print(L["No data to import."] .. " " .. L["Aborting."])
 		return
@@ -237,23 +239,23 @@ function EnhancedRaidFrames:SetSerializedAndCompressedProfile(input)
 
 	-- Decode and check if decoding worked properly
 	local decoded = LibDeflate:DecodeForPrint(input)
-	if decoded == nil then
+	if not decoded then
 		self:Print(L["Decoding failed."] .. " " .. L["Aborting."])
 		return
 	end
 
 	-- Decompress and verify if decompression worked properly
 	local decompressed = LibDeflate:DecompressZlib(decoded)
-	if decompressed == nil then
+	if not decompressed then
 		self:Print(L["Decompression failed."] .. " " .. L["Aborting."])
 		return
 	end
 
 	-- Deserialize the data and return it back into a table format
-	local result, newProfile = self:Deserialize(decompressed)
+	local success, newProfile = self:Deserialize(decompressed)
 
 	-- If we successfully deserialize, load the new table into the database
-	if result == true and newProfile then
+	if success and newProfile then
 		for k, v in pairs(newProfile) do
 			if type(v) == "table" then
 				self.db.profile[k] = CopyTable(v)
@@ -261,6 +263,9 @@ function EnhancedRaidFrames:SetSerializedAndCompressedProfile(input)
 				self.db.profile[k] = v
 			end
 		end
+
+		-- Reload our database object with the defaults post-import
+		self:InitializeDatabase()
 	else
 		self:Print(L["Data import Failed."] .. " " .. L["Aborting."])
 	end

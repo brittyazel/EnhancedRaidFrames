@@ -6,6 +6,7 @@
 ---@type EnhancedRaidFrames
 local EnhancedRaidFrames = _G.EnhancedRaidFrames
 
+-- Latest Database Version (<major>.<minor>)
 EnhancedRaidFrames.DATABASE_VERSION = 2.2
 
 -------------------------------------------------------------------------
@@ -16,51 +17,57 @@ function EnhancedRaidFrames:CreateDefaults()
 	local defaults = {}
 
 	defaults.profile = {
-		---Main Settings
-		--Default Icon Visibility
+		--------------------------------
+		------- General Settings -------
+		--------------------------------
+		-- Default Icon Visibility
 		showBuffs = true,
 		showDebuffs = true,
 		showDispellableDebuffs = true,
 
-		--Visual Options
+		-- Visual Options
 		powerBarOffset = true,
 		frameScale = 1,
 		backgroundAlpha = 1,
 		indicatorFont = "Arial Narrow",
 
-		--Out-of-Range Options
+		-- Out-of-Range Options
 		customRangeCheck = false,
 		customRange = 30,
 		rangeAlpha = 0.55,
 
-		---Target Markers Settings
-		--General Options
+		--------------------------------
+		---- Target Marker Settings ----
+		--------------------------------
+		-- General Options
 		showTargetMarkers = true,
 		markerPosition = 5,
 
-		--Visual Options
+		-- Visual Options
 		markerSize = 20,
 		markerAlpha = 1,
 
-		--Position Options
+		-- Position Options
 		markerVerticalOffset = 0,
 		markerHorizontalOffset = 0,
 	}
 
-	---Indicator Options Settings
+	-----------------------------------
+	---- Indicator Option Settings ----
+	-----------------------------------
 	for i = 1, 9 do
 		defaults.profile["indicator-" .. i] = {
-			--Aura Strings
+			-- Aura Strings
 			auras = "",
 
-			--Visibility and Behavior
+			-- Visibility and Behavior
 			mineOnly = false,
 			meOnly = false,
 			missingOnly = false,
 			showTooltip = true,
 			tooltipLocation = "ANCHOR_CURSOR",
 
-			--Icon and Color
+			-- Icon and Color
 			indicatorSize = 18,
 			indicatorHorizontalOffset = 0,
 			indicatorVerticalOffset = 0,
@@ -72,7 +79,7 @@ function EnhancedRaidFrames:CreateDefaults()
 			colorIndicatorByTime_low = 2,
 			colorIndicatorByTime_high = 5,
 
-			--Text and Color
+			-- Text and Color
 			showCountdownText = false,
 			showStackSize = true,
 			stackSizeLocation = "BOTTOMRIGHT",
@@ -84,7 +91,7 @@ function EnhancedRaidFrames:CreateDefaults()
 			textSize = 14,
 			textAlpha = 1,
 
-			--Animations and Effects
+			-- Animations and Effects
 			showCountdownSwipe = true,
 			indicatorGlow = false,
 			glowRemainingSecs = 3,

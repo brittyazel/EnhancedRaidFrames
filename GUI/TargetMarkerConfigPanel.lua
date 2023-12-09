@@ -9,12 +9,13 @@ local EnhancedRaidFrames = _G.EnhancedRaidFrames
 -- Import libraries
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 
+-- Constants
+local THIRD_WIDTH = 1.25
+
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 --- Populate our "Target Marker" options table for our Blizzard interface options
 function EnhancedRaidFrames:CreateIconOptions()
-	local THIRD_WIDTH = 1.25
-
 	local markerOptions = {
 		type = "group",
 		childGroups = "tree",
