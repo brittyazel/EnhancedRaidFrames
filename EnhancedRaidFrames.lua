@@ -62,7 +62,7 @@ function EnhancedRaidFrames:OnEnable()
 	self:UpdateAllAuras()
 
 	-- Force a full update of all frames and auras when the raid roster changes
-	self:RegisterEvent("GROUP_ROSTER_UPDATE", function()
+	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 0.25, function()
 		self:CreateAllListeners()
 		self:UpdateAllAuras()
 		self:UpdateAllIndicators(true)
