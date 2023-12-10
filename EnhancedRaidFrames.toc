@@ -15,20 +15,33 @@
 ## X-Curse-Project-ID: 298558
 ## X-Wago-ID: xZKxkE6k
 
+# Libraries
 Libs\embeds.xml
+
+# Locales
 Localizations\Localizations.xml
 
+# Core
 EnhancedRaidFrames.lua
 Globals.lua
 DatabaseDefaults.lua
-UtilitiesAndOverrides.lua
-CollectUnitAuras.lua
+Overrides.lua
 
-AuraIndicators.lua
-TargetMarkers.lua
+# Utils
+Utils/Utilities.lua
+Utils/DatabaseMigration.lua
 
+# Aura Indicators
+Modules/AuraListeners.lua
+Modules/AuraIndicators.lua
+
+# Target Markers
+Modules/TargetMarkers.lua
+
+# Templates
 XML\IndicatorTemplate.xml
 
+# GUI
 GUI\GeneralConfigPanel.lua
 GUI\IndicatorConfigPanel.lua
 GUI\TargetMarkerConfigPanel.lua

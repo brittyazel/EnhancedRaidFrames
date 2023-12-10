@@ -124,7 +124,6 @@ function EnhancedRaidFrames:UpdateAllTargetMarkers()
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			self:UpdateBackgroundAlpha(frame)
 			self:UpdateTargetMarker(frame)
 		end)
 	end

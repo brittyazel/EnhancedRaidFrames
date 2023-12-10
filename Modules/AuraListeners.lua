@@ -17,57 +17,39 @@ end
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
---- Creates all of our listeners for the UNIT_AURA event attached to their respective raid frames
-function EnhancedRaidFrames:CreateAllListeners()
-	if not self.isWoWClassicEra and not self.isWoWClassic then
-		-- 10.0 refactored CompactRaidFrameContainer with new functionality
-		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			if frame and frame.unit then
-				self:CreateAuraListener(frame)
-			end
-		end)
-	else
-		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			if frame and frame.unit then
-				self:CreateAuraListener(frame)
-			end
-		end)
-	end
-end
-
 --- Creates a listener for the UNIT_AURA event attached to a specified raid frame
 ---@param frame table @The raid frame to create the listener for
 function EnhancedRaidFrames:CreateAuraListener(frame)
-	-- Only create a listener if we don't already have one, or the unit assigned to it has changed
-	if not frame.ERF_auraListenerFrame or frame.ERF_auraListenerFrame.unit ~= frame.unit then
-		-- Only create a new frame if we don't have one yet
-		if not frame.ERF_auraListenerFrame then
-			-- To stop us from creating redundant frames we should try to re-capture them when possible.
-			if not _G[frame:GetName() .. "-ERF_auraListenerFrame"] then
-				frame.ERF_auraListenerFrame = CreateFrame("Frame", frame:GetName() .. "-ERF_auraListenerFrame", frame)
-			else
-				frame.ERF_auraListenerFrame = _G[frame:GetName() .. "-ERF_auraListenerFrame"]
-				-- If we capture an old indicator frame, we should reattach it to the current unit frame.
-				frame.ERF_auraListenerFrame:SetParent(frame)
-				-- If we capture an old indicator frame, we should clear any old events it may be listening for.
-				frame.ERF_auraListenerFrame:UnregisterAllEvents()
-			end
-		end
-
-		-- Set the unit for the listener frame and register the unit event
-		frame.ERF_auraListenerFrame.unit = frame.unit
-		frame.ERF_auraListenerFrame:RegisterUnitEvent("UNIT_AURA", frame.unit)
-
-		-- Assign the OnEvent callback for the listener frame
-		if not self.isWoWClassicEra and not self.isWoWClassic then
-			frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, unit, payload)
-				self:UpdateUnitAuras(unit, payload, frame)
-			end)
+	-- Only create a new frame if we don't have one yet
+	if not frame.ERF_auraListenerFrame then
+		-- To stop us from creating redundant frames we should try to re-capture them when possible.
+		if not _G[frame:GetName() .. "-ERF_auraListenerFrame"] then
+			frame.ERF_auraListenerFrame = CreateFrame("Frame", frame:GetName() .. "-ERF_auraListenerFrame", frame)
 		else
-			frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, unit)
-				self:UpdateUnitAuras_Classic(unit, frame) -- Classic uses the legacy method prior to 10.0
-			end)
+			frame.ERF_auraListenerFrame = _G[frame:GetName() .. "-ERF_auraListenerFrame"]
+			-- If we capture an old indicator frame, we should reattach it to the current unit frame.
+			frame.ERF_auraListenerFrame:SetParent(frame)
 		end
+	end
+	
+	if frame.ERF_auraListenerFrame.unit ~= frame.unit then
+		-- If the unit has changed, we should clear any old events it may be listening for.
+		frame.ERF_auraListenerFrame:UnregisterAllEvents()
+	end
+
+	-- Set the unit for the listener frame and register the unit event
+	frame.ERF_auraListenerFrame.unit = frame.unit
+	frame.ERF_auraListenerFrame:RegisterUnitEvent("UNIT_AURA", frame.unit)
+
+	-- Assign the OnEvent callback for the listener frame
+	if not self.isWoWClassicEra and not self.isWoWClassic then
+		frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, unit, payload)
+			self:UpdateUnitAuras(unit, payload, frame)
+		end)
+	else
+		frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, unit)
+			self:UpdateUnitAuras_Classic(unit, frame) -- Classic uses the legacy method prior to 10.0
+		end)
 	end
 end
 
@@ -98,6 +80,11 @@ end
 function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
 	if not self.ShouldContinue(unit) then
 		return
+	end
+
+	-- Create a listener frame for the unit if we don't have one yet or it's listening to the wrong unit
+	if not parentFrame.ERF_auraListenerFrame or parentFrame.ERF_auraListenerFrame.unit ~= unit then
+		self:CreateAuraListener(parentFrame)
 	end
 
 	-- Create the main table for the unit
@@ -220,6 +207,11 @@ end
 function EnhancedRaidFrames:UpdateUnitAuras_Classic(unit, parentFrame)
 	if not self.ShouldContinue(unit) then
 		return
+	end
+
+	-- Create a listener frame for the unit if we don't have one yet or it's listening to the wrong unit
+	if not parentFrame.ERF_auraListenerFrame or parentFrame.ERF_auraListenerFrame.unit ~= unit then
+		self:CreateAuraListener(parentFrame)
 	end
 
 	-- Create or clear out the tables for the unit

@@ -41,10 +41,10 @@ function EnhancedRaidFrames:CreateProfileImportExportOptions()
 				end,
 				validate = false,
 				set = function(self, input)
-					EnhancedRaidFrames:SetSerializedAndCompressedProfile(input)
+					EnhancedRaidFrames:DeserializeAndDecompressProfile(input)
 				end,
 				get = function()
-					return EnhancedRaidFrames:GetSerializedAndCompressedProfile()
+					return EnhancedRaidFrames:SerializeAndCompressProfile()
 				end,
 				width = "full",
 			},

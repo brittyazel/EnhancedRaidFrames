@@ -55,37 +55,25 @@ function EnhancedRaidFrames:OnEnable()
 	-- Populate our starting config values
 	self:RefreshConfig()
 
-	-- Create our listeners for UNIT_AURA events
-	self:CreateAllListeners()
-
 	-- Run a full update of all auras for a starting point
 	self:UpdateAllAuras()
 
 	-- Force a full update of all frames and auras when the raid roster changes
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 0.25, function()
-		self:CreateAllListeners()
 		self:UpdateAllAuras()
 		self:UpdateAllIndicators(true)
-		self:UpdateAllStockAuraVisOverrides()
+		self:UpdateAllStockAuraVisibility()
 	end)
-
-	-- In retail, there's a special type of boss aura called a "private aura" that is not accessible to addons.
-	-- We can attempt to hide these auras by hooking the default CompactUnitFrame_UpdatePrivateAuras function.
-	if not self.isWoWClassicEra and not self.isWoWClassic then
-		self:SecureHook("CompactUnitFrame_UpdatePrivateAuras", function(frame)
-			self:UpdatePrivateAuraVisOverrides(frame)
-		end)
-	end
-
+	
+	-- Force a full update of all frames when a raid target icon changes
+	self:RegisterEvent("RAID_TARGET_UPDATE", function()
+		self:UpdateAllTargetMarkers()
+	end)
+	
 	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
 	-- Using SecureHook ensures that our function will run 'after' the default function, which is what we want.
 	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame)
 		self:UpdateInRange(frame)
-	end)
-
-	-- Force a full update of all frames when a raid target icon changes
-	self:RegisterEvent("RAID_TARGET_UPDATE", function()
-		self:UpdateAllTargetMarkers()
 	end)
 
 	-- Register our slash command to open the config panel
@@ -149,14 +137,14 @@ function EnhancedRaidFrames:RefreshConfig()
 			self:UpdateIndicators(frame, true)
 			self:UpdateBackgroundAlpha(frame)
 			self:UpdateTargetMarker(frame, true)
-			self:UpdateStockAuraVisOverrides(frame)
+			self:UpdateStockAuraVisibility(frame)
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
 			self:UpdateIndicators(frame, true)
 			self:UpdateBackgroundAlpha(frame)
 			self:UpdateTargetMarker(frame, true)
-			self:UpdateStockAuraVisOverrides(frame)
+			self:UpdateStockAuraVisibility(frame)
 		end)
 	end
 end
