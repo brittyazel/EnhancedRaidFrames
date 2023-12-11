@@ -31,9 +31,9 @@ function EnhancedRaidFrames:CreateAuraListener(frame)
 			frame.ERF_auraListenerFrame:SetParent(frame)
 		end
 	end
-	
+
+	-- If the unit has changed, we should clear any old events it may be listening for.
 	if frame.ERF_auraListenerFrame.unit ~= frame.unit then
-		-- If the unit has changed, we should clear any old events it may be listening for.
 		frame.ERF_auraListenerFrame:UnregisterAllEvents()
 	end
 
