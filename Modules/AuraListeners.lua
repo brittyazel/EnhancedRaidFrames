@@ -44,7 +44,7 @@ function EnhancedRaidFrames:CreateAuraListener(frame)
 	-- Assign the OnEvent callback for the listener frame
 	if not self.isWoWClassicEra and not self.isWoWClassic then
 		frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, unit, payload)
-			self:UpdateUnitAuras(unit, payload, frame)
+			self:UpdateUnitAuras(unit, frame, payload)
 		end)
 	else
 		frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, unit)
@@ -62,7 +62,7 @@ function EnhancedRaidFrames:UpdateAllAuras()
 	if not self.isWoWClassicEra and not self.isWoWClassic then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			self:UpdateUnitAuras(frame.unit, { isFullUpdate = true }, frame)
+			self:UpdateUnitAuras(frame.unit, frame, { isFullUpdate = true })
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
@@ -77,7 +77,7 @@ end
 ---@param unit string @The unit to update auras for
 ---@param payload table @The payload from the UNIT_AURA event
 ---@param parentFrame table @The raid frame to update
-function EnhancedRaidFrames:UpdateUnitAuras(unit, payload, parentFrame)
+function EnhancedRaidFrames:UpdateUnitAuras(unit, parentFrame, payload)
 	if not self.ShouldContinue(unit) then
 		return
 	end
@@ -214,6 +214,12 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(unit, parentFrame)
 		self:CreateAuraListener(parentFrame)
 	end
 
+	-- Keep a record of how many auras we had previously
+	local numPreviousAuras = 0
+	if parentFrame.ERF_unitAuras then
+		numPreviousAuras = #parentFrame.ERF_unitAuras
+	end
+
 	-- Create or clear out the tables for the unit
 	parentFrame.ERF_unitAuras = {}
 
@@ -261,7 +267,8 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(unit, parentFrame)
 	end
 
 	-- Only update the indicators if we have at least 1 tracked aura in our table
-	if #parentFrame.ERF_unitAuras > 0 then
+	-- or if we had a tracked aura in our table previously and now we don't (to clear indicators)
+	if #parentFrame.ERF_unitAuras > 0 or (#parentFrame.ERF_unitAuras == 0 and numPreviousAuras ~= 0) then
 		self:UpdateIndicators(parentFrame)
 	end
 end
