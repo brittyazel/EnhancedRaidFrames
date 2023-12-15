@@ -250,7 +250,8 @@ function EnhancedRaidFrames:FindActiveAndTrackedAura(indicatorFrame)
 		for _, aura in pairs(parentFrame.ERF_unitAuras) do
 			-- Check if the aura matches our auraString
 			if aura.name == auraIdentifier or (tonumber(auraIdentifier) and aura.spellId == tonumber(auraIdentifier))
-					or (aura.isHarmful and aura.dispelName == auraIdentifier) then
+					or (aura.isHarmful and aura.dispelName == auraIdentifier)
+					or (aura.isHarmful and aura.isRaid and "dispel" == auraIdentifier) then
 				-- Check if we should only show our own auras
 				if not self.db.profile["indicator-" .. i].mineOnly
 						or (self.db.profile["indicator-" .. i].mineOnly and aura.sourceUnit == "player") then

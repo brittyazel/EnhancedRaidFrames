@@ -174,7 +174,8 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	if self.allAuras:find(" " .. auraData.name:lower() .. " ", 1, true)
 			or self.allAuras:find(auraData.spellId, 1, true)
 			-- Check if the aura is a debuff, and if it's a dispellable debuff check if we're tracking the wildcard of that debuff type
-			or (auraData.isHarmful and auraData.dispelName and self.allAuras:find(auraData.dispelName:lower(), 1, true)) then
+			or (auraData.isHarmful and auraData.dispelName and self.allAuras:find(auraData.dispelName:lower(), 1, true))
+			or (auraData.isHarmful and auraData.isRaid and self.allAuras:find("dispel", 1, true)) then
 
 		-- Lowercase the aura name for consistency
 		auraData.name = auraData.name:lower()
