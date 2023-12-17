@@ -70,7 +70,7 @@ end
 ---@param frame table @The frame to update the appearance for
 ---@param setAppearance boolean @Whether or not to set the appearance of the marker
 function EnhancedRaidFrames:UpdateTargetMarker(frame, setAppearance)
-	if not self.ShouldContinue(frame.unit) then
+	if not self.ShouldContinue(frame) then
 		return
 	end
 

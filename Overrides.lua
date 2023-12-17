@@ -35,7 +35,7 @@ end
 --- This function hooks teh "OnShow" event of the stock buff/debuff frames.
 ---@param frame table @The frame to set the visibility on
 function EnhancedRaidFrames:UpdateStockAuraVisibility(frame)
-	if not self.ShouldContinue(frame.unit) then
+	if not self.ShouldContinue(frame) then
 		return
 	end
 
@@ -77,7 +77,7 @@ end
 --- We can't hide the private aura frames directly, so we'll hide their anchor frames instead.
 ---@param frame table @The frame to set the visibility on
 function EnhancedRaidFrames:UpdatePrivateAuraVisOverrides(frame)
-	if not self.ShouldContinue(frame.unit) then
+	if not self.ShouldContinue(frame) then
 		return
 	end
 
@@ -100,7 +100,7 @@ end
 --- This function is secure hooked to the CompactUnitFrame_UpdateInRange function.
 ---@param frame table @The frame to update the alpha on
 function EnhancedRaidFrames:UpdateInRange(frame)
-	if not self.ShouldContinue(frame.unit) then
+	if not self.ShouldContinue(frame) then
 		return
 	end
 
@@ -139,7 +139,7 @@ end
 --- Set the background alpha amount based on a defined value by the user.
 ---@param frame table @The frame to set the background alpha on
 function EnhancedRaidFrames:UpdateBackgroundAlpha(frame)
-	if not self.ShouldContinue(frame.unit) then
+	if not self.ShouldContinue(frame) then
 		return
 	end
 

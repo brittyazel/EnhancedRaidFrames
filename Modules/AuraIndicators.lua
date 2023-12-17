@@ -128,7 +128,7 @@ end
 --- @param frame table @The raid frame of our indicators
 --- @param setAppearance boolean @Indicates if we should trigger reapply appearance settings to the indicators
 function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
-	if not self.ShouldContinue(frame.unit) then
+	if not self.ShouldContinue(frame) then
 		return
 	end
 
@@ -160,20 +160,15 @@ function EnhancedRaidFrames:UpdateAllIndicators()
 	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
 		return
 	end
-
-	-- This is the heart and soul of the addon. Everything gets called from here.
+	
 	if not self.isWoWClassicEra and not self.isWoWClassic then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			if frame and frame.unit then
-				self:UpdateIndicators(frame)
-			end
+			self:UpdateIndicators(frame)
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			if frame and frame.unit then
-				self:UpdateIndicators(frame)
-			end
+			self:UpdateIndicators(frame)
 		end)
 	end
 end
@@ -279,8 +274,10 @@ end
 --- Start the update ticker for our indicator animation
 --- @param indicatorFrame table @The indicator frame to process
 function EnhancedRaidFrames:StartUpdateTicker(indicatorFrame)
-	self:IndicatorTick(indicatorFrame) -- Run straight away to set initial values
 	if not indicatorFrame.updateTicker then
+		-- Run straight away to set initial values
+		self:IndicatorTick(indicatorFrame)
+		
 		-- Only start the ticker if it isn't already running
 		indicatorFrame.updateTicker = self:ScheduleRepeatingTimer(function()
 			self:IndicatorTick(indicatorFrame)
@@ -600,9 +597,9 @@ function EnhancedRaidFrames:GenerateAuraStrings()
 		for rawString in self.db.profile["indicator-" .. i].auras:gmatch("[^\n]+") do
 			table.insert(rawStrings, rawString)
 		end
-
+		
+		-- Process each line
 		for j, rawString in ipairs(rawStrings) do
-			-- Grab each line
 			-- Sanitize strings
 			local auraString = self:SanitizeAuraString(rawString)
 			-- Add each watched aura to a matrix for quick searching later

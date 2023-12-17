@@ -60,9 +60,9 @@ function EnhancedRaidFrames:OnEnable()
 
 	-- Force a full update of all frames and auras when the raid roster changes
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 0.25, function()
+		self:UpdateAllStockAuraVisibility()
 		self:UpdateAllAuras()
 		self:UpdateAllIndicators(true)
-		self:UpdateAllStockAuraVisibility()
 	end)
 	
 	-- Force a full update of all frames when a raid target icon changes

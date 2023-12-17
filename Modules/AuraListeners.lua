@@ -44,11 +44,11 @@ function EnhancedRaidFrames:CreateAuraListener(frame)
 	-- Assign the OnEvent callback for the listener frame
 	if not self.isWoWClassicEra and not self.isWoWClassic then
 		frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, unit, payload)
-			self:UpdateUnitAuras(unit, frame, payload)
+			self:UpdateUnitAuras(frame, payload)
 		end)
 	else
 		frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, unit)
-			self:UpdateUnitAuras_Classic(unit, frame) -- Classic uses the legacy method prior to 10.0
+			self:UpdateUnitAuras_Classic(frame) -- Classic uses the legacy method prior to 10.0
 		end)
 	end
 end
@@ -62,11 +62,11 @@ function EnhancedRaidFrames:UpdateAllAuras()
 	if not self.isWoWClassicEra and not self.isWoWClassic then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			self:UpdateUnitAuras(frame.unit, frame, { isFullUpdate = true })
+			self:UpdateUnitAuras(frame, { isFullUpdate = true })
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			self:UpdateUnitAuras_Classic(frame.unit, frame) -- Classic uses the legacy method prior to 10.0
+			self:UpdateUnitAuras_Classic(frame) -- Classic uses the legacy method prior to 10.0
 		end)
 	end
 end
@@ -74,14 +74,15 @@ end
 --- Called by our UNIT_AURA listeners and is used to store unit aura information for a given unit.
 --- Unit aura information for tracked auras is stored in the ERF_unitAuras table.
 --- It uses the C_UnitAuras API that was added in 10.0.
----@param unit string @The unit to update auras for
----@param payload table @The payload from the UNIT_AURA event
 ---@param parentFrame table @The raid frame to update
-function EnhancedRaidFrames:UpdateUnitAuras(unit, parentFrame, payload)
-	if not self.ShouldContinue(unit) then
+---@param payload table @The payload from the UNIT_AURA event
+function EnhancedRaidFrames:UpdateUnitAuras(parentFrame, payload)
+	if not self.ShouldContinue(parentFrame) then
 		return
 	end
-
+	
+	local unit = parentFrame.unit
+	
 	-- Create a listener frame for the unit if we don't have one yet or it's listening to the wrong unit
 	if not parentFrame.ERF_auraListenerFrame or parentFrame.ERF_auraListenerFrame.unit ~= unit then
 		self:CreateAuraListener(parentFrame)
@@ -146,7 +147,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(unit, parentFrame, payload)
 		end
 	end
 
-	-- If one or more auras was removed, remove it from the table
+	-- If one or more auras was removed, remove them from the table
 	if payload.removedAuraInstanceIDs then
 		for _, auraInstanceID in pairs(payload.removedAuraInstanceIDs) do
 			if parentFrame.ERF_unitAuras[auraInstanceID] then
@@ -184,12 +185,10 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 			auraData.dispelName = auraData.dispelName:lower()
 		end
 
-		if auraData.auraInstanceID then
-			-- For 10.0 and newer
+		if auraData.auraInstanceID then -- For 10.0 and newer
 			-- Add our auraData to the ERF_unitAuras table using the auraInstanceID as the key
 			parentFrame.ERF_unitAuras[auraData.auraInstanceID] = auraData
-		else
-			-- For prior to 10.0
+		else -- For 9.x and older
 			-- Append our auraData to the ERF_unitAuras table
 			table.insert(parentFrame.ERF_unitAuras, auraData)
 		end
@@ -202,12 +201,13 @@ end
 --- Called by our UNIT_AURA listeners and is used to store unit aura information for a given unit.
 --- Unit aura information for tracked auras is stored in the ERF_unitAuras table.
 --- This function is less optimized than :UpdateUnitAuras(), but is still required for Classic and Classic Era.
----@param unit string @The unit to update auras for
 ---@param parentFrame table @The raid frame to update
-function EnhancedRaidFrames:UpdateUnitAuras_Classic(unit, parentFrame)
-	if not self.ShouldContinue(unit) then
+function EnhancedRaidFrames:UpdateUnitAuras_Classic(parentFrame)
+	if not self.ShouldContinue(parentFrame) then
 		return
 	end
+
+	local unit = parentFrame.unit
 
 	-- Create a listener frame for the unit if we don't have one yet or it's listening to the wrong unit
 	if not parentFrame.ERF_auraListenerFrame or parentFrame.ERF_auraListenerFrame.unit ~= unit then
