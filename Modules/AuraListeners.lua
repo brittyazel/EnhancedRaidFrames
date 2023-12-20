@@ -32,22 +32,17 @@ function EnhancedRaidFrames:CreateAuraListener(frame)
 		end
 	end
 
-	-- If the unit has changed, we should clear any old events it may be listening for.
-	if frame.ERF_auraListenerFrame.unit ~= frame.unit then
-		frame.ERF_auraListenerFrame:UnregisterAllEvents()
-	end
-
-	-- Set the unit for the listener frame and register the unit event
-	frame.ERF_auraListenerFrame.unit = frame.unit
+	-- Register the unit event
+	frame.ERF_auraListenerFrame:UnregisterAllEvents() -- Clear any existing events
 	frame.ERF_auraListenerFrame:RegisterUnitEvent("UNIT_AURA", frame.unit)
 
 	-- Assign the OnEvent callback for the listener frame
 	if not self.isWoWClassicEra and not self.isWoWClassic then
-		frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, unit, payload)
+		frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, _, payload)
 			self:UpdateUnitAuras(frame, payload)
 		end)
 	else
-		frame.ERF_auraListenerFrame:SetScript("OnEvent", function(_, _, unit)
+		frame.ERF_auraListenerFrame:SetScript("OnEvent", function()
 			self:UpdateUnitAuras_Classic(frame) -- Classic uses the legacy method prior to 10.0
 		end)
 	end
@@ -83,8 +78,8 @@ function EnhancedRaidFrames:UpdateUnitAuras(parentFrame, payload)
 	
 	local unit = parentFrame.unit
 	
-	-- Create a listener frame for the unit if we don't have one yet or it's listening to the wrong unit
-	if not parentFrame.ERF_auraListenerFrame or parentFrame.ERF_auraListenerFrame.unit ~= unit then
+	-- Create a listener frame for the unit if we don't have one yet
+	if not parentFrame.ERF_auraListenerFrame then
 		self:CreateAuraListener(parentFrame)
 	end
 
@@ -209,8 +204,8 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(parentFrame)
 
 	local unit = parentFrame.unit
 
-	-- Create a listener frame for the unit if we don't have one yet or it's listening to the wrong unit
-	if not parentFrame.ERF_auraListenerFrame or parentFrame.ERF_auraListenerFrame.unit ~= unit then
+	-- Create a listener frame for the unit if we don't have one yet
+	if not parentFrame.ERF_auraListenerFrame then
 		self:CreateAuraListener(parentFrame)
 	end
 
