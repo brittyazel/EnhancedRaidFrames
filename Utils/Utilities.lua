@@ -24,7 +24,7 @@ function EnhancedRaidFrames.ShouldContinue(frame)
 	end
 	
 	-- Don't do any work if the frame isn't shown
-	if not frame and not frame:IsShown() then
+	if not frame or (frame and not frame:IsShown()) then
 		return false
 	end
 

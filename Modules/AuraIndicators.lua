@@ -149,7 +149,8 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 			-- This is the meat of our processing loop
 			self:ProcessIndicator(indicator, frame.unit)
 		else
-			indicator:Hide() -- Hide the frame
+			-- Clear the indicator frame
+			self:ClearIndicator(indicator)
 		end
 	end
 end
