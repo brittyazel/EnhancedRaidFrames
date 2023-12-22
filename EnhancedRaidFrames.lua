@@ -66,12 +66,12 @@ function EnhancedRaidFrames:OnEnable()
 		self:UpdateAllAuras()
 		self:UpdateAllIndicators(true)
 	end)
-	
+
 	-- Force a full update of all frames when a raid target icon changes
 	self:RegisterEvent("RAID_TARGET_UPDATE", function()
 		self:UpdateAllTargetMarkers()
 	end)
-	
+
 	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
 	-- Using SecureHook ensures that our function will run 'after' the default function, which is what we want.
 	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame)

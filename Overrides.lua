@@ -16,7 +16,7 @@ function EnhancedRaidFrames:UpdateAllStockAuraVisibility()
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:UpdateStockAuraVisibility(frame)
 		end)
-		
+
 		-- In retail, there's a special type of boss aura called a "private aura" that is not accessible to addons.
 		-- We can attempt to hide these auras by hooking the default CompactUnitFrame_UpdatePrivateAuras function.
 		if not self:IsHooked("CompactUnitFrame_UpdatePrivateAuras") then

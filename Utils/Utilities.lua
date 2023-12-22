@@ -29,12 +29,12 @@ function EnhancedRaidFrames.ShouldContinue(frame, skipVisibilityCheck)
 		if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
 			return false
 		end
-		
+
 		if frame and not frame:IsShown() then
 			return false
 		end
 	end
-	
+
 	-- Check that we have a unit, and only process player, raid, and party units
 	if not frame.unit or (not frame.unit:find("player", 1, true)
 			and not frame.unit:find("raid", 1, true)

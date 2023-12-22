@@ -161,7 +161,7 @@ function EnhancedRaidFrames:UpdateAllIndicators()
 	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
 		return
 	end
-	
+
 	if not self.isWoWClassicEra and not self.isWoWClassic then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
@@ -249,16 +249,16 @@ function EnhancedRaidFrames:FindActiveAndTrackedAura(indicatorFrame)
 					-- Check if the aura is a spellId and the spellId matches our auraString
 					or (tonumber(auraIdentifier) and aura.spellId == tonumber(auraIdentifier))
 					-- Check if the aura is a debuff, if it matches the "RAID" filter, and the auraString matches the "dispel" wildcard
-					or (aura.isHarmful and aura.isRaid and "dispel" == auraIdentifier) 
+					or (aura.isHarmful and aura.isRaid and "dispel" == auraIdentifier)
 					-- Check if the aura is a debuff and if the auraString matches one of the debuff type wildcards
 					or (aura.isHarmful and aura.dispelName == auraIdentifier) then
-				
+
 				-- Check if we should only show our own auras
 				if not self.db.profile["indicator-" .. i].mineOnly
 						or (self.db.profile["indicator-" .. i].mineOnly and aura.sourceUnit == "player") then
 					-- Return once we find an aura that matches all of these conditions
 					return aura
-				
+
 				end
 			end
 		end
@@ -285,7 +285,7 @@ function EnhancedRaidFrames:StartUpdateTicker(indicatorFrame)
 	if not indicatorFrame.updateTicker then
 		-- Run straight away to set initial values
 		self:IndicatorTick(indicatorFrame)
-		
+
 		-- Only start the ticker if it isn't already running
 		indicatorFrame.updateTicker = self:ScheduleRepeatingTimer(function()
 			self:IndicatorTick(indicatorFrame)
@@ -580,7 +580,8 @@ function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame, parentFrame)
 				GameTooltip:SetUnitDebuffByAuraInstanceID(parentFrame.unit, thisAura.auraInstanceID)
 			elseif thisAura.auraIndex then
 				-- The legacy way to set the tooltip for an aura
-				if thisAura.isRaid then -- This is a raid debuff (aka dispellable), it uses a different UnitAura filter
+				if thisAura.isRaid then
+					-- This is a raid debuff (aka dispellable), it uses a different UnitAura filter
 					GameTooltip:SetUnitAura(parentFrame.unit, thisAura.auraIndex, "RAID|HARMFUL")
 				else
 					GameTooltip:SetUnitAura(parentFrame.unit, thisAura.auraIndex, "HARMFUL")
@@ -609,7 +610,7 @@ function EnhancedRaidFrames:GenerateAuraStrings()
 		for rawString in self.db.profile["indicator-" .. i].auras:gmatch("[^\n]+") do
 			table.insert(rawStrings, rawString)
 		end
-		
+
 		-- Process each line
 		for j, rawString in ipairs(rawStrings) do
 			-- Sanitize strings

@@ -25,7 +25,7 @@ function EnhancedRaidFrames:CreateAuraListener(frame)
 	if frame.ERF_auraListenerFrame or not self.ShouldContinue(frame, true) then
 		return
 	end
-	
+
 	-- To stop us from creating redundant frames we should try to re-capture them when possible.
 	if not _G[frame:GetName() .. "-ERF_auraListenerFrame"] then
 		frame.ERF_auraListenerFrame = CreateFrame("Frame", frame:GetName() .. "-ERF_auraListenerFrame", frame)
@@ -34,7 +34,7 @@ function EnhancedRaidFrames:CreateAuraListener(frame)
 		-- If we capture an old indicator frame, we should reattach it to the current unit frame.
 		frame.ERF_auraListenerFrame:SetParent(frame)
 	end
-	
+
 	-- Register the unit event
 	frame.ERF_auraListenerFrame:UnregisterAllEvents() -- Clear any existing events
 	frame.ERF_auraListenerFrame:RegisterUnitEvent("UNIT_AURA", frame.unit)
@@ -93,9 +93,9 @@ function EnhancedRaidFrames:UpdateUnitAuras(parentFrame, payload)
 	if not self.ShouldContinue(parentFrame) then
 		return
 	end
-	
+
 	local unit = parentFrame.unit
-	
+
 	-- Create a listener frame for the unit if we don't happen to have one yet
 	if not parentFrame.ERF_auraListenerFrame then
 		self:CreateAuraListener(parentFrame)
@@ -200,10 +200,12 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 			auraData.dispelName = auraData.dispelName:lower()
 		end
 
-		if auraData.auraInstanceID then -- For 10.0 and newer
+		if auraData.auraInstanceID then
+			-- For 10.0 and newer
 			-- Add our auraData to the ERF_unitAuras table using the auraInstanceID as the key
 			parentFrame.ERF_unitAuras[auraData.auraInstanceID] = auraData
-		else -- For 9.x and older
+		else
+			-- For 9.x and older
 			-- Append our auraData to the ERF_unitAuras table
 			table.insert(parentFrame.ERF_unitAuras, auraData)
 		end
