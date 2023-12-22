@@ -70,6 +70,11 @@ function EnhancedRaidFrames:OnEnable()
 		self:UpdateAllTargetMarkers()
 	end)
 	
+	-- Force a full update of our auras every 3 seconds, meant to catch any auras that may be missed by other events
+	self:ScheduleRepeatingTimer(function()
+		self:UpdateAllAuras()
+	end, 3)
+	
 	-- Hook our UpdateInRange function to the default CompactUnitFrame_UpdateInRange function.
 	-- Using SecureHook ensures that our function will run 'after' the default function, which is what we want.
 	self:SecureHook("CompactUnitFrame_UpdateInRange", function(frame)
