@@ -17,18 +17,25 @@ local LibRangeCheck = LibStub("LibRangeCheck-2.0")
 --- Test for whether or not we should continue processing a given unit
 ---@param frame table @The frame to test
 ---@return boolean @Whether or not we should continue processing the unit
-function EnhancedRaidFrames.ShouldContinue(frame)
-	-- Don't do any work if the raid frames aren't shown
-	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
+function EnhancedRaidFrames.ShouldContinue(frame, skipVisibilityCheck)
+	-- Don't do any work if the frame is nil
+	if not frame then
 		return false
 	end
-	
+
 	-- Check that we have a frame and that it is visible
-	if not frame or (frame and not frame:IsShown()) then
-		return false
+	if not skipVisibilityCheck then
+		-- Don't do any work if the raid frames aren't shown
+		if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
+			return false
+		end
+		
+		if frame and not frame:IsShown() then
+			return false
+		end
 	end
 	
-	-- Only process player, raid and party units
+	-- Check that we have a unit, and only process player, raid, and party units
 	if not frame.unit or (not frame.unit:find("player", 1, true)
 			and not frame.unit:find("raid", 1, true)
 			and not frame.unit:find("party", 1, true)) then

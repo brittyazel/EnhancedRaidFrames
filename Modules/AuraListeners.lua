@@ -20,6 +20,12 @@ end
 --- Creates a listener for the UNIT_AURA event attached to a specified raid frame
 ---@param frame table @The raid frame to create the listener for
 function EnhancedRaidFrames:CreateAuraListener(frame)
+	-- Check if we should continue and if we don't already have a listener frame
+	-- Skip the visibility check in ShouldContinue() as we need the listener to exist even if the frame is hidden
+	if frame.ERF_auraListenerFrame or not self.ShouldContinue(frame, true) then
+		return
+	end
+	
 	-- To stop us from creating redundant frames we should try to re-capture them when possible.
 	if not _G[frame:GetName() .. "-ERF_auraListenerFrame"] then
 		frame.ERF_auraListenerFrame = CreateFrame("Frame", frame:GetName() .. "-ERF_auraListenerFrame", frame)
@@ -41,6 +47,21 @@ function EnhancedRaidFrames:CreateAuraListener(frame)
 	else
 		frame.ERF_auraListenerFrame:SetScript("OnEvent", function()
 			self:UpdateUnitAuras_Classic(frame) -- Classic uses the legacy method prior to 10.0
+		end)
+	end
+end
+
+--- Creates a listener for the UNIT_AURA event attached to all raid frames
+--- This function explicitly creates a listener for all raid frames, even if they aren't visible.
+function EnhancedRaidFrames:CreateAllAuraListeners()
+	if not self.isWoWClassicEra and not self.isWoWClassic then
+		-- 10.0 refactored CompactRaidFrameContainer with new functionality
+		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
+			self:CreateAuraListener(frame)
+		end)
+	else
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
+			self:CreateAuraListener(frame)
 		end)
 	end
 end
@@ -75,7 +96,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(parentFrame, payload)
 	
 	local unit = parentFrame.unit
 	
-	-- Create a listener frame for the unit if we don't have one yet
+	-- Create a listener frame for the unit if we don't happen to have one yet
 	if not parentFrame.ERF_auraListenerFrame then
 		self:CreateAuraListener(parentFrame)
 	end
@@ -201,7 +222,7 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(parentFrame)
 
 	local unit = parentFrame.unit
 
-	-- Create a listener frame for the unit if we don't have one yet
+	-- Create a listener frame for the unit if we don't happen to have one yet
 	if not parentFrame.ERF_auraListenerFrame then
 		self:CreateAuraListener(parentFrame)
 	end

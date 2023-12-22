@@ -56,11 +56,13 @@ function EnhancedRaidFrames:OnEnable()
 	self:RefreshConfig()
 
 	-- Run a full update of all auras for a starting point
+	self:CreateAllAuraListeners() -- Explicitly create aura listeners for all frames regardless of visibility
 	self:UpdateAllAuras()
 
 	-- Force a full update of all frames and auras when the raid roster changes
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 0.25, function()
 		self:UpdateAllStockAuraVisibility()
+		self:CreateAllAuraListeners() -- Explicitly create aura listeners for all frames regardless of visibility
 		self:UpdateAllAuras()
 		self:UpdateAllIndicators(true)
 	end)
@@ -70,7 +72,7 @@ function EnhancedRaidFrames:OnEnable()
 		self:UpdateAllTargetMarkers()
 	end)
 	
-	-- Force a full update of our auras every 3 seconds, meant to catch any auras that may be missed by other events
+	-- Force a full update of our auras every 3 seconds, meant to catch any auras whose triggers may have been missed
 	self:ScheduleRepeatingTimer(function()
 		self:UpdateAllAuras()
 	end, 3)
