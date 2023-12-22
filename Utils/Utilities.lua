@@ -23,20 +23,15 @@ function EnhancedRaidFrames.ShouldContinue(frame)
 		return false
 	end
 	
-	-- Don't do any work if the frame isn't shown
+	-- Check that we have a frame and that it is visible
 	if not frame or (frame and not frame:IsShown()) then
 		return false
 	end
-
-	-- If we don't have a unit, stop here
-	if not frame.unit then
-		return false
-	end
-
+	
 	-- Only process player, raid and party units
-	if not frame.unit:find("player", 1, true)
+	if not frame.unit or (not frame.unit:find("player", 1, true)
 			and not frame.unit:find("raid", 1, true)
-			and not frame.unit:find("party", 1, true) then
+			and not frame.unit:find("party", 1, true)) then
 		return false
 	end
 

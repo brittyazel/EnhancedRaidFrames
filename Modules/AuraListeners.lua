@@ -20,18 +20,15 @@ end
 --- Creates a listener for the UNIT_AURA event attached to a specified raid frame
 ---@param frame table @The raid frame to create the listener for
 function EnhancedRaidFrames:CreateAuraListener(frame)
-	-- Only create a new frame if we don't have one yet
-	if not frame.ERF_auraListenerFrame then
-		-- To stop us from creating redundant frames we should try to re-capture them when possible.
-		if not _G[frame:GetName() .. "-ERF_auraListenerFrame"] then
-			frame.ERF_auraListenerFrame = CreateFrame("Frame", frame:GetName() .. "-ERF_auraListenerFrame", frame)
-		else
-			frame.ERF_auraListenerFrame = _G[frame:GetName() .. "-ERF_auraListenerFrame"]
-			-- If we capture an old indicator frame, we should reattach it to the current unit frame.
-			frame.ERF_auraListenerFrame:SetParent(frame)
-		end
+	-- To stop us from creating redundant frames we should try to re-capture them when possible.
+	if not _G[frame:GetName() .. "-ERF_auraListenerFrame"] then
+		frame.ERF_auraListenerFrame = CreateFrame("Frame", frame:GetName() .. "-ERF_auraListenerFrame", frame)
+	else
+		frame.ERF_auraListenerFrame = _G[frame:GetName() .. "-ERF_auraListenerFrame"]
+		-- If we capture an old indicator frame, we should reattach it to the current unit frame.
+		frame.ERF_auraListenerFrame:SetParent(frame)
 	end
-
+	
 	-- Register the unit event
 	frame.ERF_auraListenerFrame:UnregisterAllEvents() -- Clear any existing events
 	frame.ERF_auraListenerFrame:RegisterUnitEvent("UNIT_AURA", frame.unit)

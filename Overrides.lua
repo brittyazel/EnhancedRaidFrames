@@ -32,7 +32,7 @@ function EnhancedRaidFrames:UpdateAllStockAuraVisibility()
 end
 
 --- Set the visibility on the stock buff/debuff frames for a single frame
---- This function hooks teh "OnShow" event of the stock buff/debuff frames.
+--- This function hooks the "OnShow" event of the stock buff/debuff frames.
 ---@param frame table @The frame to set the visibility on
 function EnhancedRaidFrames:UpdateStockAuraVisibility(frame)
 	if not self.ShouldContinue(frame) then
