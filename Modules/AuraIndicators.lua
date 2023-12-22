@@ -244,15 +244,21 @@ function EnhancedRaidFrames:FindActiveAndTrackedAura(indicatorFrame)
 	for _, auraIdentifier in pairs(self.auraStrings[i]) do
 		-- Loop through list of the current auras on the unit
 		for _, aura in pairs(parentFrame.ERF_unitAuras) do
-			-- Check if the aura matches our auraString
-			if aura.name == auraIdentifier or (tonumber(auraIdentifier) and aura.spellId == tonumber(auraIdentifier))
-					or (aura.isHarmful and aura.dispelName == auraIdentifier)
-					or (aura.isHarmful and aura.isRaid and "dispel" == auraIdentifier) then
+			-- Check if the aura name matches our auraString
+			if aura.name == auraIdentifier
+					-- Check if the aura is a spellId and the spellId matches our auraString
+					or (tonumber(auraIdentifier) and aura.spellId == tonumber(auraIdentifier))
+					-- Check if the aura is a debuff, if it matches the "RAID" filter, and the auraString matches the "dispel" wildcard
+					or (aura.isHarmful and aura.isRaid and "dispel" == auraIdentifier) 
+					-- Check if the aura is a debuff and if the auraString matches one of the debuff type wildcards
+					or (aura.isHarmful and aura.dispelName == auraIdentifier) then
+				
 				-- Check if we should only show our own auras
 				if not self.db.profile["indicator-" .. i].mineOnly
 						or (self.db.profile["indicator-" .. i].mineOnly and aura.sourceUnit == "player") then
 					-- Return once we find an aura that matches all of these conditions
 					return aura
+				
 				end
 			end
 		end
@@ -574,7 +580,11 @@ function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame, parentFrame)
 				GameTooltip:SetUnitDebuffByAuraInstanceID(parentFrame.unit, thisAura.auraInstanceID)
 			elseif thisAura.auraIndex then
 				-- The legacy way to set the tooltip for an aura
-				GameTooltip:SetUnitAura(parentFrame.unit, thisAura.auraIndex, "HARMFUL")
+				if thisAura.isRaid then -- This is a raid debuff (aka dispellable), it uses a different UnitAura filter
+					GameTooltip:SetUnitAura(parentFrame.unit, thisAura.auraIndex, "RAID|HARMFUL")
+				else
+					GameTooltip:SetUnitAura(parentFrame.unit, thisAura.auraIndex, "HARMFUL")
+				end
 			end
 		end
 	else

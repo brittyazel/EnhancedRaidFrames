@@ -64,6 +64,7 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						self.WHITE_COLOR:WrapTextInColorCode("Magic") .. "\n" ..
 						"\n" ..
 						L["Wildcards"] .. ":\n" ..
+						self.RED_COLOR:WrapTextInColorCode("Dispel") .. self.WHITE_COLOR:WrapTextInColorCode(": " .. L["dispelWildcard_desc"]) .. "\n" ..
 						self.GREEN_COLOR:WrapTextInColorCode("Poison") .. self.WHITE_COLOR:WrapTextInColorCode(": " .. L["poisonWildcard_desc"]) .. "\n" ..
 						self.PURPLE_COLOR:WrapTextInColorCode("Curse") .. self.WHITE_COLOR:WrapTextInColorCode(": " .. L["curseWildcard_desc"]) .. "\n" ..
 						self.BROWN_COLOR:WrapTextInColorCode("Disease") .. self.WHITE_COLOR:WrapTextInColorCode(": " .. L["diseaseWildcard_desc"]) .. "\n" ..

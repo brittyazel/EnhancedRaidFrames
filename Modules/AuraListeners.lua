@@ -187,9 +187,10 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	-- otherwise strings with parentheses in them will fail to be found
 	if self.allAuras:find(" " .. auraData.name:lower() .. " ", 1, true)
 			or self.allAuras:find(auraData.spellId, 1, true)
-			-- Check if the aura is a debuff, and if it's a dispellable debuff check if we're tracking the wildcard of that debuff type
-			or (auraData.isHarmful and auraData.dispelName and self.allAuras:find(auraData.dispelName:lower(), 1, true))
-			or (auraData.isHarmful and auraData.isRaid and self.allAuras:find("dispel", 1, true)) then
+			-- Check if the aura is a debuff, if it matches the "RAID" filter, and if we're tracking the wildcard for "dispel"
+			or (auraData.isHarmful and auraData.isRaid and self.allAuras:find("dispel", 1, true))
+			-- Check if the aura is a debuff, and if it has a dispelName see if we're tracking the wildcard for it
+			or (auraData.isHarmful and auraData.dispelName and self.allAuras:find(auraData.dispelName:lower(), 1, true)) then
 
 		-- Lowercase the aura name for consistency
 		auraData.name = auraData.name:lower()
@@ -238,7 +239,7 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(parentFrame)
 	parentFrame.ERF_unitAuras = {}
 
 	-- Iterate through all buffs and debuffs on the unit
-	for _, filter in pairs({ "HELPFUL", "HARMFUL" }) do
+	for _, filter in pairs({ "HELPFUL", "HARMFUL", "RAID|HARMFUL" }) do
 		-- Counter to keep track of our aura index
 		local auraIndex = 1
 
@@ -262,15 +263,18 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(parentFrame)
 				-- Set our isHelpful/isHarmful flags to match the C_UnitAuras API syntax for compatibility with the rest of the addon
 				if filter == "HELPFUL" then
 					auraData.isHelpful = true
-				else
+				elseif filter == "HARMFUL" then
 					auraData.isHarmful = true
+				elseif filter == "RAID|HARMFUL" then
+					auraData.isHarmful = true
+					auraData.isRaid = true
 				end
 
 				-- Add our auraIndex into the table
 				auraData.auraIndex = auraIndex
 
 				-- Add our auraData to the ERF_unitAuras table
-				self:addToAuraTable(parentFrame, auraData, auraIndex)
+				self:addToAuraTable(parentFrame, auraData)
 			else
 				shouldStop = true
 			end
