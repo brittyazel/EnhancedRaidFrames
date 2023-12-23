@@ -5,6 +5,7 @@
 -- Create a local handle to our addon table
 ---@type EnhancedRaidFrames
 local EnhancedRaidFrames = _G.EnhancedRaidFrames
+local LibRangeCheck = LibStub("LibRangeCheck-2.0")
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------

@@ -9,7 +9,6 @@ local EnhancedRaidFrames = _G.EnhancedRaidFrames
 -- Import libraries
 local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 local LibDeflate = LibStub:GetLibrary("LibDeflate")
-local LibRangeCheck = LibStub("LibRangeCheck-2.0")
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
