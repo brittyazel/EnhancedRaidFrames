@@ -100,7 +100,7 @@ end
 --- This function is secure hooked to the CompactUnitFrame_UpdateInRange function.
 ---@param frame table @The frame to update the alpha on
 function EnhancedRaidFrames:UpdateInRange(frame)
-	if not self.ShouldContinue(frame) then
+	if not self.ShouldContinue(frame, true) then
 		return
 	end
 

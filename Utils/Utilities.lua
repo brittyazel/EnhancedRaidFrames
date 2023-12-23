@@ -23,6 +23,13 @@ function EnhancedRaidFrames.ShouldContinue(frame, skipVisibilityCheck)
 		return false
 	end
 
+	-- Check that we have a unit, and only process player, raid, and party units
+	if not frame.unit or (not frame.unit:find("player", 1, true)
+			and not frame.unit:find("raid", 1, true)
+			and not frame.unit:find("party", 1, true)) then
+		return false
+	end
+	
 	-- Check that we have a frame and that it is visible
 	if not skipVisibilityCheck then
 		-- Don't do any work if the raid frames aren't shown
@@ -30,16 +37,10 @@ function EnhancedRaidFrames.ShouldContinue(frame, skipVisibilityCheck)
 			return false
 		end
 
-		if frame and not frame:IsShown() then
+		-- Don't do any work if the frame isn't shown
+		if not frame:IsShown() then
 			return false
 		end
-	end
-
-	-- Check that we have a unit, and only process player, raid, and party units
-	if not frame.unit or (not frame.unit:find("player", 1, true)
-			and not frame.unit:find("raid", 1, true)
-			and not frame.unit:find("party", 1, true)) then
-		return false
 	end
 
 	return true
