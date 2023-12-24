@@ -33,7 +33,7 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/FrameXML/UI
     <Script file="LibDualSpec-1.0\LibDualSpec-1.0.lua"/>
 
     <!--LibRangeCheck-->
-    <Script file="LibRangeCheck-2.0\LibRangeCheck-2.0.lua"/>
+    <Script file="LibRangeCheck-3.0\LibRangeCheck-3.0.lua"/>
 
     <!--LibClassicDurations-->
     <Include file="LibClassicDurations\LibClassicDurations.xml"/>
