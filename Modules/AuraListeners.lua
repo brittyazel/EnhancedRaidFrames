@@ -20,9 +20,8 @@ end
 --- Creates a listener for the UNIT_AURA event attached to a specified raid frame
 ---@param frame table @The raid frame to create the listener for
 function EnhancedRaidFrames:CreateAuraListener(frame)
-	-- Check if we should continue and if we don't already have a listener frame
 	-- Skip the visibility check in ShouldContinue() as we need the listener to exist even if the frame is hidden
-	if frame.ERF_auraListenerFrame or not self.ShouldContinue(frame, true) then
+	if not self.ShouldContinue(frame, true) then
 		return
 	end
 
