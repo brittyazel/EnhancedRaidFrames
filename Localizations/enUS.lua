@@ -99,6 +99,9 @@ L["backgroundAlpha_desc"] = "The opacity percentage of the raid frame background
 L["Indicator Font"] = true
 L["indicatorFont_desc"] = "The the font used for the indicators"
 
+L["Mouseover Cast Compatibility"] = true
+L["mouseoverCast_desc"] = "Enable compatibility with mouseover casting functionality. Consequently, this option will disable tooltips when hovering over indicators."
+
 L["Out-of-Range"] = true
 
 L["Override Default Distance"] = true

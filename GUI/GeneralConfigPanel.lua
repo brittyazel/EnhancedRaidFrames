@@ -148,6 +148,20 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				width = THIRD_WIDTH,
 				order = 33,
 			},
+			mouseoverCastCompat = {
+				type = "toggle",
+				name = L["Mouseover Cast Compatibility"],
+				desc = L["mouseoverCast_desc"],
+				get = function()
+					return self.db.profile.mouseoverCastCompat
+				end,
+				set = function(_, value)
+					self.db.profile.mouseoverCastCompat = value
+					self:UpdateAllMouseBehavior()
+				end,
+				width = THIRD_WIDTH,
+				order = 34,
+			},
 			indicatorFont = {
 				type = 'select',
 				dialogControl = "LSM30_Font",
@@ -162,7 +176,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 					self:RefreshConfig()
 				end,
 				width = THIRD_WIDTH,
-				order = 34,
+				order = 35,
 			},
 			-------------------------------------------------
 			outOfRangeOptions = {

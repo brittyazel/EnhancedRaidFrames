@@ -42,11 +42,10 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 		indicatorFrame:SetScript("OnLeave", function()
 			GameTooltip:Hide()
 		end)
-
-		-- Disable the mouse click on our frames to allow those clicks to get passed straight through to the raid frame.
-		-- This MUST come after the SetScript lines for OnEnter and OnLeave. SetScript will re-enable mouse clicks when called.
-		indicatorFrame:SetMouseClickEnabled(false)
 	end
+
+	-- Set our mouse behavior for our indicators
+	self:UpdateMouseBehavior(frame)
 
 	-- Set our initial indicator appearance
 	self:SetIndicatorAppearance(frame)
@@ -117,6 +116,48 @@ function EnhancedRaidFrames:SetIndicatorAppearance(frame)
 
 		-- Clear the indicator frame
 		self:ClearIndicator(indicatorFrame)
+	end
+end
+
+--- Update the mouse behavior for a given frame
+--- This is used to update the mouse behavior when the user changes the mouseoverCastCompat option
+--- @param frame table @The raid frame to update mouse behavior for
+function EnhancedRaidFrames:UpdateMouseBehavior(frame)
+	-- Stop here if we don't have any indicators
+	if not frame.ERF_indicatorFrames then
+		return
+	end
+
+	-- Set the mouse behavior for our indicators
+	for i = 1, 9 do
+		-- Create local pointer for readability
+		local indicatorFrame = frame.ERF_indicatorFrames[i]
+
+		if self.db.profile.mouseoverCastCompat then
+			-- For mouseover functionality to work, we need to disable all mouse behavior on our frames
+			indicatorFrame:EnableMouse(false)
+		else
+			-- If we're not using mouseover functionality, we need to enable mouse behavior on our frames to reset the default behavior
+			indicatorFrame:EnableMouse(true)
+			-- We also need to disable mouse clicks on our frames to prevent clicks from interfering with the raid frame
+			-- By selectively targeting just SetMouseClickEnabled(), we retain the ability to hover over the indicator and see the tooltip
+			indicatorFrame:SetMouseClickEnabled(false)
+		end
+	end
+end
+
+--- Update all mouse behavior for all indicators
+--- This is used to update all indicators when the user changes the mouseoverCastCompat option
+function EnhancedRaidFrames:UpdateAllMouseBehavior()
+	if not self.isWoWClassicEra and not self.isWoWClassic then
+		-- 10.0 refactored CompactRaidFrameContainer with new functionality
+		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
+			self:UpdateMouseBehavior(frame)
+		end)
+	else
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
+			self:UpdateMouseBehavior(frame)
+		end)
 	end
 end
 

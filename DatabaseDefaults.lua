@@ -30,6 +30,7 @@ function EnhancedRaidFrames:CreateDefaults()
 		frameScale = 1,
 		backgroundAlpha = 1,
 		indicatorFont = "Arial Narrow",
+		mouseoverCastCompat = false,
 
 		-- Out-of-Range Options
 		customRangeCheck = false,
