@@ -17,6 +17,7 @@ local AceDBOptions = LibStub("AceDBOptions-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceDB = LibStub("AceDB-3.0")
+local LibDualSpec = LibStub("LibDualSpec-1.0")
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
@@ -105,9 +106,9 @@ function EnhancedRaidFrames:InitializeDatabase()
 	if not self.isWoWClassicEra then
 		-- Not available in Classic Era
 		-- Enhance the database object with per spec profile features
-		LibStub('LibDualSpec-1.0'):EnhanceDatabase(self.db, "EnhancedRaidFrames")
+		LibDualSpec:EnhanceDatabase(self.db, "EnhancedRaidFrames")
 		-- Enhance the profile options table with per spec profile features
-		LibStub('LibDualSpec-1.0'):EnhanceOptions(AceDBOptions:GetOptionsTable(self.db), self.db)
+		LibDualSpec:EnhanceOptions(AceDBOptions:GetOptionsTable(self.db), self.db)
 	end
 end
 
