@@ -45,7 +45,7 @@ function EnhancedRaidFrames:CreateIndicators(frame)
 	end
 
 	-- Set our mouse behavior for our indicators
-	self:UpdateMouseBehavior(frame)
+	self:SetMouseBehavior(frame)
 
 	-- Set our initial indicator appearance
 	self:SetIndicatorAppearance(frame)
@@ -122,7 +122,7 @@ end
 --- Update the mouse behavior for a given frame
 --- This is used to update the mouse behavior when the user changes the mouseoverCastCompat option
 --- @param frame table @The raid frame to update mouse behavior for
-function EnhancedRaidFrames:UpdateMouseBehavior(frame)
+function EnhancedRaidFrames:SetMouseBehavior(frame)
 	-- Stop here if we don't have any indicators
 	if not frame.ERF_indicatorFrames then
 		return
@@ -148,15 +148,15 @@ end
 
 --- Update all mouse behavior for all indicators
 --- This is used to update all indicators when the user changes the mouseoverCastCompat option
-function EnhancedRaidFrames:UpdateAllMouseBehavior()
+function EnhancedRaidFrames:SetAllMouseBehavior()
 	if not self.isWoWClassicEra and not self.isWoWClassic then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			self:UpdateMouseBehavior(frame)
+			self:SetMouseBehavior(frame)
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			self:UpdateMouseBehavior(frame)
+			self:SetMouseBehavior(frame)
 		end)
 	end
 end

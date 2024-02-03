@@ -157,7 +157,7 @@ function EnhancedRaidFrames:CreateGeneralOptions()
 				end,
 				set = function(_, value)
 					self.db.profile.mouseoverCastCompat = value
-					self:UpdateAllMouseBehavior()
+					self:SetAllMouseBehavior()
 				end,
 				width = THIRD_WIDTH,
 				order = 34,
