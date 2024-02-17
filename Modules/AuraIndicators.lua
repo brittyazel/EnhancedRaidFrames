@@ -197,7 +197,7 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 end
 
 --- Update all aura indicators
-function EnhancedRaidFrames:UpdateAllIndicators()
+function EnhancedRaidFrames:UpdateAllIndicators(setAppearance)
 	-- Don't do any work if the raid frames aren't shown
 	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
 		return
@@ -206,11 +206,11 @@ function EnhancedRaidFrames:UpdateAllIndicators()
 	if not self.isWoWClassicEra and not self.isWoWClassic then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			self:UpdateIndicators(frame)
+			self:UpdateIndicators(frame, setAppearance)
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			self:UpdateIndicators(frame)
+			self:UpdateIndicators(frame, setAppearance)
 		end)
 	end
 end
