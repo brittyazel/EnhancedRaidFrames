@@ -1,12 +1,12 @@
-tag 7b853271f8a96c023ee9dcaed9d9ee674b6799f0 v1.22.5
+tag 83f5d1251166a2bf44a782acbc10ed0a01420131 v1.24.0
 Author:	Kyle Buller <bullerk@gmail.com>
-Date:	Wed May 8 01:29:36 2024 -0500
+Date:	Wed Jul 10 02:16:07 2024 -0500
 
-Tagging as v1.22.5
+Tagging as v1.24.0
 
-commit 1f311597d9a0bbcdb292877daa91ef4fb47609a7
+commit e0da0f71030bc52fd07cdaf56543c139fdc09276
 Author: Kyle Buller <bullerk@gmail.com>
-Date:   Wed May 8 01:28:08 2024 -0500
+Date:   Wed Jul 10 01:46:35 2024 -0500
 
-    Update TOC for 10.2.7, 4.4.0 and combine
+    Add support for Wrath Classic (China)
 
