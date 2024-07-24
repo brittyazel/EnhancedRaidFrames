@@ -96,8 +96,14 @@ function EnhancedRaidFrames:UpdateTargetMarker(frame, setAppearance)
 		-- Get the full texture path for the marker
 		local texture = UnitPopupRaidTarget1ButtonMixin:GetIcon() or "Interface\\TargetingFrame\\UI-RaidTargetingIcons"
 
+		local coords = {}
 		-- Get the texture coordinates for the marker
-		local coords = _G["UnitPopupRaidTarget" .. index .. "ButtonMixin"]:GetTextureCoords()
+		if not self.isWoWClassicEra and not self.isWoWClassic then
+			-- 11.0 changed GetTextureCoords to return the coords unpacked
+			coords.tCoordLeft, coords.tCoordRight, coords.tCoordTop, coords.tCoordBottom = _G["UnitPopupRaidTarget" .. index .. "ButtonMixin"]:GetTextureCoords()
+		else
+			coords = _G["UnitPopupRaidTarget" .. index .. "ButtonMixin"]:GetTextureCoords()
+		end
 
 		-- Set the marker texture using trilinear filtering (reduces pixelation)
 		frame.ERF_targetMarkerFrame:SetTexture(texture, nil, nil, "TRILINEAR")
