@@ -65,6 +65,7 @@ function EnhancedRaidFrames:OnEnable()
 		self:CreateAllAuraListeners() -- Explicitly create aura listeners for all frames regardless of visibility
 		self:UpdateAllAuras()
 		self:UpdateAllIndicators()
+		self:UpdateAllTargetMarkers()
 	end)
 
 	-- Force a full update of all frames when a raid target icon changes

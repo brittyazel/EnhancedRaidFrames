@@ -466,7 +466,14 @@ function EnhancedRaidFrames:UpdateIndicatorIcon(indicatorFrame)
 		if not self.iconCache[auraIdentifier] then
 			-- Check our iconCache for the name. 
 			-- Note: The icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons.
-			local icon = select(3, GetSpellInfo(auraIdentifier)) -- Query the game for the icon
+			local icon
+			-- Check if we can use the new API introduced in 11.0, Classic and Classic_Era may not support it
+			if C_Spell and C_Spell.GetSpellTexture then
+				icon = C_Spell.GetSpellTexture(auraIdentifier) -- Query the game for the icon
+			else
+				icon = select(3, GetSpellInfo(auraIdentifier)) -- Query the game for the icon
+			end
+			
 			if icon then
 				self.iconCache[auraIdentifier] = icon --cache our icon if we found one
 				indicatorFrame.Icon:SetTexture(icon)
