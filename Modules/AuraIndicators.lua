@@ -149,7 +149,7 @@ end
 --- Update all mouse behavior for all indicators
 --- This is used to update all indicators when the user changes the mouseoverCastCompat option
 function EnhancedRaidFrames:SetAllMouseBehavior()
-	if not self.isWoWClassicEra and not self.isWoWClassic then
+	if CompactRaidFrameContainer and CompactRaidFrameContainer.ApplyToFrames then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:SetMouseBehavior(frame)
@@ -203,7 +203,7 @@ function EnhancedRaidFrames:UpdateAllIndicators(setAppearance)
 		return
 	end
 
-	if not self.isWoWClassicEra and not self.isWoWClassic then
+	if CompactRaidFrameContainer and CompactRaidFrameContainer.ApplyToFrames then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:UpdateIndicators(frame, setAppearance)

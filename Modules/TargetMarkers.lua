@@ -123,7 +123,7 @@ end
 
 --- Update the appearance of our target markers for all frames
 function EnhancedRaidFrames:UpdateAllTargetMarkers()
-	if not self.isWoWClassicEra and not self.isWoWClassic then
+	if CompactRaidFrameContainer and CompactRaidFrameContainer.ApplyToFrames then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:UpdateTargetMarker(frame)

@@ -134,7 +134,7 @@ end
 function EnhancedRaidFrames:RefreshConfig()
 	self:GenerateAuraStrings()
 	self:UpdateScale()
-	if not self.isWoWClassicEra and not self.isWoWClassic then
+	if CompactRaidFrameContainer and CompactRaidFrameContainer.ApplyToFrames then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:UpdateIndicators(frame, true)

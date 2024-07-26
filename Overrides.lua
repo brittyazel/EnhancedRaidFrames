@@ -12,7 +12,7 @@ local LibRangeCheck = LibStub("LibRangeCheck-3.0")
 
 --- Set the visibility on the stock buff/debuff frames
 function EnhancedRaidFrames:UpdateAllStockAuraVisibility()
-	if not self.isWoWClassicEra and not self.isWoWClassic then
+	if CompactRaidFrameContainer and CompactRaidFrameContainer.ApplyToFrames then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:UpdateStockAuraVisibility(frame)

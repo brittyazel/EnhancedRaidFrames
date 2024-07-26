@@ -53,7 +53,7 @@ end
 --- Creates a listener for the UNIT_AURA event attached to all raid frames
 --- This function explicitly creates a listener for all raid frames, even if they aren't visible.
 function EnhancedRaidFrames:CreateAllAuraListeners()
-	if not self.isWoWClassicEra and not self.isWoWClassic then
+	if CompactRaidFrameContainer and CompactRaidFrameContainer.ApplyToFrames then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:CreateAuraListener(frame)
@@ -71,7 +71,7 @@ end
 --- Scans all raid frame units and updates the unitAuras table with all auras on each unit.
 function EnhancedRaidFrames:UpdateAllAuras()
 	-- Iterate over all raid frame units and force a full update
-	if not self.isWoWClassicEra and not self.isWoWClassic then
+	if CompactRaidFrameContainer and CompactRaidFrameContainer.ApplyToFrames then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
 			self:UpdateUnitAuras(frame, { isFullUpdate = true })
