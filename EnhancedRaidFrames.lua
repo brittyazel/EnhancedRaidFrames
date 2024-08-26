@@ -54,7 +54,7 @@ end
 function EnhancedRaidFrames:OnEnable()
 	-- Populate our starting config values
 	self:RefreshConfig()
-
+	
 	-- Run a full update of all auras for a starting point
 	self:CreateAllAuraListeners() -- Explicitly create aura listeners for all frames regardless of visibility
 	self:UpdateAllAuras()

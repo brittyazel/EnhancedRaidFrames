@@ -37,4 +37,8 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/FrameXML/UI
 
     <!--LibClassicDurations-->
     <Include file="LibClassicDurations\LibClassicDurations.xml"/>
+    
+    <!--LibDispel-->
+    <!-- https://github.com/tukui-org/LibDispel -->
+    <Script file="LibDispel\LibDispel.lua"/>
 </Ui>

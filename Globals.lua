@@ -28,6 +28,7 @@ EnhancedRaidFrames.GREEN_COLOR = CreateColor(0.6627, 0.8235, 0.4431) --poison te
 EnhancedRaidFrames.PURPLE_COLOR = CreateColor(0.6392, 0.1882, 0.7882) --curse text color
 EnhancedRaidFrames.BROWN_COLOR = CreateColor(0.7804, 0.6118, 0.4314) --disease text color
 EnhancedRaidFrames.BLUE_COLOR = CreateColor(0.0, 0.4392, 0.8706) --magic text color
+EnhancedRaidFrames.PINK_COLOR = CreateColor(1.0, 0.2, 0.6) --bleed text color
 
 -- Declare Global positions table
 EnhancedRaidFrames.POSITIONS = {}

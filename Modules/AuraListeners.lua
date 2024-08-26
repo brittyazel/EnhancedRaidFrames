@@ -7,12 +7,17 @@
 local EnhancedRaidFrames = _G.EnhancedRaidFrames
 
 -- Import libraries
+local LibDispel = LibStub("LibDispel-1.0")
+
 if EnhancedRaidFrames.isWoWClassicEra then
 	-- Set up LibClassicDurations
 	local LibClassicDurations = LibStub("LibClassicDurations")
 	LibClassicDurations:Register("Enhanced Raid Frames") -- Tell library it's being used and should start working
 	EnhancedRaidFrames.UnitAuraWrapper = LibClassicDurations.UnitAuraWrapper -- Wrapper function to use in place of UnitAura
 end
+
+-- Get our list of bleeds from LibDispel
+local bleedList = LibDispel:GetBleedList()
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
@@ -181,6 +186,16 @@ end
 ---@param auraData table @Payload from UNIT_AURA event
 ---@return boolean @True if we added or updated an aura
 function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
+	-- Inject bleed type into auraData courtesy of LibDispel
+	if auraData.isHarmful and not EnhancedRaidFrames.isWoWClassicEra and not EnhancedRaidFrames.IsWowClassic then
+		if bleedList[auraData.spellId] then
+			auraData.dispelName = "bleed"
+			if LibDispel:IsDispellableByMe("Bleed") then
+				auraData.isRaid = true
+			end
+		end
+	end
+	
 	-- Quickly check if we're watching for this aura, and ignore if we aren't
 	-- It's important to use the 4th argument in string.find to turn off pattern matching, 
 	-- otherwise strings with parentheses in them will fail to be found

@@ -43,10 +43,12 @@ L["colorByTime_low_desc"] = "The time (in seconds) for the lower boundary"
 L["Time #2"] = true
 L["colorByTime_high_desc"] = "The time (in seconds) for the upper boundary"
 
+L["Dispel"] = true
 L["Poison"] = true
 L["Curse"] = true
 L["Disease"] = true
 L["Magic"] = true
+L["Bleed"] = true
 
 L["Top-Left"] = true
 L["Top"] = true
@@ -150,6 +152,7 @@ L["poisonWildcard_desc"] = "any poison debuffs"
 L["curseWildcard_desc"] = "any curse debuffs"
 L["diseaseWildcard_desc"] = "any disease debuffs"
 L["magicWildcard_desc"] = "any magic debuffs"
+L["bleedWildcard_desc"] = "any bleed debuffs"
 
 L["Visibility and Behavior"] = true
 

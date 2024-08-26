@@ -68,7 +68,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 						self.GREEN_COLOR:WrapTextInColorCode("Poison") .. self.WHITE_COLOR:WrapTextInColorCode(": " .. L["poisonWildcard_desc"]) .. "\n" ..
 						self.PURPLE_COLOR:WrapTextInColorCode("Curse") .. self.WHITE_COLOR:WrapTextInColorCode(": " .. L["curseWildcard_desc"]) .. "\n" ..
 						self.BROWN_COLOR:WrapTextInColorCode("Disease") .. self.WHITE_COLOR:WrapTextInColorCode(": " .. L["diseaseWildcard_desc"]) .. "\n" ..
-						self.BLUE_COLOR:WrapTextInColorCode("Magic") .. self.WHITE_COLOR:WrapTextInColorCode(": " .. L["magicWildcard_desc"]) .. "\n",
+						self.BLUE_COLOR:WrapTextInColorCode("Magic") .. self.WHITE_COLOR:WrapTextInColorCode(": " .. L["magicWildcard_desc"]) .. "\n" ..
+						self.PINK_COLOR:WrapTextInColorCode("Bleed") .. self.WHITE_COLOR:WrapTextInColorCode(": " .. L["bleedWildcard_desc"]) .. "\n",
 				multiline = 7,
 				get = function()
 					return self.db.profile["indicator-" .. i].auras
