@@ -186,10 +186,12 @@ end
 ---@param auraData table @Payload from UNIT_AURA event
 ---@return boolean @True if we added or updated an aura
 function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
-	-- Inject bleed type into auraData courtesy of LibDispel
-	if auraData.isHarmful and not EnhancedRaidFrames.isWoWClassicEra and not EnhancedRaidFrames.IsWowClassic then
-		if bleedList[auraData.spellId] then
+	-- Inject bleed debuff types into our auraData, courtesy of LibDispel
+	if not self.isWoWClassicEra and not self.isWoWClassic then
+		-- Check if the aura is harmful and if it's a known bleed (as defined by LibDispel)
+		if auraData.isHarmful and bleedList[auraData.spellId] then
 			auraData.dispelName = "bleed"
+			-- Set our raid debuff flag to true if the aura is a bleed and we can dispel bleeds
 			if LibDispel:IsDispellableByMe("Bleed") then
 				auraData.isRaid = true
 			end

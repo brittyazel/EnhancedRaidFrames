@@ -152,7 +152,7 @@ L["poisonWildcard_desc"] = "any poison debuffs"
 L["curseWildcard_desc"] = "any curse debuffs"
 L["diseaseWildcard_desc"] = "any disease debuffs"
 L["magicWildcard_desc"] = "any magic debuffs"
-L["bleedWildcard_desc"] = "any bleed debuffs"
+L["bleedWildcard_desc"] = "any bleed debuffs (retail only)"
 
 L["Visibility and Behavior"] = true
 

@@ -317,7 +317,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 								self.GREEN_COLOR:WrapTextInColorCode(L["Poison"]) .. "\n" ..
 								self.PURPLE_COLOR:WrapTextInColorCode(L["Curse"]) .. "\n" ..
 								self.BROWN_COLOR:WrapTextInColorCode(L["Disease"]) .. "\n" ..
-								self.BLUE_COLOR:WrapTextInColorCode(L["Magic"]) .. "\n",
+								self.BLUE_COLOR:WrapTextInColorCode(L["Magic"]) .. "\n" ..
+								self.PINK_COLOR:WrapTextInColorCode(L["Bleed"]) .. "\n",
 						get = function()
 							return self.db.profile["indicator-" .. i].colorIndicatorByDebuff
 						end,
@@ -514,7 +515,8 @@ function EnhancedRaidFrames:CreateIndicatorOptions()
 								self.GREEN_COLOR:WrapTextInColorCode(L["Poison"]) .. "\n" ..
 								self.PURPLE_COLOR:WrapTextInColorCode(L["Curse"]) .. "\n" ..
 								self.BROWN_COLOR:WrapTextInColorCode(L["Disease"]) .. "\n" ..
-								self.BLUE_COLOR:WrapTextInColorCode(L["Magic"]) .. "\n",
+								self.BLUE_COLOR:WrapTextInColorCode(L["Magic"]) .. "\n" ..
+								self.PINK_COLOR:WrapTextInColorCode(L["Bleed"]) .. "\n",
 						get = function()
 							return self.db.profile["indicator-" .. i].colorTextByDebuff
 						end,
