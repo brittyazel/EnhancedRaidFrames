@@ -16,9 +16,6 @@ if EnhancedRaidFrames.isWoWClassicEra then
 	EnhancedRaidFrames.UnitAuraWrapper = LibClassicDurations.UnitAuraWrapper -- Wrapper function to use in place of UnitAura
 end
 
--- Get our list of bleeds from LibDispel
-local bleedList = LibDispel:GetBleedList()
-
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
@@ -188,6 +185,9 @@ end
 function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	-- Inject bleed debuff types into our auraData, courtesy of LibDispel
 	if not self.isWoWClassicEra and not self.isWoWClassic then
+		-- Get our list of bleeds from LibDispel
+		local bleedList = LibDispel:GetBleedList()
+		
 		-- Check if the aura is harmful and if it's a known bleed (as defined by LibDispel)
 		if auraData.isHarmful and bleedList[auraData.spellId] then
 			auraData.dispelName = "bleed"
