@@ -530,7 +530,7 @@ function EnhancedRaidFrames:UpdateIndicatorColor(indicatorFrame, remainingTime)
 				indicatorFrame.Icon:SetColorTexture(self.BLUE_COLOR:GetRGB())
 				return
 			elseif thisAura.dispelName == "bleed" then
-				indicatorFrame.Icon:SetColorTexture(self.BLOOD_RED_COLOR:GetRGB())
+				indicatorFrame.Icon:SetColorTexture(self.PINK_COLOR:GetRGB())
 			end
 		end
 	end
