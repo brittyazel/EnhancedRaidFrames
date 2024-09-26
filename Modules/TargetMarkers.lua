@@ -98,8 +98,9 @@ function EnhancedRaidFrames:UpdateTargetMarker(frame, setAppearance)
 
 		local coords = {}
 		-- Get the texture coordinates for the marker
-		if not self.isWoWClassicEra and not self.isWoWClassic then
+		if not self.isWoWClassic then
 			-- 11.0 changed GetTextureCoords to return the coords unpacked
+			-- 1.15.4 updated to match retail, only WoW Cataclysm Classic still uses the old way
 			coords.tCoordLeft, coords.tCoordRight, coords.tCoordTop, coords.tCoordBottom = _G["UnitPopupRaidTarget" .. index .. "ButtonMixin"]:GetTextureCoords()
 		else
 			coords = _G["UnitPopupRaidTarget" .. index .. "ButtonMixin"]:GetTextureCoords()
