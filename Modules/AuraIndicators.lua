@@ -196,25 +196,6 @@ function EnhancedRaidFrames:UpdateIndicators(frame, setAppearance)
 	end
 end
 
---- Update all aura indicators
-function EnhancedRaidFrames:UpdateAllIndicators(setAppearance)
-	-- Don't do any work if the raid frames aren't shown
-	if not CompactRaidFrameContainer:IsShown() and CompactPartyFrame and not CompactPartyFrame:IsShown() then
-		return
-	end
-
-	if CompactRaidFrameContainer and CompactRaidFrameContainer.ApplyToFrames then
-		-- 10.0 refactored CompactRaidFrameContainer with new functionality
-		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			self:UpdateIndicators(frame, setAppearance)
-		end)
-	else
-		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			self:UpdateIndicators(frame, setAppearance)
-		end)
-	end
-end
-
 --- Process a single indicator location and apply any necessary visual effects for this moment in time
 --- @param indicatorFrame table @The indicator frame to process
 --- @param unit string @The unit to process the indicator for

@@ -19,6 +19,7 @@ end
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
+
 --- Creates a listener for the UNIT_AURA event attached to a specified raid frame
 ---@param frame table @The raid frame to create the listener for
 function EnhancedRaidFrames:CreateAuraListener(frame)
@@ -52,35 +53,21 @@ function EnhancedRaidFrames:CreateAuraListener(frame)
 	end
 end
 
---- Creates a listener for the UNIT_AURA event attached to all raid frames
---- This function explicitly creates a listener for all raid frames, even if they aren't visible.
-function EnhancedRaidFrames:CreateAllAuraListeners()
-	if CompactRaidFrameContainer and CompactRaidFrameContainer.ApplyToFrames then
-		-- 10.0 refactored CompactRaidFrameContainer with new functionality
-		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			self:CreateAuraListener(frame)
-		end)
-	else
-		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			self:CreateAuraListener(frame)
-		end)
-	end
-end
-
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
 --- Scans all raid frame units and updates the unitAuras table with all auras on each unit.
 function EnhancedRaidFrames:UpdateAllAuras()
-	-- Iterate over all raid frame units and force a full update
+	-- Iterate over all raid frame units, forcing a full refresh and re-creating the listener frame
+	-- It is important that we re-create the listener frame for each unit to ensure that the listener is attached to the correct unit
 	if CompactRaidFrameContainer and CompactRaidFrameContainer.ApplyToFrames then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
 		CompactRaidFrameContainer:ApplyToFrames("normal", function(frame)
-			self:UpdateUnitAuras(frame, { isFullUpdate = true })
+			self:UpdateUnitAuras(frame, {}, true)
 		end)
 	else
 		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", function(frame)
-			self:UpdateUnitAuras_Classic(frame) -- Classic uses the legacy method prior to 10.0
+			self:UpdateUnitAuras_Classic(frame, true) -- Classic uses the legacy method prior to 10.0
 		end)
 	end
 end
@@ -90,18 +77,18 @@ end
 --- It uses the C_UnitAuras API that was added in 10.0.
 ---@param parentFrame table @The raid frame to update
 ---@param payload table @The payload from the UNIT_AURA event
-function EnhancedRaidFrames:UpdateUnitAuras(parentFrame, payload)
+---@param forceRefresh boolean @Whether or not to force a full refresh
+function EnhancedRaidFrames:UpdateUnitAuras(parentFrame, payload, forceRefresh)
 	if not self.ShouldContinue(parentFrame) then
 		return
 	end
-
-	local unit = parentFrame.unit
-
-	-- Create a listener frame for the unit if we don't happen to have one yet
-	if not parentFrame.ERF_auraListenerFrame then
+	
+	-- Create a listener frame for the unit if we don't happen to have one yet, or we're forcing a re-creation
+	if not parentFrame.ERF_auraListenerFrame or forceRefresh then
 		self:CreateAuraListener(parentFrame)
+		payload.isFullUpdate = true -- Force a full update if we're forcing a refresh
 	end
-
+	
 	-- Create the main table for the unit
 	if not parentFrame.ERF_unitAuras then
 		parentFrame.ERF_unitAuras = {}
@@ -111,14 +98,14 @@ function EnhancedRaidFrames:UpdateUnitAuras(parentFrame, payload)
 	-- Flag to determine if we need to run an update on the indicators since we only care about select auras
 	-- This should filter out a lot of unnecessary updates from triggering an indicator update
 	local shouldRunUpdate = false
-
+	
 	-- If we get a full update signal, reset the table and rescan all auras for the unit
 	if payload.isFullUpdate then
 		-- Clear out the table
 		parentFrame.ERF_unitAuras = {}
 		-- Iterate through all buffs and debuffs on the unit
 		for _, filter in pairs({ "HELPFUL", "HARMFUL" }) do
-			AuraUtil.ForEachAura(unit, filter, nil, function(auraData)
+			AuraUtil.ForEachAura(parentFrame.unit, filter, nil, function(auraData)
 				-- Add our auraData to the ERF_unitAuras table
 				local updateFlag = self:addToAuraTable(parentFrame, auraData)
 				if updateFlag then
@@ -126,13 +113,6 @@ function EnhancedRaidFrames:UpdateUnitAuras(parentFrame, payload)
 				end
 			end, true);
 		end
-
-		-- Only update the indicators if we added any tracked auras
-		if shouldRunUpdate then
-			self:UpdateIndicators(parentFrame)
-		end
-
-		return -- End early since we've already updated all the indicators
 	end
 
 	-- If one or more new auras were added, update the table with their payload information
@@ -149,7 +129,7 @@ function EnhancedRaidFrames:UpdateUnitAuras(parentFrame, payload)
 	-- If one or more auras were updated, query their updated information and add it to the table
 	if payload.updatedAuraInstanceIDs then
 		for _, auraInstanceID in pairs(payload.updatedAuraInstanceIDs) do
-			local auraData = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
+			local auraData = C_UnitAuras.GetAuraDataByAuraInstanceID(parentFrame.unit, auraInstanceID)
 			-- Though rare, it is possible for auraData to be nil if the aura was removed just prior to us querying it.
 			if auraData then
 				-- Add our auraData to the ERF_unitAuras table
@@ -235,15 +215,16 @@ end
 --- Unit aura information for tracked auras is stored in the ERF_unitAuras table.
 --- This function is less optimized than :UpdateUnitAuras(), but is still required for Classic and Classic Era.
 ---@param parentFrame table @The raid frame to update
-function EnhancedRaidFrames:UpdateUnitAuras_Classic(parentFrame)
+---@param forceRefresh boolean @Whether or not to force a full refresh
+function EnhancedRaidFrames:UpdateUnitAuras_Classic(parentFrame, forceRefresh)
 	if not self.ShouldContinue(parentFrame) then
 		return
 	end
 
 	local unit = parentFrame.unit
 
-	-- Create a listener frame for the unit if we don't happen to have one yet
-	if not parentFrame.ERF_auraListenerFrame then
+	-- Create a listener frame for the unit if we don't happen to have one yet, or we're forcing a re-creation
+	if not parentFrame.ERF_auraListenerFrame or forceRefresh then
 		self:CreateAuraListener(parentFrame)
 	end
 

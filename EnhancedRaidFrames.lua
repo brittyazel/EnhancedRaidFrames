@@ -56,15 +56,16 @@ function EnhancedRaidFrames:OnEnable()
 	self:RefreshConfig()
 	
 	-- Run a full update of all auras for a starting point
-	self:CreateAllAuraListeners() -- Explicitly create aura listeners for all frames regardless of visibility
 	self:UpdateAllAuras()
 
-	-- Force a full update of all frames and auras when the raid roster changes
-	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 0.25, function()
-		self:UpdateAllStockAuraVisibility()
-		self:CreateAllAuraListeners() -- Explicitly create aura listeners for all frames regardless of visibility
+	-- (THROTTLED) Force a full update of all group member's auras when the group roster changes
+	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, function() -- 1 second throttle to avoid lagging the game
 		self:UpdateAllAuras()
-		self:UpdateAllIndicators()
+	end)
+
+	-- Force a full update of all stock aura visibilities, target markers, and ranges when the group roster changes
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", function()
+		self:UpdateAllStockAuraVisibility()
 		self:UpdateAllTargetMarkers()
 	end)
 
@@ -133,6 +134,7 @@ end
 --- Refresh everything that is affected by changes to the configuration
 function EnhancedRaidFrames:RefreshConfig()
 	self:GenerateAuraStrings()
+	self:UpdateAllAuras() -- Update all auras to reflect new settings
 	self:UpdateScale()
 	if CompactRaidFrameContainer and CompactRaidFrameContainer.ApplyToFrames then
 		-- 10.0 refactored CompactRaidFrameContainer with new functionality
