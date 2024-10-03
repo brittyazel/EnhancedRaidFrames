@@ -280,7 +280,6 @@ function EnhancedRaidFrames:FindActiveAndTrackedAura(indicatorFrame)
 						or (self.db.profile["indicator-" .. i].mineOnly and aura.sourceUnit == "player") then
 					-- Return once we find an aura that matches all of these conditions
 					return aura
-
 				end
 			end
 		end
@@ -297,6 +296,9 @@ function EnhancedRaidFrames:IndicatorTick(indicatorFrame)
 			self:UpdateOverlayGlow(indicatorFrame, remainingTime) -- Set glow animation based on time remaining
 			self:UpdateCountdownTextColor(indicatorFrame, remainingTime) -- Set indicator text color based on time remaining
 			self:UpdateIndicatorColor(indicatorFrame, remainingTime) -- Set indicator background color based on time remaining
+		else
+			-- Clear the indicator and stop the timer if remainingTime is less than 0
+			self:ClearIndicator(indicatorFrame)
 		end
 	end
 end
