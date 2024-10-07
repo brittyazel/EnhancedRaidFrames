@@ -222,7 +222,8 @@ function EnhancedRaidFrames:ProcessIndicator(indicatorFrame, unit)
 		end
 
 		-- Only start our ticker and cooldown animation if the aura has a duration
-		if indicatorFrame.thisAura.expirationTime and indicatorFrame.thisAura.duration then
+		if indicatorFrame.thisAura.expirationTime and indicatorFrame.thisAura.expirationTime ~= 0 and 
+				indicatorFrame.thisAura.duration and indicatorFrame.thisAura.duration ~= 0 then
 			self:StartUpdateTicker(indicatorFrame) -- Start our update ticker
 			self:SetCooldownAnimation(indicatorFrame) -- Set the cooldown animation
 		end
