@@ -1,4 +1,4 @@
-local MAJOR, MINOR = "LibDispel-1.0", 10
+local MAJOR, MINOR = "LibDispel-1.0", 11
 assert(LibStub, MAJOR.." requires LibStub")
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
@@ -52,7 +52,7 @@ if Retail then
 	BlockList[108220] = "Deep Corruption"
 	BlockList[116095] = "Disable" -- slow
 
-	-- Bleed spells updated August 7th 2024 by Simpy for Patch 11.0
+	-- Bleed spells updated October 21st 2024 by Simpy for Patch 11.0.5
 	--- Combined lists (without duplicates, filter requiring either main or effect bleed):
 	----> Apply Aura
 	-----> Mechanic Bleeding: https://www.wowhead.com/spells/mechanic:15?filter=109;6;0
@@ -122,7 +122,6 @@ if Retail then
 	BleedList[35318] = "Saw Blade"
 	BleedList[35321] = "Gushing Wound"
 	BleedList[36023] = "Deathblow"
-	BleedList[36054] = "Deathblow"
 	BleedList[36332] = "Rake"
 	BleedList[36383] = "Carnivorous Bite"
 	BleedList[36590] = "Rip"
@@ -1010,7 +1009,7 @@ if Retail then
 	BleedList[432416] = "Treacherous Blow"
 	BleedList[433825] = "Blood Feast"
 	BleedList[434773] = "Mean Mug"
-	BleedList[434860] = "Cosmic Wound"
+	BleedList[434860] = "Phase Blades"
 	BleedList[438599] = "Bleeding Jab"
 	BleedList[438975] = "Shredding Sting"
 	BleedList[439037] = "Disembowel"
@@ -1050,6 +1049,7 @@ if Retail then
 	BleedList[454472] = "Gash Frenzy"
 	BleedList[454587] = "Serrated Teeth"
 	BleedList[454694] = "Headbutt"
+	BleedList[454783] = "Void Rift"
 	BleedList[455543] = "Crushing Claws"
 	BleedList[455815] = "Harvest Cabbage"
 	BleedList[455896] = "Flurry of Steel"
@@ -1062,6 +1062,7 @@ if Retail then
 	BleedList[457947] = "Limb-shredder Tornado"
 	BleedList[458010] = "Deep Wounds"
 	BleedList[459495] = "Soul Reaper"
+	BleedList[459560] = "Laceration"
 	BleedList[459753] = "Ravenous Leap"
 	BleedList[462018] = "Barbed Bolt"
 	BleedList[463227] = "Splintered"
@@ -1132,7 +1133,7 @@ do
 		end
 
 		-- this will fix a problem where spells dont show as existing because they are 'hidden'
-		local undoRanks = (not Retail and GetCVar('ShowAllSpellRanks') ~= '1') and SetCVar('ShowAllSpellRanks', '1')
+		local undoRanks = (Classic and GetCVar('ShowAllSpellRanks') ~= '1') and SetCVar('ShowAllSpellRanks', '1')
 
 		if event == 'UNIT_PET' then
 			DispelList.Magic = CheckPetSpells()
