@@ -95,22 +95,15 @@ function EnhancedRaidFrames:UpdateTargetMarker(frame, setAppearance)
 	if index and index >= 1 and index <= 8 then
 		-- Get the full texture path for the marker
 		local texture = UnitPopupRaidTarget1ButtonMixin:GetIcon() or "Interface\\TargetingFrame\\UI-RaidTargetingIcons"
-
-		local coords = {}
-		-- Get the texture coordinates for the marker
-		if not self.isWoWClassic then
-			-- 11.0 changed GetTextureCoords to return the coords unpacked
-			-- 1.15.4 updated to match retail, only WoW Cataclysm Classic still uses the old way
-			coords.tCoordLeft, coords.tCoordRight, coords.tCoordTop, coords.tCoordBottom = _G["UnitPopupRaidTarget" .. index .. "ButtonMixin"]:GetTextureCoords()
-		else
-			coords = _G["UnitPopupRaidTarget" .. index .. "ButtonMixin"]:GetTextureCoords()
-		end
-
+		
+		-- Get the texture coordinates for the marker icon
+		local tCoordLeft, tCoordRight, tCoordTop, tCoordBottom = _G["UnitPopupRaidTarget" .. index .. "ButtonMixin"]:GetTextureCoords()
+		
 		-- Set the marker texture using trilinear filtering (reduces pixelation)
 		frame.ERF_targetMarkerFrame:SetTexture(texture, nil, nil, "TRILINEAR")
 
 		-- Set the texture coordinates to the correct icon of the larger texture
-		frame.ERF_targetMarkerFrame:SetTexCoord(coords.tCoordLeft, coords.tCoordRight, coords.tCoordTop, coords.tCoordBottom)
+		frame.ERF_targetMarkerFrame:SetTexCoord(tCoordLeft, tCoordRight, tCoordTop, tCoordBottom)
 
 		-- Set the marker opacity
 		frame.ERF_targetMarkerFrame:SetAlpha(self.db.profile.markerAlpha)
