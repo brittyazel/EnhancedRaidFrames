@@ -1,5 +1,5 @@
 -- Enhanced Raid Frames is a World of Warcraft® user interface addon.
--- Copyright (c) 2017-2024 Britt W. Yazel
+-- Copyright (c) 2017-2025 Britt W. Yazel
 -- This code is licensed under the MIT license (see LICENSE for details)
 
 --- EnhancedRaidFrames is the main addon object for the Enhanced Raid Frames add-on.
