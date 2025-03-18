@@ -1,5 +1,6 @@
-local MAJOR, MINOR = "LibDispel-1.0", 12
+local MAJOR, MINOR = "LibDispel-1.0", 14
 assert(LibStub, MAJOR.." requires LibStub")
+
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -8,6 +9,8 @@ local Classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 local Cata = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
 
 local next = next
+local wipe = wipe
+local CopyTable = CopyTable
 local CreateFrame = CreateFrame
 local GetTalentInfo = GetTalentInfo
 local IsPlayerSpell = IsPlayerSpell
@@ -16,26 +19,39 @@ local IsSpellKnownOrOverridesKnown = IsSpellKnownOrOverridesKnown
 local GetCVar = C_CVar.GetCVar
 local SetCVar = C_CVar.SetCVar
 
-local DebuffColors = CopyTable(DebuffTypeColor)
-lib.DebuffTypeColor = DebuffColors
+local function GetList(name, data)
+	local list = lib[name]
+	if list then -- clear the existing list
+		wipe(list)
+	else
+		list = {} -- create new list
+		lib[name] = list -- add new list
+	end
+
+	if data then -- import color data
+		for key, value in next, data do
+			if type(value) == 'table' then
+				list[key] = CopyTable(value)
+			else
+				list[key] = value
+			end
+		end
+	end
+
+	return list
+end
+
+local BadList = GetList('BadList') -- Spells that backfire when dispelled
+local BleedList = GetList('BleedList') -- Contains spells classified as Bleeds
+local BlockList = GetList('BlockList') -- Spells blocked from AuraHighlight
+local DispelList = GetList('DispelList') -- List of types the player can dispel
+local DebuffColors = GetList('DebuffTypeColor', _G.DebuffTypeColor)
 
 -- These dont exist in Blizzards color table
 DebuffColors.Bleed = { r = 1, g = 0.2, b = 0.6 }
 DebuffColors.EnemyNPC = { r = 0.9, g = 0.1, b = 0.1 }
 DebuffColors.BadDispel = { r = 0.05, g = 0.85, b = 0.94 }
 DebuffColors.Stealable = { r = 0.93, g = 0.91, b = 0.55 }
-
-local DispelList = {} -- List of types the player can dispel
-lib.DispelList = DispelList
-
-local BleedList = {} -- Contains spells classified as Bleeds
-lib.BleedList = BleedList
-
-local BlockList = {} -- Spells blocked from AuraHighlight
-lib.BlockList = BlockList
-
-local BadList = {} -- Spells that backfire when dispelled
-lib.BadList = BadList
 
 if Retail then
 	-- Bad to dispel spells
@@ -52,7 +68,7 @@ if Retail then
 	BlockList[108220] = "Deep Corruption"
 	BlockList[116095] = "Disable" -- slow
 
-	-- Bleed spells updated January 18th 2025 by Simpy for Patch 11.0.7
+	-- Bleed spells updated March 9th 2025 by Simpy for Patch 11.1
 	--- Combined lists (without duplicates, filter requiring either main or effect bleed):
 	----> Apply Aura
 	-----> Mechanic Bleeding: https://www.wowhead.com/spells/mechanic:15?filter=109;6;0
@@ -447,6 +463,7 @@ if Retail then
 	BleedList[194639] = "Rending Claws"
 	BleedList[194674] = "Barbed Spear"
 	BleedList[195094] = "Coral Slash"
+	BleedList[195279] = "Bind"
 	BleedList[195506] = "Razorsharp Axe"
 	BleedList[196111] = "Jagged Claws"
 	BleedList[196122] = "Severing Swipe"
@@ -854,6 +871,7 @@ if Retail then
 	BleedList[346823] = "Furious Cleave"
 	BleedList[347227] = "Weighted Blade"
 	BleedList[347716] = "Letter Opener"
+	BleedList[347807] = "Barbed Arrow"
 	BleedList[348074] = "Assailing Lance"
 	BleedList[348385] = "Bloody Cleave"
 	BleedList[348726] = "Lethal Shot"
@@ -892,6 +910,7 @@ if Retail then
 	BleedList[361042] = "Hardlight Assassination"
 	BleedList[361049] = "Bleeding Gash"
 	BleedList[361756] = "Death Chakram"
+	BleedList[362149] = "Ascended Phalanx"
 	BleedList[362194] = "Suffering"
 	BleedList[362819] = "Rend"
 	BleedList[363124] = "Hardlight Assassination"
@@ -1105,7 +1124,6 @@ if Retail then
 	BleedList[447268] = "Skullsplitter"
 	BleedList[447272] = "Hurl Spear"
 	BleedList[448818] = "Scratch"
-	BleedList[449233] = "Cull the Herd"
 	BleedList[449585] = "Deep Cut"
 	BleedList[449886] = "Deephunter's Bloody Hook"
 	BleedList[449960] = "Fresh Cut"
@@ -1126,7 +1144,7 @@ if Retail then
 	BleedList[454539] = "Talon Swipe"
 	BleedList[454587] = "Serrated Teeth"
 	BleedList[454694] = "Headbutt"
-	BleedList[454783] = "Void Rift"
+	BleedList[454783] = "Devouring Rift"
 	BleedList[454922] = "Slashing Claws"
 	BleedList[454951] = "Skewer Flesh"
 	BleedList[455543] = "Crushing Claws"
@@ -1155,20 +1173,53 @@ if Retail then
 	BleedList[464358] = "Rend"
 	BleedList[464570] = "Toe-Slash"
 	BleedList[465089] = "Shrapnel Blast"
+	BleedList[465102] = "Sundering Bash"
+	BleedList[465189] = "Grievous Thrashing"
 	BleedList[465213] = "Bloody Slash"
 	BleedList[465223] = "Blood Tithe"
 	BleedList[465240] = "Blood Rush"
 	BleedList[465247] = "Leg Rip"
 	BleedList[465261] = "Perforate Flesh"
 	BleedList[465271] = "Heart Shot"
+	BleedList[465326] = "Rend Flesh"
+	BleedList[466606] = "Serrated Bite"
 	BleedList[467105] = "Ravenous Charge"
+	BleedList[468229] = "Slashing Prices"
 	BleedList[468457] = "Rend"
+	BleedList[468631] = "Harpoon"
 	BleedList[468873] = "Thrash"
 	BleedList[468885] = "Rip"
 	BleedList[468934] = "Rake"
+	BleedList[469391] = "Perforating Wound"
 	BleedList[469700] = "Stab"
+	BleedList[470005] = "Vicious Bite"
 	BleedList[470154] = "Latched On"
+	BleedList[470241] = "Shred"
+	BleedList[470383] = "Talon Shred"
 	BleedList[470632] = "Rend"
+	BleedList[470695] = "Mech-a-Zoomies"
+	BleedList[470903] = "Phantom Strikes"
+	BleedList[471076] = "Chomp"
+	BleedList[471442] = "Rabid Charge"
+	BleedList[472196] = "Rending Maul"
+	BleedList[472855] = "Shred"
+	BleedList[474201] = "Gore"
+	BleedList[474271] = "Drillstrike"
+	BleedList[1213141] = "Heavy Slash"
+	BleedList[1213803] = "Nailed"
+	BleedList[1213848] = "Wrecking Ball"
+	BleedList[1214068] = "Grievous Bite"
+	BleedList[1214653] = "Buzz-Saw"
+	BleedList[1215411] = "Puncture"
+	BleedList[1216056] = "Talon Shred"
+	BleedList[1216467] = "Lacerated"
+	BleedList[1217261] = "Screwed!"
+	BleedList[1217375] = "Merciless Blow"
+	BleedList[1217677] = "Flesh Wound"
+	BleedList[1218140] = "Junksaws"
+	BleedList[1218302] = "Punctured"
+	BleedList[1221386] = "Spearhead"
+	BleedList[1227293] = "Gushing Wound"
 end
 
 function lib:GetDebuffTypeColor()
