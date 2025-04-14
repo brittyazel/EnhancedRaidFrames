@@ -1,12 +1,16 @@
-tag ada8b4e72724e1f694a18b742ca1e885a516e9f4 v1.24.2
+tag 13bf5586d3bf3ad96246e0e64ca1bfef160dd550 v1.25.0
 Author:	Kyle Buller <bullerk@gmail.com>
-Date:	Tue Nov 19 19:11:39 2024 -0600
+Date:	Thu Mar 20 20:26:11 2025 -0500
 
-Tagging as v1.24.2
-
-commit 15130682a8f7020c91dccd9ae6da2c03fc806549
+commit 88780e5efc6792e119a98ccb631d7e190a7a098f
 Author: Kyle Buller <bullerk@gmail.com>
-Date:   Tue Nov 19 19:11:30 2024 -0600
+Date:   Thu Mar 20 20:25:20 2025 -0500
 
-    Update load guard for Classic Anniversary (HC)
+    Bump minor version
+
+commit da9e7bbadde63f21550245a30825e5190a5df5b4
+Author: Kyle Buller <bullerk@gmail.com>
+Date:   Thu Mar 20 20:19:33 2025 -0500
+
+    Fix Wrath Classic options
 
