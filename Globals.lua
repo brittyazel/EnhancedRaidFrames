@@ -48,3 +48,4 @@ EnhancedRaidFrames.iconCache["poison"] = 132104
 EnhancedRaidFrames.iconCache["disease"] = 132099
 EnhancedRaidFrames.iconCache["curse"] = 132095
 EnhancedRaidFrames.iconCache["magic"] = 135894
+EnhancedRaidFrames.iconCache["bleed"] = 136168

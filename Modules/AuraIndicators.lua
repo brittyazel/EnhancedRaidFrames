@@ -449,7 +449,7 @@ function EnhancedRaidFrames:UpdateIndicatorIcon(indicatorFrame)
 
 		if not self.iconCache[auraIdentifier] then
 			-- Check our iconCache for the name. 
-			-- Note: The icon cache is pre-populated with generic "poison", "curse", "disease", and "magic" debuff icons.
+			-- Note: The icon cache is pre-populated with generic "poison", "curse", "disease", "magic", and "bleed" debuff icons.
 			local icon
 			-- Check if we can use the new API introduced in 11.0, Classic and Classic_Era may not support it
 			if C_Spell and C_Spell.GetSpellTexture then
@@ -515,6 +515,7 @@ function EnhancedRaidFrames:UpdateIndicatorColor(indicatorFrame, remainingTime)
 				return
 			elseif thisAura.dispelName == "bleed" then
 				indicatorFrame.Icon:SetColorTexture(self.PINK_COLOR:GetRGB())
+				return
 			end
 		end
 	end
@@ -558,6 +559,9 @@ function EnhancedRaidFrames:UpdateCountdownTextColor(indicatorFrame, remainingTi
 				return
 			elseif thisAura.dispelName == "magic" then
 				indicatorFrame.Countdown:SetTextColor(self.BLUE_COLOR:GetRGB())
+				return
+			elseif thisAura.dispelName == "bleed" then
+				indicatorFrame.Countdown:SetTextColor(self.PINK_COLOR:GetRGB())
 				return
 			end
 		end
