@@ -8,6 +8,7 @@ local EnhancedRaidFrames = _G.EnhancedRaidFrames
 
 -- Import libraries
 local LibSharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
+local LibDispel = LibStub("LibDispel-1.0")
 
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
@@ -271,10 +272,10 @@ function EnhancedRaidFrames:FindActiveAndTrackedAura(indicatorFrame)
 			if aura.name == auraIdentifier
 					-- Check if the aura is a spellId and the spellId matches our auraString
 					or (tonumber(auraIdentifier) and aura.spellId == tonumber(auraIdentifier))
-					-- Check if the aura is a debuff, if it matches the "RAID" filter, and the auraString matches the "dispel" wildcard
-					or (aura.isHarmful and aura.isRaid and "dispel" == auraIdentifier)
+					-- Check if the aura is a debuff, if the auraString matches the "dispel" wildcard, and if the player can dispel this type
+					or (aura.isHarmful and "dispel" == auraIdentifier and LibDispel:GetMyDispelTypes()[aura.dispelName])
 					-- Check if the aura is a debuff and if the auraString matches one of the debuff type wildcards
-					or (aura.isHarmful and aura.dispelName == auraIdentifier) then
+					or (aura.isHarmful and aura.dispelName:lower() == auraIdentifier) then
 
 				-- Check if we should only show our own auras
 				if not self.db.profile["indicator-" .. i].mineOnly
@@ -501,19 +502,19 @@ function EnhancedRaidFrames:UpdateIndicatorColor(indicatorFrame, remainingTime)
 
 		-- Set the color by debuff type
 		if self.db.profile["indicator-" .. i].colorIndicatorByDebuff and thisAura.isHarmful and thisAura.dispelName then
-			if thisAura.dispelName == "poison" then
+			if thisAura.dispelName == "Poison" then
 				indicatorFrame.Icon:SetColorTexture(self.GREEN_COLOR:GetRGB())
 				return
-			elseif thisAura.dispelName == "curse" then
+			elseif thisAura.dispelName == "Curse" then
 				indicatorFrame.Icon:SetColorTexture(self.PURPLE_COLOR:GetRGB())
 				return
-			elseif thisAura.dispelName == "disease" then
+			elseif thisAura.dispelName == "Disease" then
 				indicatorFrame.Icon:SetColorTexture(self.BROWN_COLOR:GetRGB())
 				return
-			elseif thisAura.dispelName == "magic" then
+			elseif thisAura.dispelName == "Magic" then
 				indicatorFrame.Icon:SetColorTexture(self.BLUE_COLOR:GetRGB())
 				return
-			elseif thisAura.dispelName == "bleed" then
+			elseif thisAura.dispelName == "Bleed" then
 				indicatorFrame.Icon:SetColorTexture(self.PINK_COLOR:GetRGB())
 				return
 			end
@@ -548,19 +549,19 @@ function EnhancedRaidFrames:UpdateCountdownTextColor(indicatorFrame, remainingTi
 
 		-- Set the color by debuff type
 		if self.db.profile["indicator-" .. i].colorTextByDebuff and thisAura.isHarmful and thisAura.dispelName then
-			if thisAura.dispelName == "poison" then
+			if thisAura.dispelName == "Poison" then
 				indicatorFrame.Countdown:SetTextColor(self.GREEN_COLOR:GetRGB())
 				return
-			elseif thisAura.dispelName == "curse" then
+			elseif thisAura.dispelName == "Curse" then
 				indicatorFrame.Countdown:SetTextColor(self.PURPLE_COLOR:GetRGB())
 				return
-			elseif thisAura.dispelName == "disease" then
+			elseif thisAura.dispelName == "Disease" then
 				indicatorFrame.Countdown:SetTextColor(self.BROWN_COLOR:GetRGB())
 				return
-			elseif thisAura.dispelName == "magic" then
+			elseif thisAura.dispelName == "Magic" then
 				indicatorFrame.Countdown:SetTextColor(self.BLUE_COLOR:GetRGB())
 				return
-			elseif thisAura.dispelName == "bleed" then
+			elseif thisAura.dispelName == "Bleed" then
 				indicatorFrame.Countdown:SetTextColor(self.PINK_COLOR:GetRGB())
 				return
 			end
@@ -618,12 +619,8 @@ function EnhancedRaidFrames:Tooltip_OnEnter(indicatorFrame, parentFrame)
 				GameTooltip:SetUnitDebuffByAuraInstanceID(parentFrame.unit, thisAura.auraInstanceID)
 			elseif thisAura.auraIndex then
 				-- The legacy way to set the tooltip for an aura
-				if thisAura.isRaid then
-					-- This is a raid debuff (aka dispellable), it uses a different UnitAura filter
-					GameTooltip:SetUnitAura(parentFrame.unit, thisAura.auraIndex, "RAID|HARMFUL")
-				else
-					GameTooltip:SetUnitAura(parentFrame.unit, thisAura.auraIndex, "HARMFUL")
-				end
+				GameTooltip:SetUnitAura(parentFrame.unit, thisAura.auraIndex, "HARMFUL")
+
 			end
 		end
 	else

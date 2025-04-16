@@ -44,8 +44,8 @@ EnhancedRaidFrames.POSITIONS[9] = L["Bottom-Right"]
 
 -- Declare Global iconCache table with pre-populated values
 EnhancedRaidFrames.iconCache = {}
-EnhancedRaidFrames.iconCache["poison"] = 132104
-EnhancedRaidFrames.iconCache["disease"] = 132099
-EnhancedRaidFrames.iconCache["curse"] = 132095
-EnhancedRaidFrames.iconCache["magic"] = 135894
-EnhancedRaidFrames.iconCache["bleed"] = 136168
+EnhancedRaidFrames.iconCache["Poison"] = 132104
+EnhancedRaidFrames.iconCache["Disease"] = 132099
+EnhancedRaidFrames.iconCache["Curse"] = 132095
+EnhancedRaidFrames.iconCache["Magic"] = 135894
+EnhancedRaidFrames.iconCache["Bleed"] = 136168

@@ -165,16 +165,9 @@ end
 function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	-- Inject bleed debuff types into our auraData, courtesy of LibDispel
 	if not self.isWoWClassicEra and not self.isWoWClassic then
-		-- Get our list of bleeds from LibDispel
-		local bleedList = LibDispel:GetBleedList()
-		
 		-- Check if the aura is harmful and if it's a known bleed (as defined by LibDispel)
-		if auraData.isHarmful and bleedList[auraData.spellId] then
-			auraData.dispelName = "bleed"
-			-- Set our raid debuff flag to true if the aura is a bleed and we can dispel bleeds
-			if LibDispel:IsDispellableByMe("Bleed") then
-				auraData.isRaid = true
-			end
+		if auraData.isHarmful and LibDispel:GetBleedList()[auraData.spellId] then
+			auraData.dispelName = "Bleed"
 		end
 	end
 	
@@ -183,18 +176,13 @@ function EnhancedRaidFrames:addToAuraTable(parentFrame, auraData)
 	-- otherwise strings with parentheses in them will fail to be found
 	if self.allAuras:find(" " .. auraData.name:lower() .. " ", 1, true)
 			or self.allAuras:find(auraData.spellId, 1, true)
-			-- Check if the aura is a debuff, if it matches the "RAID" filter, and if we're tracking the wildcard for "dispel"
-			or (auraData.isHarmful and auraData.isRaid and self.allAuras:find("dispel", 1, true))
+			-- Check if the aura is a debuff, if aura string contains the "dispel" wildcard, and if the player can dispel this type
+			or (auraData.isHarmful and self.allAuras:find("dispel", 1, true) and auraData.dispelName and LibDispel:GetMyDispelTypes()[auraData.dispelName])
 			-- Check if the aura is a debuff, and if it has a dispelName see if we're tracking the wildcard for it
 			or (auraData.isHarmful and auraData.dispelName and auraData.dispelName ~= "" and self.allAuras:find(auraData.dispelName:lower(), 1, true)) then
 
 		-- Lowercase the aura name for consistency
 		auraData.name = auraData.name:lower()
-
-		-- Check to see if we have a dispel name, and lowercase it if we do
-		if auraData.dispelName then
-			auraData.dispelName = auraData.dispelName:lower()
-		end
 
 		if auraData.auraInstanceID then
 			-- For 10.0 and newer
@@ -238,7 +226,7 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(parentFrame, forceRefresh)
 	parentFrame.ERF_unitAuras = {}
 
 	-- Iterate through all buffs and debuffs on the unit
-	for _, filter in pairs({ "HELPFUL", "HARMFUL", "RAID|HARMFUL" }) do
+	for _, filter in pairs({ "HELPFUL", "HARMFUL" }) do
 		-- Counter to keep track of our aura index
 		local auraIndex = 1
 
@@ -264,9 +252,6 @@ function EnhancedRaidFrames:UpdateUnitAuras_Classic(parentFrame, forceRefresh)
 					auraData.isHelpful = true
 				elseif filter == "HARMFUL" then
 					auraData.isHarmful = true
-				elseif filter == "RAID|HARMFUL" then
-					auraData.isHarmful = true
-					auraData.isRaid = true
 				end
 
 				-- Add our auraIndex into the table
