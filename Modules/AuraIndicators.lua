@@ -273,9 +273,9 @@ function EnhancedRaidFrames:FindActiveAndTrackedAura(indicatorFrame)
 					-- Check if the aura is a spellId and the spellId matches our auraString
 					or (tonumber(auraIdentifier) and aura.spellId == tonumber(auraIdentifier))
 					-- Check if the aura is a debuff, if the auraString matches the "dispel" wildcard, and if the player can dispel this type
-					or (aura.isHarmful and "dispel" == auraIdentifier and LibDispel:GetMyDispelTypes()[aura.dispelName])
+					or (aura.isHarmful and auraIdentifier == "dispel" and aura.dispelName and LibDispel:GetMyDispelTypes()[aura.dispelName])
 					-- Check if the aura is a debuff and if the auraString matches one of the debuff type wildcards
-					or (aura.isHarmful and aura.dispelName:lower() == auraIdentifier) then
+					or (aura.isHarmful and aura.dispelName and aura.dispelName:lower() == auraIdentifier) then
 
 				-- Check if we should only show our own auras
 				if not self.db.profile["indicator-" .. i].mineOnly
