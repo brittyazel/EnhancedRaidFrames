@@ -15,7 +15,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("EnhancedRaidFrames")
 -- Set Classic and Classic_Era flags
 if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 	EnhancedRaidFrames.isWoWClassicEra = true
-elseif WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC then
+elseif WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
 	EnhancedRaidFrames.isWoWClassic = true
 end
 
