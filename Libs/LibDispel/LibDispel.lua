@@ -1,22 +1,24 @@
-local MAJOR, MINOR = "LibDispel-1.0", 14
+local MAJOR, MINOR = "LibDispel-1.0", 15
 assert(LibStub, MAJOR.." requires LibStub")
 
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
-local Retail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local Classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-local Mists = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
-
 local next = next
 local wipe = wipe
+local type = type
+
+local GetCVar = C_CVar.GetCVar
+local SetCVar = C_CVar.SetCVar
+
 local CopyTable = CopyTable
 local CreateFrame = CreateFrame
 local IsPlayerSpell = IsPlayerSpell
 local IsSpellKnownOrOverridesKnown = IsSpellKnownOrOverridesKnown
 
-local GetCVar = C_CVar.GetCVar
-local SetCVar = C_CVar.SetCVar
+local Retail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+local Classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+local Mists = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
 
 local function GetList(name, data)
 	local list = lib[name]
