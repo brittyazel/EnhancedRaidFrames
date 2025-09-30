@@ -1,4 +1,5 @@
-local MAJOR, MINOR = "LibDispel-1.0", 18
+
+local MAJOR, MINOR = "LibDispel-1.0", 20
 assert(LibStub, MAJOR.." requires LibStub")
 
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
@@ -1233,6 +1234,8 @@ if Retail then
 	BleedList[1237602] = "Gushing Wound"
 	BleedList[1239906] = "Phantom Strikes"
 	BleedList[1248211] = "Phase Slash"
+	BleedList[1253240] = "Corruption of the Engorged"
+	BleedList[1255245] = "Twilight Slash"
 end
 
 function lib:GetDebuffTypeColor()
@@ -1265,9 +1268,7 @@ do
 		[89808] = "Singe"
 	}
 
-	if Retail then
-		WarlockPetSpells[132411] = "Singe Magic" -- Grimoire of Sacrifice
-	else
+	if Classic then
 		WarlockPetSpells[19505] = "Devour Magic Rank 1"
 		WarlockPetSpells[19731] = "Devour Magic Rank 2"
 		WarlockPetSpells[19734] = "Devour Magic Rank 3"
@@ -1275,6 +1276,8 @@ do
 		WarlockPetSpells[27276] = "Devour Magic Rank 5"
 		WarlockPetSpells[27277] = "Devour Magic Rank 6"
 		WarlockPetSpells[48011] = "Devour Magic Rank 7"
+	else
+		WarlockPetSpells[132411] = "Singe Magic" -- Grimoire of Sacrifice
 	end
 
 	local function CheckSpell(spellID, pet)
@@ -1283,7 +1286,7 @@ do
 
 	local function CheckPetSpells()
 		for spellID in next, WarlockPetSpells do
-			if CheckSpell(spellID, Retail and 1 or true) then
+			if CheckSpell(spellID, Classic and true or 1) then
 				return true
 			end
 		end
@@ -1368,7 +1371,7 @@ do
 	frame:RegisterEvent('LEARNED_SPELL_IN_TAB')
 	frame:RegisterEvent('SPELLS_CHANGED')
 
-	if Retail or Mists then
+	if not Classic then
 		frame:RegisterEvent('PLAYER_TALENT_UPDATE')
 	end
 
