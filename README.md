@@ -1,11 +1,15 @@
 # Enhanced Raid Frames
 
-_"...makes the stock raid frames as good as Grid2 and VuhDo, but without the learning curve!"_ -Tom Hanks, probably
+_**Update regarding WoW Midnight.**_
 
-**Enhanced Raid Frames** is a raid frame add-on for **World of Warcraft: Dragonflight** and **World of Warcraft: Classic
-** that adds many small but significant features to enhance the (already quite awesome) built-in raid frames, allowing
-the raid frames to function much closer to add-ons such as Grid/Grid2 or VuhDo — the most notable addition being
-configurable aura indicators.
+_Due to the changes Blizzard is making to addons in WoW Midnight, it looks like Enhanced Raid Frames will cease functioning. As I currently no longer play WoW and have been keeping the addon updated solely for the benefit of you all, I don't foresee Enhanced Raid Frames continuing once these changes go into effect. We had a good run, and it's been a pleasure developing addons for you all. Cheers,_
+
+_-Soyier_
+
+**Enhanced Raid Frames** is a raid frame add-on for **World of Warcraft**, **World of Warcraft: Classic** and
+**World of Warcraft: Classic Era** that adds many small but significant features to enhance the (already quite awesome) 
+built-in raid frames, allowing the raid frames to function much closer to add-ons such as Grid/Grid2 or VuhDo — the most 
+notable addition being configurable aura indicators.
 
 Along with options to adjust the out-of-range distance, frame scale, frame opacity, overlay target icons, and numerous
 other small features, Enhanced Raid Frames adds 9 aura indicators for each raid member, forming a 3x3 grid overlaying
