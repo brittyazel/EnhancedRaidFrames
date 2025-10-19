@@ -1,4 +1,4 @@
-﻿## Interface: 11507, 50500, 110200
+﻿## Interface: 11507, 50501, 110205
 ## Title: Enhanced Raid Frames
 ## Notes: Enhances the Blizzard raid frames with configurable Buff/Debuff indicators
 ## IconTexture: Interface\Icons\spell_holy_borrowedtime
