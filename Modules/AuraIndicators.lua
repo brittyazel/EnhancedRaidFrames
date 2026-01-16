@@ -581,9 +581,13 @@ function EnhancedRaidFrames:UpdateOverlayGlow(indicatorFrame, remainingTime)
 	if self.db.profile["indicator-" .. i].indicatorGlow and remainingTime
 			and (self.db.profile["indicator-" .. i].glowRemainingSecs == 0
 			or self.db.profile["indicator-" .. i].glowRemainingSecs >= remainingTime) then
-		ActionButton_ShowOverlayGlow(indicatorFrame)
+		if ActionButton_ShowOverlayGlow then
+			ActionButton_ShowOverlayGlow(indicatorFrame)
+		end
 	else
-		ActionButton_HideOverlayGlow(indicatorFrame)
+		if ActionButton_HideOverlayGlow then
+			ActionButton_HideOverlayGlow(indicatorFrame)
+		end
 	end
 end
 
